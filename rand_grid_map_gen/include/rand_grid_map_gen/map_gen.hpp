@@ -9,6 +9,8 @@ class RandomMapGen
 public:
   RandomMapGen(ros::NodeHandle& nh_private);
 
+  grid_map_msgs::GridMap getROSMessage();
+
 private:
   ros::NodeHandle nh_private_;
   int seed_;
@@ -19,6 +21,8 @@ private:
   int max_obstacle_length_;
   int max_obstacle_width_;
   int max_obstacle_height_;
+
+  int resolution_;
 
   grid_map::GridMap grid_map_;
   grid_map::GridMapRosConverter grid_map_converter_;

@@ -133,7 +133,7 @@ add_library(map_gen
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/rand_grid_map_gen_node.cpp)
+add_executable(map_gen_pub_node src/map_gen_pub_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -148,6 +148,11 @@ add_library(map_gen
 ## Specify libraries to link a library or executable target against
 target_link_libraries(map_gen
   ${catkin_LIBRARIES}
+)
+
+target_link_libraries(map_gen_pub_node
+  ${catkin_LIBRARIES}
+  map_gen
 )
 
 #############
