@@ -17,6 +17,7 @@ int main (int argc, char** argv) {
 
     while (ros::ok()) {
         grid_map_publisher.publish(Map.getROSMessage());
+        ros::spinOnce();
         rate.sleep();
     }
     

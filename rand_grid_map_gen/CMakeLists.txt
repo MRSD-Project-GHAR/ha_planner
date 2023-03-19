@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   grid_map_ros
   roscpp
   visualization_msgs
+  std_srvs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -105,7 +106,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES rand_grid_map_gen
- CATKIN_DEPENDS grid_map_ros roscpp visualization_msgs
+ CATKIN_DEPENDS grid_map_ros roscpp visualization_msgs std_srvs
 #  DEPENDS system_lib
 )
 
