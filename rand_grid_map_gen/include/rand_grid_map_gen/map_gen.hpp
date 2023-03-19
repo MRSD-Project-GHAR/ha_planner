@@ -10,22 +10,26 @@ public:
   RandomMapGen(ros::NodeHandle& nh_private);
 
   grid_map_msgs::GridMap getROSMessage();
+  void generateNewMap();
 
 private:
   ros::NodeHandle nh_private_;
   int seed_;
 
-  int map_width_;
-  int map_length_;
+  double map_width_;
+  double map_length_;
 
-  int max_obstacle_length_;
-  int max_obstacle_width_;
-  int max_obstacle_height_;
+  double max_obstacle_length_;
+  double max_obstacle_width_;
+  double max_obstacle_height_;
 
-  int resolution_;
+  double resolution_;
+  int num_obstacles_;
 
   grid_map::GridMap grid_map_;
   grid_map::GridMapRosConverter grid_map_converter_;
+
+  void addObstacle();
 
 };
 
