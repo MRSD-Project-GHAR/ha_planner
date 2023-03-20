@@ -3,6 +3,8 @@
 #include <mbf_abstract_core/abstract_planner.h>
 #include <pluginlib/class_list_macros.h>
 
+#include <grid_map_core/grid_map_core.hpp>
+
 namespace mbf_rrts_core
 {
 /**
@@ -13,6 +15,13 @@ namespace mbf_rrts_core
 class RRTSPlanner : public mbf_abstract_core::AbstractPlanner
 {
 public:
+
+  typedef std::shared_ptr<grid_map::GridMap> GridMapPtr;
+
+  // RRTSPlanner(GridMapPtr grid_map_ptr);
+
+  // RRTSPlanner();
+
   /**
    * @brief Given a goal pose in the world, compute a plan
    * @param start The start pose
@@ -49,7 +58,10 @@ public:
    */
   bool cancel();
 
+  void setMapPtr(GridMapPtr grid_map_ptr);
+
 private:
   bool cancel_requested_ = false;
+  GridMapPtr grid_map_;
 };
 }  // namespace mbf_rrts_core

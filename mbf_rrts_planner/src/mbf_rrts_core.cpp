@@ -8,6 +8,15 @@ PLUGINLIB_EXPORT_CLASS(mbf_rrts_core::RRTSPlanner, mbf_abstract_core::AbstractPl
 
 namespace mbf_rrts_core
 {
+// RRTSPlanner::RRTSPlanner(GridMapPtr grid_map_ptr)
+// {
+//   grid_map_ = grid_map_ptr;
+// }
+
+// RRTSPlanner::RRTSPlanner() {
+//   grid_map_ = NULL;
+// }
+
 uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geometry_msgs::PoseStamped& goal,
                                double tolerance, std::vector<geometry_msgs::PoseStamped>& plan, double& cost,
                                std::string& message)
@@ -36,9 +45,11 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
   // Make a dummy plan consisting of just one point, (10, 0, 0)
   geometry_msgs::PoseStamped dummy_plan;
-  dummy_plan.pose.position.x = 10.0;
+  dummy_plan.pose.position.x = 2.0;
   dummy_plan.pose.orientation.w = 1.0;
   dummy_plan.header.frame_id = "odom";
+  plan.push_back(dummy_plan);
+  dummy_plan.pose.position.x = 5.0;
   plan.push_back(dummy_plan);
   std::cout << "Made a dummy plan!" << std::endl;
 
@@ -52,4 +63,9 @@ bool RRTSPlanner::cancel()
   return true;
 }
 
-}  // namespace mbf_rrts_planner
+
+void RRTSPlanner::setMapPtr(GridMapPtr grid_map) {
+  grid_map_ = grid_map;
+}
+
+}  // namespace mbf_rrts_core

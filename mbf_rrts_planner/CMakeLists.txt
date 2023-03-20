@@ -133,7 +133,7 @@ add_library(${PROJECT_NAME}_core
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/mbf_rrts_planner_node.cpp)
+add_executable(mbf_rrts_vis_node src/mbf_rrts_vis_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -146,9 +146,10 @@ add_library(${PROJECT_NAME}_core
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(mbf_rrts_vis_node
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}_core
+)
 
 #############
 ## Install ##
