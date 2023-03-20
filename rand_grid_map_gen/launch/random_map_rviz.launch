@@ -1,0 +1,9 @@
+<launch>
+
+  <node pkg="rand_grid_map_gen" type="map_gen_pub_node" name="random_map_publisher" output="screen" >
+    <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/map_params.yaml" />
+  </node>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" />
+
+</launch>
