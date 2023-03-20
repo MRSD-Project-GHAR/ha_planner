@@ -1,0 +1,6 @@
+
+<library path="lib/libmbf_rrts_planner_core">
+  <class name="mbf_rrts_core/RRTSPlanner" type="mbf_rrts_core::RRTSPlanner" base_class_type="mbf_abstract_core::AbstractPlanner">
+    <description>This is a RRT* Planner that uses the grid map library</description>
+  </class>
+</library>
