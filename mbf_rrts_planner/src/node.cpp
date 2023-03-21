@@ -41,10 +41,32 @@ double RRTNode::getDistance(RRTNodePtr node)
   return sqrtf64((x - node->x) * (x - node->x) + (y - node->y) * (y - node->y));
 }
 
-// IMP TODO : Incorporate obstacle passing in the node cost.
+// IMP TODO : Incorporate obstacle passing in the node cost : done
 double RRTNode::getCost(RRTNodePtr node)
 {
-  return getDistance(node);
+  bool hits_obstacle = false;
+  double total_length = getDistance(node);
+  double slope = atan2(y - node->y, x - node->x);
+  double resolution = map_->getResolution();
+
+  double new_x = x;
+  double new_y = y;
+
+  for (double length = 0; length < total_length; length += resolution)
+  {
+    new_x = new_x + resolution * cos(slope);
+    new_y = new_y + resolution * cos(slope);
+
+    // Remove hardcore
+    if (map_->atPosition("elevation", { new_x, new_y }) > 2)
+    {
+      hits_obstacle = true;
+      break;
+    }
+  }
+
+  if (hits_obstacle) return DBL_MAX;
+  else return total_length;
 }
 
 void RRTNode::setParent(RRTNodePtr parent)

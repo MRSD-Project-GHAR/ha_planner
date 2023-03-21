@@ -90,11 +90,9 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   return 0;
 }
 
-// IMP TODO
 
 std::vector<RRTNode::RRTNodePtr> RRTSPlanner::findNearestNeighbours(RRTNode::RRTNodePtr node, double threshold)
 {
-  // RRTNode::RRTNodePtr nearest_neighbour = nodes[0];
   std::vector<RRTNode::RRTNodePtr> nearest_neighbours;
 
   for (auto neighbour : nodes)
@@ -108,7 +106,6 @@ std::vector<RRTNode::RRTNodePtr> RRTSPlanner::findNearestNeighbours(RRTNode::RRT
   return nearest_neighbours;
 }
 
-// IMP TODO
 void RRTSPlanner::generatePlanFromTree(std::vector<geometry_msgs::PoseStamped>& plan, RRTNode::RRTNodePtr goal)
 {
   RRTNode::RRTNodePtr current_parent = goal->getParent();

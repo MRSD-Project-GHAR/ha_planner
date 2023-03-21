@@ -15,6 +15,12 @@ public:
     goal_sub_ = nh.subscribe("goal_topic", 10, &PlanVisualizer::goalPoseCallback, this);
 
     path_pub_ = nh.advertise<nav_msgs::Path>("planned_path", 10);
+
+    start_.pose.position.x = 0;
+    start_.pose.position.y = 1;
+
+    goal_.pose.position.x = 1;
+    goal_.pose.position.y = 0;
   }
 
   void mapCallback(const grid_map_msgs::GridMap& map_msg)
