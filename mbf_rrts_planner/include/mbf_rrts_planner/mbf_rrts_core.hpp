@@ -4,6 +4,7 @@
 #include <pluginlib/class_list_macros.h>
 
 #include <grid_map_core/grid_map_core.hpp>
+#include "mbf_rrts_planner/node.hpp"
 
 namespace mbf_rrts_core
 {
@@ -15,13 +16,6 @@ namespace mbf_rrts_core
 class RRTSPlanner : public mbf_abstract_core::AbstractPlanner
 {
 public:
-
-  typedef std::shared_ptr<grid_map::GridMap> GridMapPtr;
-
-  // RRTSPlanner(GridMapPtr grid_map_ptr);
-
-  // RRTSPlanner();
-
   /**
    * @brief Given a goal pose in the world, compute a plan
    * @param start The start pose
@@ -63,5 +57,9 @@ public:
 private:
   bool cancel_requested_ = false;
   GridMapPtr grid_map_;
+  std::vector<RRTNode::RRTNodePtr> nodes;
+
+  std::vector<RRTNode::RRTNodePtr> findNearestNeighbours(RRTNode::RRTNodePtr node, double threshold);
+  void generatePlanFromTree(std::vector<geometry_msgs::PoseStamped>& plan, RRTNode::RRTNodePtr goal);
 };
 }  // namespace mbf_rrts_core

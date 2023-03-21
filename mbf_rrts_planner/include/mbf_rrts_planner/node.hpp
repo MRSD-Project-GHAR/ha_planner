@@ -4,26 +4,33 @@
 #include <list>
 #include <memory>
 #include <grid_map_core/grid_map_core.hpp>
+#include <geometry_msgs/PoseStamped.h>
 
 namespace mbf_rrts_core
 {
-class RRTNode
+typedef std::shared_ptr<grid_map::GridMap> GridMapPtr;
+
+class RRTNode : std::enable_shared_from_this<RRTNode>
 {
 public:
   typedef std::shared_ptr<RRTNode> RRTNodePtr;
 
-  RRTNode(grid_map::GridMap map, int seed);
+  RRTNode(GridMapPtr map, int seed);
+  RRTNode(GridMapPtr map, const geometry_msgs::PoseStamped& pose);
   RRTNode();
 
   double getDistance(RRTNodePtr node);
   double getCost(RRTNodePtr node);
-
-  RRTNodePtr parent;
-  std::list<RRTNodePtr> children;
+  void setParent(RRTNodePtr parent);
+  RRTNodePtr getParent();
+  geometry_msgs::PoseStamped getPoseStampedMsg();
+  double cost;
 
 private:
+  RRTNodePtr parent_;
+  std::list<RRTNodePtr> children_;
   double x, y;
-  grid_map::GridMap map_;
+  GridMapPtr map_;
 };
 
 }  // namespace mbf_rrts_core

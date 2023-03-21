@@ -56,7 +56,7 @@ private:
 
   grid_map::GridMap map_;
   mbf_rrts_core::RRTSPlanner planner_;
-  mbf_rrts_core::RRTSPlanner::GridMapPtr map_ptr;
+  mbf_rrts_core::GridMapPtr map_ptr;
   geometry_msgs::PoseStamped start_;
   geometry_msgs::PoseStamped goal_;
 

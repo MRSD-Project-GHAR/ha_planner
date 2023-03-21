@@ -122,6 +122,7 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}_core
+  src/node.cpp
   src/mbf_rrts_core.cpp
 )
 
