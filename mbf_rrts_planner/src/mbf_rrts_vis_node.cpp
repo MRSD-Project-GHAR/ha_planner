@@ -26,20 +26,22 @@ public:
   void mapCallback(const grid_map_msgs::GridMap& map_msg)
   {
     grid_map::GridMapRosConverter::fromMessage(map_msg, map_);
-    planner_.setMapPtr(std::make_shared<grid_map::GridMap>());
-    makeAndPublishPlan();
+    planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_));
+    received_map_ = true;
   }
 
   void startPoseCallback(const geometry_msgs::PoseStamped& start_msg)
   {
     start_ = start_msg;
-    makeAndPublishPlan();
+    if (received_map_)
+      makeAndPublishPlan();
   }
 
   void goalPoseCallback(const geometry_msgs::PoseStamped& goal_msg)
   {
     goal_ = goal_msg;
-    makeAndPublishPlan();
+    if (received_map_)
+      makeAndPublishPlan();
   }
 
 private:
@@ -70,6 +72,8 @@ private:
   ros::Subscriber start_sub_;
   ros::Subscriber goal_sub_;
   ros::Publisher path_pub_;
+
+  bool received_map_;
 };
 
 int main(int argc, char** argv)
@@ -80,6 +84,8 @@ int main(int argc, char** argv)
   ros::NodeHandle nh_private("~");
 
   PlanVisualizer plan_visualizer(nh, nh_private);
+
+  // std::cout << (DBL_MAX);
 
   ros::spin();
 
