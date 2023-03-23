@@ -10,35 +10,24 @@ RRTNode::RRTNode()
 RRTNode::RRTNode(GridMapPtr map, std::default_random_engine& generator)
 {
   parent_ = NULL;
-  // std::cout << "Starting formation of node\n";
   map_ = map;
-  // std::cout << "Map set!\n";
-
-  // std::cout << "Generator Seeded!\n";
-
-  // std::cout << map->getLength();
 
   // TODO: hardcoded center of the map
   std::uniform_real_distribution<> x_generator(-map->getLength()[0] / 2.0, map->getLength()[0] / 2.0);
   std::uniform_real_distribution<> y_generator(-map->getLength()[1] / 2.0, map->getLength()[1] / 2.0);
 
-  // std::cout << "Distribution formed!\n";
-
   x = x_generator(generator);
   y = y_generator(generator);
 
   auto layers = map->getLayers();
-  // std::cout << "layers in this map: " << layers[0];
 
   while (map->atPosition("elevation", { x, y }) > 1)
   {
-    // std::cout << "Oops, was not a good node, remaking the node\n";
-
     x = x_generator(generator);
     y = y_generator(generator);
   }
 
-  std::cout << "The new node is generated with coordinates " << x << "," << y << "\n";
+  // std::cout << "The new node is generated with coordinates " << x << "," << y << "\n";
 }
 
 RRTNode::RRTNode(GridMapPtr map, const geometry_msgs::PoseStamped& pose)
@@ -72,9 +61,8 @@ double RRTNode::getCost(RRTNodePtr node)
   {
     double new_x = node->x + length * cos(slope);
     double new_y = node->y + length * sin(slope);
-    // std::cout << "New interpolated point : " << new_x << ", " << new_y << "\n";
 
-    // Remove hardcode
+    // TODO: Remove hardcode in threshold
     if (map_->atPosition("elevation", { new_x, new_y }) > 0.00001)
     {
       hits_obstacle = true;
@@ -82,10 +70,16 @@ double RRTNode::getCost(RRTNodePtr node)
     }
   }
 
+  double cost;
+
   if (hits_obstacle)
-    return DBL_MAX;
+    // std::cout << "This path passes through an intraversable obstacle! Returning max cost\n";
+    cost = DBL_MAX;
   else
-    return total_length;
+    cost = total_length;
+
+  // std::cout << "Cost to this node is " << total_length << "\n";
+  return cost;
 }
 
 void RRTNode::setParent(RRTNodePtr parent)
@@ -104,8 +98,8 @@ void RRTNode::setParent(RRTNodePtr parent)
   parent_->children_.push_back(this_node_ptr);
   cost = parent_->cost + getCost(parent_);
 
-  std::cout << "Parent Set! Parent coordinates: " << parent_->x << ", " << parent_->y
-            << "; Parent cost: " << parent_->cost << "; Child cost: " << cost << "\n";
+  // std::cout << "Parent Set! Parent: " << parent_->x << ", " << parent_->y << "; Child: " << x << ", " << y
+  //           << "; Parent cost: " << parent_->cost << "; Child cost: " << cost << "\n";
 }
 
 RRTNode::RRTNodePtr RRTNode::getParent()
