@@ -76,6 +76,7 @@ public:
   geometry_msgs::PoseStamped getPoseStampedMsg();
   double cost;
 
+  std::size_t getHash() const;
 private:
   RRTNodePtr parent_;
   std::list<RRTNodePtr> children_;

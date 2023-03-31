@@ -62,6 +62,16 @@ private:
   GridMapPtr grid_map_;
   std::vector<RRTNode::RRTNodePtr> nodes;
 
+  class RRTNodeHash
+  {
+    std::size_t operator()(const RRTNode& node) const
+    {
+      return (node.getHash());
+    }
+  };
+
+  std::unordered_map < std::pair<double, double>, RRTNode::RRTNodePtr, RRTNodeHash> new_nodes;
+
   /**
    * @brief Finds the neighbours nearest to a node in the tree.
    * @details This function finds the neighbours nearest to the given node. The function checks for nodes that are
@@ -81,5 +91,7 @@ private:
    * @param goal The node representing the goal point.
    */
   void generatePlanFromTree(std::vector<geometry_msgs::PoseStamped>& plan, RRTNode::RRTNodePtr goal);
+
+  void addNode(RRTNode::RRTNodePtr node);
 };
 }  // namespace mbf_rrts_core
