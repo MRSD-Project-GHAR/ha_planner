@@ -16,6 +16,7 @@ namespace mbf_rrts_core
 class RRTSPlanner : public mbf_abstract_core::AbstractPlanner
 {
 public:
+
   /**
    * @brief Given a goal pose in the world, compute a plan
    * @param start The start pose
@@ -81,12 +82,6 @@ private:
    * @param goal The node representing the goal point.
    */
   void generatePlanFromTree(std::vector<geometry_msgs::PoseStamped>& plan, RRTNode::RRTNodePtr goal);
-
-  void addNode(RRTNode::RRTNodePtr node, std::vector<std::list<RRTNode::RRTNodePtr>>& nodes_map);
-  std::size_t getHash(RRTNode::RRTNodePtr node) const;
-  std::size_t getMaxHash();
-
-  int scale_down_factor;
 
 };
 }  // namespace mbf_rrts_core

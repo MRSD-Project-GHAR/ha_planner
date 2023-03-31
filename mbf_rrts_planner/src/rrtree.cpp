@@ -85,7 +85,7 @@ std::vector<RRTNode::RRTNodePtr> RRTree::findNearestNeighbours(RRTNode::RRTNodeP
   GridMapCoords origin_gridmap = std::make_pair(node->x, node->y);
   NodeMapCoords origin_nodemap = getNodeMapCoords(origin_gridmap);
 
-  for (auto it_ : node_map_[origin_gridmap.first][origin_gridmap.second])
+  for (auto it_ : node_map_[origin_nodemap.first][origin_nodemap.second])
     neighbours.push_back(it_);
 
   int neighbourhood_size = 1;
