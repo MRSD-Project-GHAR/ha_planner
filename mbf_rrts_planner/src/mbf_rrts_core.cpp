@@ -16,6 +16,8 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
                                std::string& message)
 
 {
+  std::cout << "Planner is making the plan now!\n";
+
   if (grid_map_ == NULL)
   {
     return 58;
@@ -40,7 +42,6 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   goal_node->cost = DBL_MAX;
   // std::cout << "Added start and goal node\n";
 
-
   for (int i = 0; i < max_iterations; i++)
   {
     // std::cout << "Iteration: " << i << "\n";
@@ -50,6 +51,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
     std::vector<RRTNode::RRTNodePtr> neighbours = findNearestNeighbours(random_node, neighbourhood_radius);
     // std::cout << "Neighbours found. Number of neighbours found = " << neighbours.size() << "\n";
+    auto time_now = std::chrono::high_resolution_clock::now();
 
     RRTNode::RRTNodePtr nearest_neighbour = neighbours[0];
 
@@ -70,6 +72,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
     random_node->setParent(nearest_neighbour);
     nodes.push_back(random_node);
+
     // std::cout << "This neighbour has now been set as a parent\n";
 
     for (auto neighbour : neighbours)
@@ -93,6 +96,10 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
     // std::cout << "\n\n";
 
+    auto exec_time = std::chrono::high_resolution_clock::now() - time_now;
+    // std::cout << "Time taken: " << exec_time.count() << "\n";
+    std::cout << "Time taken: " << std::chrono::duration_cast<std::chrono::microseconds>(exec_time).count() << "\n\n";
+
     if (cancel_requested_)
     {
       cancel_requested_ = false;
@@ -102,7 +109,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   // std::cout << "RRT tree made. The number of nodes added are : " << nodes.size() << "\n";
   // std::cout << "RRT tree made. Cost is : " << goal_node->cost << "\n";
 
-  if (goal_node->cost > tolerance)
+  if (goal_node->cost == DBL_MAX)
   {
     return 54;
   }
@@ -134,9 +141,6 @@ std::vector<RRTNode::RRTNodePtr> RRTSPlanner::findNearestNeighbours(RRTNode::RRT
     {
       closest_neighbour = neighbour;
     }
-
-
-
   }
 
   if (!neighbours_found)
@@ -153,12 +157,14 @@ void RRTSPlanner::generatePlanFromTree(std::vector<geometry_msgs::PoseStamped>& 
   plan.push_back(goal->getPoseStampedMsg());
   RRTNode::RRTNodePtr current_parent = goal->getParent();
 
-  // std::cout << "Back tracking from goal node to start node to get the path\n"
+  // std::cout << "Back tracking from goal node to start node to get the path.\n";
   while (current_parent != NULL)
   {
     plan.push_back(current_parent->getPoseStampedMsg());
     current_parent = current_parent->getParent();
   }
+
+  // std::cout << "Plan made with " << plan.size() << " nodes\n";
 
   reverse(plan.begin(), plan.end());
 }

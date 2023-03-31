@@ -59,7 +59,8 @@ public:
 
   /**
    * @brief Sets the parent of this node.
-   * @details A node might not have a parent, or might already have another parent. This function handles both these cases.
+   * @details A node might not have a parent, or might already have another parent. This function handles both these
+   * cases.
    * @param parent The pointer to the node that is going to be the new parent of this node
    */
   void setParent(RRTNodePtr parent);

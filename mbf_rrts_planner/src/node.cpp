@@ -1,4 +1,5 @@
 #include <mbf_rrts_planner/node.hpp>
+#include <chrono>
 
 namespace mbf_rrts_core
 {
@@ -73,12 +74,16 @@ double RRTNode::getCost(RRTNodePtr node)
   double cost;
 
   if (hits_obstacle)
+  {
     // std::cout << "This path passes through an intraversable obstacle! Returning max cost\n";
     cost = DBL_MAX;
+  }
   else
+  {
     cost = total_length;
+  }
 
-  // std::cout << "Cost to this node is " << total_length << "\n";
+  // std::cout << "Cost to this node is " << cost << "\n";
   return cost;
 }
 
@@ -87,10 +92,16 @@ void RRTNode::setParent(RRTNodePtr parent)
   RRTNodePtr this_node_ptr = shared_from_this();
 
   // TODO: find an efficient way to do this
+
   if (parent_)
   {
+    // auto time_now = std::chrono::high_resolution_clock::now();
     auto this_node_it = std::find(parent_->children_.begin(), parent_->children_.end(), this_node_ptr);
     parent_->children_.erase(this_node_it);
+    // auto exec_time = std::chrono::high_resolution_clock::now() - time_now;
+    // std::cout << "Time taken: " << exec_time.count() << "\n";
+    // std::cout << "Time taken: " << std::chrono::duration_cast<std::chrono::microseconds>(exec_time).count() <<
+    // "\n\n";
   }
 
   parent_ = parent;
