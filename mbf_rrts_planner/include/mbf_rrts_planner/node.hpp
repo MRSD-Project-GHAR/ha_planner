@@ -76,11 +76,10 @@ public:
   geometry_msgs::PoseStamped getPoseStampedMsg();
   double cost;
 
-  std::size_t getHash() const;
+  double x, y;
 private:
   RRTNodePtr parent_;
   std::list<RRTNodePtr> children_;
-  double x, y;
   GridMapPtr map_;
 };
 

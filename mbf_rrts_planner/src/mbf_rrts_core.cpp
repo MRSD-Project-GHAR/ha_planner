@@ -29,14 +29,21 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   int max_iterations = 200;
   int seed = 10;
   double neighbourhood_radius = 2.0;
+  scale_down_factor = 2;
+
   std::default_random_engine generator;
   generator.seed(seed);
 
   nodes.clear();
+  std::vector<std::list<RRTNode::RRTNodePtr>> nodes_map(getMaxHash());
+  // nodes_map.clear();
+  // nodes_map.reserve(getMaxHash());
 
   RRTNode::RRTNodePtr start_node = std::make_shared<RRTNode>(grid_map_, start);
   start_node->cost = 0;
+
   nodes.push_back(start_node);
+  addNode(start_node, nodes_map);
 
   RRTNode::RRTNodePtr goal_node = std::make_shared<RRTNode>(grid_map_, goal);
   goal_node->cost = DBL_MAX;
@@ -72,6 +79,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
     random_node->setParent(nearest_neighbour);
     nodes.push_back(random_node);
+    addNode(random_node, nodes_map);
 
     // std::cout << "This neighbour has now been set as a parent\n";
 
@@ -98,7 +106,8 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
     auto exec_time = std::chrono::high_resolution_clock::now() - time_now;
     // std::cout << "Time taken: " << exec_time.count() << "\n";
-    std::cout << "Time taken: " << std::chrono::duration_cast<std::chrono::microseconds>(exec_time).count() << "\n\n";
+    // std::cout << "Time taken: " << std::chrono::duration_cast<std::chrono::microseconds>(exec_time).count() <<
+    // "\n\n";
 
     if (cancel_requested_)
     {
@@ -179,6 +188,55 @@ bool RRTSPlanner::cancel()
 void RRTSPlanner::setMapPtr(GridMapPtr grid_map)
 {
   grid_map_ = grid_map;
+}
+
+std::size_t RRTSPlanner::getHash(RRTNode::RRTNodePtr node) const
+{
+  double resolution = grid_map_->getResolution();
+  auto dimensions = grid_map_->getLength();
+
+  double x_len = dimensions[0];
+  double y_len = dimensions[1];
+
+  // std::cout << x_len << ", " << y_len << "erfer\n";
+
+  // TODO: Remove hardcode for center of the map
+  long int x_id = std::floor((node->x + x_len / 2.0) / resolution);
+  long int y_id = std::floor((node->y + y_len / 2.0) / resolution);
+  // std::cout << node->x << ", " << node->y << "ndoe coords\n";
+  // std::cout << x_id << ", " << y_id << "Ids individuals\n";
+
+  long int num_cells_x = std::ceil(x_len / (resolution * scale_down_factor));
+  // std::cout << num_cells_x << " num cells x \n";
+
+  return std::ceil((y_id * num_cells_x + x_id) / scale_down_factor);
+}
+
+std::size_t RRTSPlanner::getMaxHash()
+{
+  double resolution = grid_map_->getResolution();
+  auto dimensions = grid_map_->getLength();
+
+  double x_len = dimensions[0];
+  double y_len = dimensions[1];
+
+  long int num_cells_x = std::ceil(x_len / (resolution * scale_down_factor));
+  long int num_cells_y = std::ceil(y_len / (resolution * scale_down_factor));
+
+  // std::cout << x_len << ", " << y_len << "erfer\n";
+  // std::cout << num_cells_x << " num cells x \n";
+
+  return (num_cells_x + 1) * (num_cells_y + 1);
+}
+
+void RRTSPlanner::addNode(RRTNode::RRTNodePtr node, std::vector<std::list<RRTNode::RRTNodePtr>>& nodes_map)
+{
+  long int idx = getHash(node);
+
+  std::cout << "Id = " << idx << "\n";
+  std::cout << "size = " << nodes_map.size() << "\n";
+
+  nodes_map[idx].push_back(node);
 }
 
 }  // namespace mbf_rrts_core

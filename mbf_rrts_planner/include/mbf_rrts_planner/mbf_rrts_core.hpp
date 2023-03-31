@@ -62,23 +62,13 @@ private:
   GridMapPtr grid_map_;
   std::vector<RRTNode::RRTNodePtr> nodes;
 
-  class RRTNodeHash
-  {
-    std::size_t operator()(const RRTNode& node) const
-    {
-      return (node.getHash());
-    }
-  };
-
-  std::unordered_map < std::pair<double, double>, RRTNode::RRTNodePtr, RRTNodeHash> new_nodes;
+  // std::unordered_map < std::pair<double, double>, RRTNode::RRTNodePtr, RRTNodeHash> nodes_map;
 
   /**
    * @brief Finds the neighbours nearest to a node in the tree.
    * @details This function finds the neighbours nearest to the given node. The function checks for nodes that are
    * within a certain radius of the given node. If no such node exists, it just returns the closest node to the given
    * node. Hence, it is always guaranteed to return at least one neighbour if the tree is not empty.
-   * @remark Closest in this context means closest in terms of cost to traverse between the 2 nodes (which may not
-   * necessarily be distance)
    * @param node The node whose nearest neighbours need to be found
    * @param threshold The radius threshold within which neighbours have to be found
    * @return A vector of nearest neighbours.
@@ -92,6 +82,11 @@ private:
    */
   void generatePlanFromTree(std::vector<geometry_msgs::PoseStamped>& plan, RRTNode::RRTNodePtr goal);
 
-  void addNode(RRTNode::RRTNodePtr node);
+  void addNode(RRTNode::RRTNodePtr node, std::vector<std::list<RRTNode::RRTNodePtr>>& nodes_map);
+  std::size_t getHash(RRTNode::RRTNodePtr node) const;
+  std::size_t getMaxHash();
+
+  int scale_down_factor;
+
 };
 }  // namespace mbf_rrts_core
