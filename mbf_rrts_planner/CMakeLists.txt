@@ -124,6 +124,7 @@ include_directories(
 add_library(${PROJECT_NAME}_core
   src/node.cpp
   src/mbf_rrts_core.cpp
+  src/rrtree.cpp
 )
 
 ## Add cmake target dependencies of the library
