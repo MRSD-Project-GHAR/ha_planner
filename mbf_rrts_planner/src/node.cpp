@@ -95,13 +95,8 @@ void RRTNode::setParent(RRTNodePtr parent)
 
   if (parent_)
   {
-    // auto time_now = std::chrono::high_resolution_clock::now();
     auto this_node_it = std::find(parent_->children_.begin(), parent_->children_.end(), this_node_ptr);
     parent_->children_.erase(this_node_it);
-    // auto exec_time = std::chrono::high_resolution_clock::now() - time_now;
-    // std::cout << "Time taken: " << exec_time.count() << "\n";
-    // std::cout << "Time taken: " << std::chrono::duration_cast<std::chrono::microseconds>(exec_time).count() <<
-    // "\n\n";
   }
 
   parent_ = parent;

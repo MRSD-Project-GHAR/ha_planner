@@ -36,7 +36,6 @@ void RRTree::generatePlanFromTree(std::vector<geometry_msgs::PoseStamped>& plan,
   }
 
   // std::cout << "Plan made with " << plan.size() << " nodes\n";
-
   reverse(plan.begin(), plan.end());
 }
 
@@ -53,13 +52,10 @@ RRTree::NodeMapCoords RRTree::getNodeMapCoords(RRTree::GridMapCoords grid_map_co
 
   double x_len = dimensions[0];
   double y_len = dimensions[1];
-  // std::cout << x_len << ", " << y_len << "erfer\n";
 
   // TODO: Remove hardcode for center of the map
   long int x_id = std::floor((grid_map_coords.first + x_len / 2.0) / resolution);
   long int y_id = std::floor((grid_map_coords.second + y_len / 2.0) / resolution);
-  // std::cout << node->x << ", " << node->y << "ndoe coords\n";
-  // std::cout << x_id << ", " << y_id << "Ids individuals\n";
 
   return std::make_pair(x_id, y_id);
 }

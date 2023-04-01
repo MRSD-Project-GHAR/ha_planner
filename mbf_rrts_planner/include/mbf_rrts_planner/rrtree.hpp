@@ -13,9 +13,7 @@ public:
   void addNode(RRTNode::RRTNodePtr node);
   std::vector<RRTNode::RRTNodePtr> findNearestNeighbours(RRTNode::RRTNodePtr node, double size_of_bounds);
 
-
 private:
-
   typedef std::pair<long int, long int> NodeMapCoords;
   typedef std::pair<double, double> GridMapCoords;
   NodeMapCoords getNodeMapCoords(GridMapCoords grid_map_coords);
@@ -23,7 +21,6 @@ private:
   NodeMap node_map_;
   GridMapPtr grid_map_;
   int scale_up_factor_;
-
 };
 
 }  // namespace mbf_rrts_core

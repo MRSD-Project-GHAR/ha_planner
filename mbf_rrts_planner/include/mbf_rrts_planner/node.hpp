@@ -77,6 +77,7 @@ public:
   double cost;
 
   double x, y;
+
 private:
   RRTNodePtr parent_;
   std::list<RRTNodePtr> children_;

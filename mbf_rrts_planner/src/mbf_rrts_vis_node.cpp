@@ -40,8 +40,6 @@ public:
   void goalPoseCallback(const geometry_msgs::PoseStamped& goal_msg)
   {
     goal_ = goal_msg;
-    // if (received_map_)
-      // makeAndPublishPlan();
   }
 
 private:
