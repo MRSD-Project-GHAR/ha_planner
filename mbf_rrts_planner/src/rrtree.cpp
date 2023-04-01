@@ -78,10 +78,9 @@ RRTree::GridMapCoords RRTree::getGridMapCoords(RRTree::NodeMapCoords node_map_co
   return std::make_pair(x, y);
 }
 
-std::vector<RRTNode::RRTNodePtr> RRTree::findNearestNeighbours(RRTNode::RRTNodePtr node, double size_of_bounds)
+void RRTree::findNearestNeighbours(std::vector<RRTNode::RRTNodePtr>& neighbours, RRTNode::RRTNodePtr node,
+                                   double size_of_bounds)
 {
-  std::vector<RRTNode::RRTNodePtr> neighbours;
-
   GridMapCoords origin_gridmap = std::make_pair(node->x, node->y);
   NodeMapCoords origin_nodemap = getNodeMapCoords(origin_gridmap);
 
@@ -134,8 +133,6 @@ std::vector<RRTNode::RRTNodePtr> RRTree::findNearestNeighbours(RRTNode::RRTNodeP
     double resolution = grid_map_->getResolution() * scale_up_factor_;
     within_bounds = (neighbourhood_size * resolution + (resolution / 2.0)) < size_of_bounds;
   }
-
-  return neighbours;
 }
 
 }  // namespace mbf_rrts_core

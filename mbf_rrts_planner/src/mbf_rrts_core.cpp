@@ -30,6 +30,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   int max_iterations = 200;
   int seed = 10;
   double neighbourhood_radius = 2.0;
+  long long int time_taken = 0;
 
   std::default_random_engine generator;
   generator.seed(seed);
@@ -55,21 +56,37 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
     // std::cout << "Random Node formed\n";
 
     // std::vector<RRTNode::RRTNodePtr> neighbours = findNearestNeighbours(random_node, neighbourhood_radius);
-    std::vector<RRTNode::RRTNodePtr> neighbours = node_tree.findNearestNeighbours(random_node, neighbourhood_radius);
+    std::vector<RRTNode::RRTNodePtr> neighbours;
+    node_tree.findNearestNeighbours(neighbours, random_node, neighbourhood_radius);
+
+    std::vector<double> neighbour_costs(neighbours.size());
+    for (auto neighbour : neighbours)
+    {
+      neighbour_costs.push_back(random_node->getCost(neighbour));
+    }
+
+    // std::cout << neighbours.size() << "Number of neighbours\n";
+
     // std::cout << "Neighbours found. Number of neighbours found = " << neighbours.size() << "\n";
 
     RRTNode::RRTNodePtr nearest_neighbour = neighbours[0];
+    int nearest_neighbour_idx = 0;
+    // double nearest_neighbour_cost = nearest_neighbour->getCost(random_node);
 
-    for (auto neighbour : neighbours)
+    // for (auto neighbour : neighbours)
+    for (int i = 0; i < neighbours.size(); i++)
     {
-      if (neighbour->getCost(random_node) < nearest_neighbour->getCost(random_node))
+
+      // if (neighbour->getCost(random_node) < nearest_neighbour->getCost(random_node))
+      if (neighbour_costs[i] < neighbour_costs[nearest_neighbour_idx])
       {
-        nearest_neighbour = neighbour;
+        nearest_neighbour = neighbours[i];
       }
+
     }
     // std::cout << "Nearest neighbour found. Cost to this neighbour is : " << nearest_neighbour->cost <<"\n";
 
-    if (random_node->getCost(nearest_neighbour) == DBL_MAX)
+    if (neighbour_costs[nearest_neighbour_idx] == DBL_MAX)
     {
       continue;
     }
@@ -81,16 +98,18 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
     // std::cout << "This neighbour has now been set as a parent\n";
 
-    for (auto neighbour : neighbours)
+    // for (auto neighbour : neighbours)
+    for (int i = 0; i < neighbours.size(); i++)
+  
     {
-      if (neighbour == nearest_neighbour)
+      if (i == nearest_neighbour_idx)
       {
         continue;
       }
 
-      if (neighbour->cost > (random_node->cost + neighbour->getCost(random_node)))
+      if (neighbours[i]->cost > (random_node->cost + neighbour_costs[i]))
       {
-        neighbour->setParent(random_node);
+        neighbours[i]->setParent(random_node);
       }
       // std::cout << "Reordered some nodes to make them more efficient\n";
     }
@@ -109,6 +128,8 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
       cancel_requested_ = false;
       return 51;
     }
+
+    // time_taken += std::chrono::duration_cast<std::chrono::microseconds>(exec_time).count();
   }
   // std::cout << "RRT tree made. The number of nodes added are : " << nodes.size() << "\n";
   // std::cout << "RRT tree made. Cost is : " << goal_node->cost << "\n";
@@ -123,8 +144,10 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   node_tree.generatePlanFromTree(plan, goal_node);
   cost = goal_node->cost;
   auto exec_time = std::chrono::high_resolution_clock::now() - time_now;
-  std::cout << "Time taken: " << std::chrono::duration_cast<std::chrono::microseconds>(exec_time).count() << "\n\n";
-  //Takes 5.8 seconds currently
+  time_taken = std::chrono::duration_cast<std::chrono::microseconds>(exec_time).count();
+  std::cout << "Time taken: " << time_taken << "\n\n";
+  // Takes 5.8 seconds currently
+  // Now takes 2.9 seconds
 
   return 0;
 }
@@ -157,7 +180,7 @@ std::vector<RRTNode::RRTNodePtr> RRTSPlanner::findNearestNeighbours(RRTNode::RRT
     // std::cout << "No neighbours found within this radius, returning the closest neighbour\n";
   }
 
-  // long int x_start_id = 
+  // long int x_start_id =
 
   return nearest_neighbours;
 }
