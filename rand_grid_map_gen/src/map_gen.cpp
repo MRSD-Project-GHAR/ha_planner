@@ -34,6 +34,10 @@ void RandomMapGen::loadParams()
   nh_private_.param("max_obstacle_width", max_obstacle_width_, 1.0);
   nh_private_.param("max_obstacle_height", max_obstacle_height_, 2.0);
 
+  nh_private_.param("min_obstacle_length", min_obstacle_length_, 0.5);
+  nh_private_.param("min_obstacle_width", min_obstacle_width_, 0.5);
+  nh_private_.param("min_obstacle_height", min_obstacle_height_, 2.0);
+
   nh_private_.param("resolution", resolution_, 0.1);
   nh_private_.param("num_obstacles", num_obstacles_, 2);
 }
@@ -51,9 +55,13 @@ void RandomMapGen::generateNewMap()
 
 void RandomMapGen::addObstacle()
 {
-  double obs_length = ((1.0 + (rand() % 1000)) / 1000.0) * max_obstacle_length_;
-  double obs_width = ((1.0 + (rand() % 1000)) / 1000.0) * max_obstacle_width_;
-  double obs_height = ((1.0 + (rand() % 1000)) / 1000.0) * max_obstacle_height_;
+  // TODO: Add different obstacle orientations
+  double obs_length =
+      min_obstacle_length_ + ((1.0 + (rand() % 1000)) / 1000.0) * (max_obstacle_length_ - min_obstacle_length_);
+  double obs_width =
+      min_obstacle_width_ + ((1.0 + (rand() % 1000)) / 1000.0) * (max_obstacle_width_ - min_obstacle_width_);
+  double obs_height =
+      min_obstacle_height_ + ((1.0 + (rand() % 1000)) / 1000.0) * (max_obstacle_height_ - min_obstacle_height_);
 
   double obs_x = (-map_length_ / 2.0) + (((1.0 + (rand() % 1000)) / 1000.0) * map_length_);
   double obs_y = (-map_width_ / 2.0) + (((1.0 + (rand() % 1000)) / 1000.0) * map_width_);

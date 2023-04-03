@@ -27,6 +27,10 @@ private:
   double max_obstacle_width_;
   double max_obstacle_height_;
 
+  double min_obstacle_length_;
+  double min_obstacle_width_;
+  double min_obstacle_height_;
+
   double resolution_;
   int num_obstacles_;
 
