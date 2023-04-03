@@ -25,6 +25,7 @@ RandomMapGen::RandomMapGen(ros::NodeHandle& nh_private)
 
 void RandomMapGen::loadParams()
 {
+  // TODO: add more parameters for slope and roughness
   nh_private_.param("seed", seed_, 0);
 
   nh_private_.param("map_length", map_length_, 10.0);

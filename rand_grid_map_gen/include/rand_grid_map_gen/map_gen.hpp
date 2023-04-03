@@ -5,6 +5,11 @@
 
 namespace rand_grid_map_gen
 {
+
+// TODO: Add dynamic adding and changing of obstacles from some external interface
+// TODO: Add walls
+// TODO: Add saving and loading maps from memory
+// TODO: Add dynamic changing of other parameters as well
 class RandomMapGen
 {
 public:
