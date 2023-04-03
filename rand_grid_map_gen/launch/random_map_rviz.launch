@@ -4,6 +4,15 @@
     <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/map_params.yaml" />
   </node>
 
+  <node pkg="grid_map_demos" type="filters_demo" name="grid_map_filter" output="screen">
+    <!-- Input topic -->
+  	<param name="input_topic" value="/random_map_publisher/dummy_map" />
+  	<!-- Output topic -->
+  	<param name="output_topic" value="dummy_filtered_map" />
+  	<!-- Load grid map filter chain configuration -->
+    <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/filters_demo_filter_chain.yaml" />
+  </node>
+
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" />
 
 </launch>
