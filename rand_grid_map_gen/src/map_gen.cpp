@@ -17,6 +17,9 @@ RandomMapGen::RandomMapGen(ros::NodeHandle& nh_private)
   if (seed_ == 0)
     srand(ros::Time::now().toNSec());
 
+  else
+    srand(seed_);
+
   generateNewMap();
 }
 
