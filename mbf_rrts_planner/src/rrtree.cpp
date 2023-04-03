@@ -6,6 +6,7 @@ RRTree::RRTree(GridMapPtr grid_map)
 {
   grid_map_ = grid_map;
 
+  // TODO: Remove Hardcoded parameters
   scale_up_factor_ = 4;
 
   double resolution = grid_map_->getResolution();

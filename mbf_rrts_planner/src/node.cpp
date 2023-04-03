@@ -39,12 +39,12 @@ RRTNode::RRTNode(GridMapPtr map, const geometry_msgs::PoseStamped& pose)
   y = pose.pose.position.y;
 }
 
-// TODO: Remove use of redundant getDistance function
 double RRTNode::getDistance(RRTNodePtr node)
 {
   return sqrtf64((x - node->x) * (x - node->x) + (y - node->y) * (y - node->y));
 }
 
+// TODO: Use Bresenham's Line Algorithm for faster speed
 double RRTNode::getCost(RRTNodePtr node)
 {
   double total_length = getDistance(node);
