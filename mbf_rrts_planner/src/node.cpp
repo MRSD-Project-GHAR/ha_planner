@@ -22,7 +22,7 @@ RRTNode::RRTNode(GridMapPtr map, std::default_random_engine& generator)
 
   auto layers = map->getLayers();
 
-  while (map->atPosition("elevation", { x, y }) > 1)
+  while (map->atPosition("traversability", { x, y }) > -0.5)
   {
     x = x_generator(generator);
     y = y_generator(generator);
@@ -47,7 +47,6 @@ double RRTNode::getDistance(RRTNodePtr node)
 
 double RRTNode::getCost(RRTNodePtr node)
 {
-  bool hits_obstacle = false;
   double total_length = getDistance(node);
 
   // std::cout << "Distance to this node is " << total_length << "\n";
@@ -58,29 +57,13 @@ double RRTNode::getCost(RRTNodePtr node)
   // std::cout << "Original point : " << node->x << ", " << node->y << "\n";
   // std::cout << "New point : " << x << ", " << y << "\n";
 
+  double cost = total_length;
   for (double length = 0; length < total_length; length += resolution)
   {
     double new_x = node->x + length * cos(slope);
     double new_y = node->y + length * sin(slope);
 
-    // TODO: Remove hardcode in threshold
-    if (map_->atPosition("elevation", { new_x, new_y }) > 0.00001)
-    {
-      hits_obstacle = true;
-      break;
-    }
-  }
-
-  double cost;
-
-  if (hits_obstacle)
-  {
-    // std::cout << "This path passes through an intraversable obstacle! Returning max cost\n";
-    cost = DBL_MAX;
-  }
-  else
-  {
-    cost = total_length;
+    cost -= map_->atPosition("traversability", { new_x, new_y });
   }
 
   // std::cout << "Cost to this node is " << cost << "\n";
