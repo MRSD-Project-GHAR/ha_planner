@@ -5,6 +5,18 @@
 
 namespace rand_grid_map_gen
 {
+struct Obstacle
+{
+  double length;
+  double width;
+  double height;
+  double slope;
+  double roughness;
+  double orientation;
+
+  double x;
+  double y;
+};
 
 // TODO: Add dynamic adding and changing of obstacles from some external interface
 // TODO: Add walls
@@ -42,10 +54,10 @@ private:
   grid_map::GridMap grid_map_;
   grid_map::GridMapRosConverter grid_map_converter_;
 
+  std::vector<Obstacle> obstacle_list;
+
   void loadParams();
   void addObstacle();
-
-
 };
 
 }  // namespace rand_grid_map_gen

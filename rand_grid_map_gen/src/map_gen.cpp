@@ -57,26 +57,28 @@ void RandomMapGen::generateNewMap()
 void RandomMapGen::addObstacle()
 {
   // TODO: Add different obstacle orientations
-  double obs_length =
+
+  Obstacle new_obstacle;
+  new_obstacle.length =
       min_obstacle_length_ + ((1.0 + (rand() % 1000)) / 1000.0) * (max_obstacle_length_ - min_obstacle_length_);
-  double obs_width =
+  new_obstacle.width =
       min_obstacle_width_ + ((1.0 + (rand() % 1000)) / 1000.0) * (max_obstacle_width_ - min_obstacle_width_);
-  double obs_height =
+  new_obstacle.height =
       min_obstacle_height_ + ((1.0 + (rand() % 1000)) / 1000.0) * (max_obstacle_height_ - min_obstacle_height_);
 
-  double obs_x = (-map_length_ / 2.0) + (((1.0 + (rand() % 1000)) / 1000.0) * map_length_);
-  double obs_y = (-map_width_ / 2.0) + (((1.0 + (rand() % 1000)) / 1000.0) * map_width_);
+  new_obstacle.x = (-map_length_ / 2.0) + (((1.0 + (rand() % 1000)) / 1000.0) * map_length_);
+  new_obstacle.y = (-map_width_ / 2.0) + (((1.0 + (rand() % 1000)) / 1000.0) * map_width_);
 
-  ROS_INFO("Adding obstacle with dimensions %lf x %lf and height %lf at (%lf, %lf)", obs_length, obs_width, obs_height,
-           obs_x, obs_y);
+  ROS_INFO("Adding obstacle with dimensions %lf x %lf and height %lf at (%lf, %lf)", new_obstacle.length, new_obstacle.width, new_obstacle.height,
+           new_obstacle.x, new_obstacle.y);
 
-  for (float x = -obs_length / 2.0; x < obs_length / 2.0; x += resolution_ / 2.0)
+  for (float x = -new_obstacle.length / 2.0; x < new_obstacle.length / 2.0; x += resolution_ / 2.0)
   {
-    for (float y = -obs_width / 2.0; y < obs_width / 2.0; y += resolution_ / 2.0)
+    for (float y = -new_obstacle.width / 2.0; y < new_obstacle.width / 2.0; y += resolution_ / 2.0)
     {
-      if (grid_map_.isInside({ obs_x + x, obs_y + y }))
+      if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
       {
-        grid_map_.atPosition("elevation", { obs_x + x, obs_y + y }) = obs_height;
+        grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = new_obstacle.height;
       }
     }
   }
