@@ -11,5 +11,7 @@ min_obstacle_length: 1.0
 min_obstacle_width: 1.0
 min_obstacle_height: 0.1
 
+min_slope: 10
+
 resolution: 0.1
-num_obstacles: 10
+num_obstacles: 1

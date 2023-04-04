@@ -48,6 +48,8 @@ private:
   double min_obstacle_width_;
   double min_obstacle_height_;
 
+  double min_slope_;
+
   double resolution_;
   int num_obstacles_;
 
@@ -58,6 +60,11 @@ private:
 
   void loadParams();
   void addObstacle();
+
+  inline double randomGenerator(double min, double max)
+  {
+    return min + ((1.0 + (rand() % 1000)) / 1000.0) * (max - min);
+  }
 };
 
 }  // namespace rand_grid_map_gen
