@@ -52,11 +52,13 @@ void RandomMapGen::generateNewMap()
 
   for (int i = 0; i < num_obstacles_; i++)
   {
-    addObstacle();
+    addRandomObstacle();
   }
+
+  populateMap();
 }
 
-void RandomMapGen::addObstacle()
+void RandomMapGen::addRandomObstacle()
 {
   // TODO: Add different obstacle orientations
 
@@ -71,86 +73,95 @@ void RandomMapGen::addObstacle()
   ROS_INFO("Adding obstacle with dimensions %lf x %lf and height %lf at (%lf, %lf)", new_obstacle.length,
            new_obstacle.width, new_obstacle.height, new_obstacle.x, new_obstacle.y);
 
-  for (float x = -new_obstacle.length / 2.0; x < new_obstacle.length / 2.0; x += resolution_ / 2.0)
+  new_obstacle.slope1 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
+  new_obstacle.slope2 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
+  new_obstacle.slope3 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
+  new_obstacle.slope4 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
+
+  obstacle_list.push_back(new_obstacle);
+}
+
+void RandomMapGen::populateMap()
+{
+  // TODO: Add different obstacle orientations
+
+  for (int i = 0; i < obstacle_list.size(); i++)
   {
+    Obstacle new_obstacle = obstacle_list[i];
+
+    for (float x = -new_obstacle.length / 2.0; x < new_obstacle.length / 2.0; x += resolution_ / 2.0)
+    {
+      for (float y = -new_obstacle.width / 2.0; y < new_obstacle.width / 2.0; y += resolution_ / 2.0)
+      {
+        if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+        {
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = new_obstacle.height;
+        }
+      }
+    }
+
+    for (float x = -new_obstacle.length / 2.0; x < new_obstacle.length / 2.0; x += resolution_ / 2.0)
+    {
+      double current_height = new_obstacle.height;
+      double y = -new_obstacle.width / 2.0;
+      while (current_height > 0)
+      {
+        if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+        {
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+        }
+
+        y -= resolution_ / 2.0;
+        current_height -= new_obstacle.slope1;
+      }
+    }
+
+    for (float x = -new_obstacle.length / 2.0; x < new_obstacle.length / 2.0; x += resolution_ / 2.0)
+    {
+      double current_height = new_obstacle.height;
+      double y = new_obstacle.width / 2.0;
+      while (current_height > 0)
+      {
+        if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+        {
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+        }
+
+        y += resolution_ / 2.0;
+        current_height -= new_obstacle.slope2;
+      }
+    }
+
     for (float y = -new_obstacle.width / 2.0; y < new_obstacle.width / 2.0; y += resolution_ / 2.0)
     {
-      if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+      double x = -new_obstacle.length / 2.0;
+      double current_height = new_obstacle.height;
+      while (current_height > 0)
       {
-        grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = new_obstacle.height;
+        if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+        {
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+        }
+
+        x -= resolution_ / 2.0;
+        current_height -= new_obstacle.slope3;
       }
     }
-  }
 
-  double slope = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
-
-  for (float x = -new_obstacle.length / 2.0; x < new_obstacle.length / 2.0; x += resolution_ / 2.0)
-  {
-    double current_height = new_obstacle.height;
-    double y = -new_obstacle.width / 2.0;
-    while (current_height > 0)
+    for (float y = -new_obstacle.width / 2.0; y < new_obstacle.width / 2.0; y += resolution_ / 2.0)
     {
-      if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+      double x = new_obstacle.length / 2.0;
+      double current_height = new_obstacle.height;
+      while (current_height > 0)
       {
-        grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+        if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+        {
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+        }
+
+        x += resolution_ / 2.0;
+        current_height -= new_obstacle.slope4;
       }
-
-      y -= resolution_ / 2.0;
-      current_height -= slope;
-    }
-  }
-
-  slope = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 45));
-
-  for (float x = -new_obstacle.length / 2.0; x < new_obstacle.length / 2.0; x += resolution_ / 2.0)
-  {
-    double current_height = new_obstacle.height;
-    double y = new_obstacle.width / 2.0;
-    while (current_height > 0)
-    {
-      if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
-      {
-        grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
-      }
-
-      y += resolution_ / 2.0;
-      current_height -= slope;
-    }
-  }
-
-  slope = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
-
-  for (float y = -new_obstacle.width / 2.0; y < new_obstacle.width / 2.0; y += resolution_ / 2.0)
-  {
-    double x = -new_obstacle.length / 2.0;
-    double current_height = new_obstacle.height;
-    while (current_height > 0)
-    {
-      if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
-      {
-        grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
-      }
-
-      x -= resolution_ / 2.0;
-      current_height -= slope;
-    }
-  }
-
-  slope = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
-
-  for (float y = -new_obstacle.width / 2.0; y < new_obstacle.width / 2.0; y += resolution_ / 2.0)
-  {
-    double x = new_obstacle.length / 2.0;
-    double current_height = new_obstacle.height;
-    while (current_height > 0)
-    {
-      if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
-      {
-        grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
-      }
-
-      x += resolution_ / 2.0;
-      current_height -= slope;
     }
   }
 }

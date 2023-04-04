@@ -14,6 +14,11 @@ struct Obstacle
   double roughness;
   double orientation;
 
+  double slope1;
+  double slope2;
+  double slope3;
+  double slope4;
+
   double x;
   double y;
 };
@@ -59,12 +64,14 @@ private:
   std::vector<Obstacle> obstacle_list;
 
   void loadParams();
-  void addObstacle();
+  void addRandomObstacle();
 
   inline double randomGenerator(double min, double max)
   {
     return min + ((1.0 + (rand() % 1000)) / 1000.0) * (max - min);
   }
+
+  void populateMap();
 };
 
 }  // namespace rand_grid_map_gen
