@@ -5,6 +5,28 @@
 
 namespace rand_grid_map_gen
 {
+struct Obstacle
+{
+  double length;
+  double width;
+  double height;
+  double slope;
+  double roughness;
+  double orientation;
+
+  double slope1;
+  double slope2;
+  double slope3;
+  double slope4;
+
+  double x;
+  double y;
+};
+
+// TODO: Add dynamic adding and changing of obstacles from some external interface
+// TODO: Add walls
+// TODO: Add saving and loading maps from memory
+// TODO: Add dynamic changing of other parameters as well
 class RandomMapGen
 {
 public:
@@ -27,16 +49,29 @@ private:
   double max_obstacle_width_;
   double max_obstacle_height_;
 
+  double min_obstacle_length_;
+  double min_obstacle_width_;
+  double min_obstacle_height_;
+
+  double min_slope_;
+
   double resolution_;
   int num_obstacles_;
 
   grid_map::GridMap grid_map_;
   grid_map::GridMapRosConverter grid_map_converter_;
 
+  std::vector<Obstacle> obstacle_list;
+
   void loadParams();
-  void addObstacle();
+  void addRandomObstacle();
 
+  inline double randomGenerator(double min, double max)
+  {
+    return min + ((1.0 + (rand() % 1000)) / 1000.0) * (max - min);
+  }
 
+  void populateMap();
 };
 
 }  // namespace rand_grid_map_gen
