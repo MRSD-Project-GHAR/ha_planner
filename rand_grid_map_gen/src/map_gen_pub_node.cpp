@@ -9,7 +9,7 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
   ros::NodeHandle nh_private("~");
 
-  rand_grid_map_gen::RandomMapGen Map(nh_private);
+  rand_grid_map_gen::RandomMapGen map(nh_private);
   int loop_rate;
   nh_private.param("loop_rate", loop_rate, 10);
 
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
   ros::Rate rate(loop_rate);
 
   QApplication app(argc, argv);
-  MainWindow* window = new MainWindow();
+  MainWindow* window = new MainWindow(&map, nh_private);
   window->show();
   app.exec();
 

@@ -181,7 +181,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_7" stretch="10,1,0,1,10">
+         <layout class="QVBoxLayout" name="verticalLayout_7" stretch="10,1,0,1,10,0,0">
           <item>
            <spacer name="verticalSpacer">
             <property name="orientation">
@@ -284,7 +284,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="delete_button">
               <property name="text">
                <string>Delete Obstacle</string>
               </property>
@@ -304,7 +304,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_3">
+             <widget class="QPushButton" name="add_button">
               <property name="text">
                <string>Add Obstacle</string>
               </property>
@@ -327,6 +327,26 @@
           </item>
           <item>
            <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="publish_map_button">
+            <property name="text">
+             <string>Publish Map</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_4">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
