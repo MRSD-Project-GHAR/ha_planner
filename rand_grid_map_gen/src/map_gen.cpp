@@ -190,6 +190,20 @@ void RandomMapGen::addObstacle(Obstacle new_obs)
   populateMap();
 }
 
+void RandomMapGen::changeObstacle(Obstacle obs)
+{
+  for (auto it = obstacle_list.begin(); it != obstacle_list.end(); it++)
+  {
+    if (it->name == obs.name)
+    {
+      *it = obs;
+      break;
+    }
+  }
+
+  populateMap();
+}
+
 void RandomMapGen::deleteObstacle(std::string name)
 {
   for (auto it = obstacle_list.begin(); it != obstacle_list.end(); it++)
@@ -204,7 +218,8 @@ void RandomMapGen::deleteObstacle(std::string name)
   populateMap();
 }
 
-Obstacle RandomMapGen::getObstacle(std::string name) {
+Obstacle RandomMapGen::getObstacle(std::string name)
+{
   for (auto it = obstacle_list.begin(); it != obstacle_list.end(); it++)
   {
     if (it->name == name)

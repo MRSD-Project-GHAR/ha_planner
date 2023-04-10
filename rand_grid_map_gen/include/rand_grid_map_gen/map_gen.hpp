@@ -43,6 +43,9 @@ public:
   void deleteObstacle(std::string name);
 
   Obstacle getObstacle(std::string name);
+
+  void changeObstacle(Obstacle obs);
+
   inline Obstacle getObstacle(int index)
   {
     return obstacle_list[index];

@@ -9,8 +9,6 @@
 
 /**
  * TODOs
- * 3) Implement Add obstacle
- * 4) Implement Change Obstacle
  * */
 namespace Ui
 {
@@ -30,6 +28,7 @@ protected:
   void obstacleDropDownChanged();
   void deleteButtonPressed();
   void addButtonPressed();
+  void changeButtonPressed();
 
 private:
   Ui::MainWindow* ui;
