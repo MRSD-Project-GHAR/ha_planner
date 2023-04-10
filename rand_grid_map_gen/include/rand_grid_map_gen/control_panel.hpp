@@ -13,7 +13,6 @@
  * 2) Implement Delete obstacle
  * 3) Implement Add obstacle
  * 4) Implement Change Obstacle
- * 5) Correctly display obstacle numbers in drop down
  * */
 namespace Ui
 {
@@ -30,12 +29,15 @@ public:
 
 protected:
   void publishMapButtonPressed();
+  void obstacleDropDownChanged();
 
 private:
   Ui::MainWindow* ui;
   rand_grid_map_gen::RandomMapGen* map_;
   ros::NodeHandle nh_;
   ros::Publisher grid_map_publisher_;
+
+  void changeObstacleFields(rand_grid_map_gen::Obstacle obs);
 };
 
 #endif  // MAINWINDOW_H
