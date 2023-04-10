@@ -25,12 +25,12 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
     changeObstacleFields(map_->getObstacle(0));
   }
 
-  ui->x->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
-  ui->y->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
+  ui->x->setValidator(new QDoubleValidator(-50.00, 50.00, 2, this));
+  ui->y->setValidator(new QDoubleValidator(-50.00, 50.00, 2, this));
 
-  ui->length->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
-  ui->width->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
-  ui->height->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
+  ui->length->setValidator(new QDoubleValidator(0.0, 50.00, 2, this));
+  ui->width->setValidator(new QDoubleValidator(0.0, 50.00, 2, this));
+  ui->height->setValidator(new QDoubleValidator(0.0, 50.00, 2, this));
 
   ui->slope_1->setValidator(new QDoubleValidator(0.0, 89.0, 2, this));
   ui->slope_2->setValidator(new QDoubleValidator(0.0, 89.0, 2, this));
