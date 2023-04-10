@@ -14,7 +14,6 @@
  * 3) Implement Add obstacle
  * 4) Implement Change Obstacle
  * 5) Correctly display obstacle numbers in drop down
- * 6) Publish map
  * */
 namespace Ui
 {

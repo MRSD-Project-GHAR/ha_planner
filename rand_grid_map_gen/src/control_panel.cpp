@@ -11,6 +11,12 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
   map_ = map;
   QObject::connect(ui->publish_map_button, &QPushButton::clicked, this, &MainWindow::publishMapButtonPressed);
 
+  // ui->obstacle_num_dropdown->addItems();
+
+  for (int i = 0; i < map_->getNumObstacles(); i++) {
+    ui->obstacle_num_dropdown->addItem(QString::number(i));
+  }
+
   grid_map_publisher_ = nh.advertise<grid_map_msgs::GridMap>("dummy_map", 1000);
 }
 

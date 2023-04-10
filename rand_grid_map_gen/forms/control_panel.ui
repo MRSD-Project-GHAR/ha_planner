@@ -218,7 +218,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="comboBox"/>
+             <widget class="QComboBox" name="obstacle_num_dropdown"/>
             </item>
             <item>
              <spacer name="horizontalSpacer_4">
