@@ -9,7 +9,6 @@
 
 /**
  * TODOs
- * 1) Display each obstacle's data in the respective fields
  * 2) Implement Delete obstacle
  * 3) Implement Add obstacle
  * 4) Implement Change Obstacle
@@ -30,6 +29,7 @@ public:
 protected:
   void publishMapButtonPressed();
   void obstacleDropDownChanged();
+  void deleteButtonPressed();
 
 private:
   Ui::MainWindow* ui;
@@ -38,6 +38,7 @@ private:
   ros::Publisher grid_map_publisher_;
 
   void changeObstacleFields(rand_grid_map_gen::Obstacle obs);
+  void clearObstacleFields();
 };
 
 #endif  // MAINWINDOW_H

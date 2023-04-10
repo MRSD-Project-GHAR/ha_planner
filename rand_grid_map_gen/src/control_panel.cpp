@@ -10,6 +10,7 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
   ui->setupUi(this);
   map_ = map;
   QObject::connect(ui->publish_map_button, &QPushButton::clicked, this, &MainWindow::publishMapButtonPressed);
+  QObject::connect(ui->delete_button, &QPushButton::clicked, this, &MainWindow::deleteButtonPressed);
   QObject::connect(ui->obstacle_num_dropdown, &QComboBox::currentIndexChanged, this, &MainWindow::obstacleDropDownChanged);
 
   for (int i = 0; i < map_->getNumObstacles(); i++)
@@ -17,7 +18,9 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
     ui->obstacle_num_dropdown->addItem(QString::number(i));
   }
 
-  changeObstacleFields(map->getObstacle(0));
+  if (map_->getNumObstacles() > 0) {
+    changeObstacleFields(map_->getObstacle(0));
+  } 
 
   ui->x->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
   ui->y->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
@@ -52,6 +55,20 @@ void MainWindow::obstacleDropDownChanged()
   changeObstacleFields(map_->getObstacle(index));
 }
 
+void MainWindow::deleteButtonPressed()
+{
+  int index = ui->obstacle_num_dropdown->currentIndex();
+  map_->deleteObstacle(index);
+  if (map_->getNumObstacles() > 0) {
+    changeObstacleFields(map_->getObstacle(0));
+    ui->obstacle_num_dropdown->removeItem(index);
+    ui->obstacle_num_dropdown->setCurrentIndex(0);
+  } else {
+    clearObstacleFields();
+    ui->obstacle_num_dropdown->clear();
+  }
+}
+
 void MainWindow::changeObstacleFields(rand_grid_map_gen::Obstacle obs)
 {
   // ui->
@@ -70,6 +87,25 @@ void MainWindow::changeObstacleFields(rand_grid_map_gen::Obstacle obs)
   ui->orientation->setText(QString::number(obs.orientation));
   
   ui->roughness->setText(QString::number(obs.roughness));
+}
+
+void MainWindow::clearObstacleFields()
+{
+  ui->x->clear();
+  ui->y->clear();
+
+  ui->length->clear();
+  ui->width->clear();
+  ui->height->clear();
+
+  ui->slope_1->clear();
+  ui->slope_2->clear();
+  ui->slope_3->clear();
+  ui->slope_4->clear();
+
+  ui->orientation->clear();
+  
+  ui->roughness->clear();
 }
 
 

@@ -59,8 +59,6 @@ void RandomMapGen::generateNewMap()
 void RandomMapGen::addRandomObstacle()
 {
   // TODO: Add different obstacle orientations
-  grid_map_.erase("elevation");
-  grid_map_.add("elevation", 0.0);
 
   Obstacle new_obstacle;
   new_obstacle.length = randomGenerator(min_obstacle_length_, max_obstacle_length_);
@@ -84,6 +82,8 @@ void RandomMapGen::addRandomObstacle()
 void RandomMapGen::populateMap()
 {
   // TODO: Add different obstacle orientations
+  grid_map_.erase("elevation");
+  grid_map_.add("elevation", 0.0);
 
   for (int i = 0; i < obstacle_list.size(); i++)
   {
