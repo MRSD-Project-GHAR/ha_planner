@@ -36,12 +36,12 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
   RRTree node_tree(grid_map_);
 
-  RRTNode::RRTNodePtr start_node = std::make_shared<RRTNode>(grid_map_, start);
+  RRTNode::RRTNodePtr start_node = std::make_shared<RRTNode>(grid_map_, layer_name_, start);
   start_node->cost = 0;
 
   node_tree.addNode(start_node);
 
-  RRTNode::RRTNodePtr goal_node = std::make_shared<RRTNode>(grid_map_, goal);
+  RRTNode::RRTNodePtr goal_node = std::make_shared<RRTNode>(grid_map_, layer_name_, goal);
   goal_node->cost = DBL_MAX;
   // std::cout << "Added start and goal node\n";
 
@@ -49,7 +49,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   {
     // std::cout << "Iteration: " << i << "\n";
 
-    RRTNode::RRTNodePtr random_node = std::make_shared<RRTNode>(grid_map_, generator);
+    RRTNode::RRTNodePtr random_node = std::make_shared<RRTNode>(grid_map_, layer_name_, generator);
     // std::cout << "Random Node formed\n";
 
     std::vector<RRTNode::RRTNodePtr> neighbours = node_tree.findNearestNeighbours(random_node, neighbourhood_radius);
@@ -164,6 +164,11 @@ bool RRTSPlanner::cancel()
 void RRTSPlanner::setMapPtr(GridMapPtr grid_map)
 {
   grid_map_ = grid_map;
+}
+
+void RRTSPlanner::setLayerName(std::string layer_name)
+{
+  layer_name_ = layer_name;
 }
 
 }  // namespace mbf_rrts_core

@@ -56,11 +56,13 @@ public:
    * @param grid_map_ptr The pointer to the grid map that will be used for planning
    */
   void setMapPtr(GridMapPtr grid_map_ptr);
+  void setLayerName(std::string layer_name);
 
 private:
   bool cancel_requested_ = false;
   GridMapPtr grid_map_;
   std::vector<RRTNode::RRTNodePtr> nodes;
+  std::string layer_name_;
 
   // std::unordered_map < std::pair<double, double>, RRTNode::RRTNodePtr, RRTNodeHash> nodes_map;
 

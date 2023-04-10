@@ -6,12 +6,14 @@ namespace mbf_rrts_core
 RRTNode::RRTNode()
 {
   parent_ = NULL;
+  layer_name_ = "traversability";
 }
 
-RRTNode::RRTNode(GridMapPtr map, std::default_random_engine& generator)
+RRTNode::RRTNode(GridMapPtr map, std::string layer_name, std::default_random_engine& generator)
 {
   parent_ = NULL;
   map_ = map;
+  layer_name_ = layer_name;
 
   // TODO: hardcoded center of the map
   std::uniform_real_distribution<> x_generator(-map->getLength()[0] / 2.0, map->getLength()[0] / 2.0);
@@ -22,7 +24,7 @@ RRTNode::RRTNode(GridMapPtr map, std::default_random_engine& generator)
 
   auto layers = map->getLayers();
 
-  while (map->atPosition("traversability", { x, y }) > -0.5)
+  while (map->atPosition(layer_name_, { x, y }) > -0.5)
   {
     x = x_generator(generator);
     y = y_generator(generator);
@@ -31,10 +33,11 @@ RRTNode::RRTNode(GridMapPtr map, std::default_random_engine& generator)
   // std::cout << "The new node is generated with coordinates " << x << "," << y << "\n";
 }
 
-RRTNode::RRTNode(GridMapPtr map, const geometry_msgs::PoseStamped& pose)
+RRTNode::RRTNode(GridMapPtr map, std::string layer_name, const geometry_msgs::PoseStamped& pose)
 {
   parent_ = NULL;
   map_ = map;
+  layer_name_ = layer_name;
   x = pose.pose.position.x;
   y = pose.pose.position.y;
 }
@@ -63,7 +66,7 @@ double RRTNode::getCost(RRTNodePtr node)
     double new_x = node->x + length * cos(slope);
     double new_y = node->y + length * sin(slope);
 
-    cost -= map_->atPosition("traversability", { new_x, new_y });
+    cost -= map_->atPosition(layer_name_, { new_x, new_y });
   }
 
   // std::cout << "Cost to this node is " << cost << "\n";

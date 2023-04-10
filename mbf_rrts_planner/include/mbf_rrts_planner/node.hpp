@@ -28,14 +28,14 @@ public:
    * @param generator The random generator object that will be used to generate the node's parameters. This allows you
    * to pass a seeded generator for repeatability
    */
-  RRTNode(GridMapPtr map, std::default_random_engine& generator);
+  RRTNode(GridMapPtr map, std::string layer_name, std::default_random_engine& generator);
 
   /**
    * @brief Constructor for constructing a Node initialized from a ROS PoseStamped message
    * @param map The pointer to the grid map on which this node is going to be created
    * @param generator The PoseStamped message used to intialize the Node
    */
-  RRTNode(GridMapPtr map, const geometry_msgs::PoseStamped& pose);
+  RRTNode(GridMapPtr map, std::string layer_name, const geometry_msgs::PoseStamped& pose);
 
   /**
    * @brief The default constructor, doesn't initialize anything
@@ -82,6 +82,7 @@ private:
   RRTNodePtr parent_;
   std::list<RRTNodePtr> children_;
   GridMapPtr map_;
+  std::string layer_name_;
 };
 
 }  // namespace mbf_rrts_core
