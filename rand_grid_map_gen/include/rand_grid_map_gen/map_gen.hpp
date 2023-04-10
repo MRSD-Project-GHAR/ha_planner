@@ -35,6 +35,19 @@ public:
   grid_map_msgs::GridMap getROSMessage();
   void generateNewMap();
   bool resetMapServiceCallback(std_srvs::EmptyRequest& req, std_srvs::EmptyResponse& resp);
+  
+  void addObstacle(Obstacle new_obst);
+  void deleteObstacle(int index);
+  
+  inline Obstacle getObstacle(int index)
+  {
+    return obstacle_list[index];
+  }
+  
+  inline int getNumObstacles()
+  {
+    return obstacle_list.size();
+  }
 
 private:
   ros::NodeHandle nh_private_;

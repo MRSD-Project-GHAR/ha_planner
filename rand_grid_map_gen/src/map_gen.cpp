@@ -47,9 +47,7 @@ void RandomMapGen::loadParams()
 
 void RandomMapGen::generateNewMap()
 {
-  grid_map_.erase("elevation");
-  grid_map_.add("elevation", 0.0);
-
+  obstacle_list.clear();
   for (int i = 0; i < num_obstacles_; i++)
   {
     addRandomObstacle();
@@ -61,6 +59,8 @@ void RandomMapGen::generateNewMap()
 void RandomMapGen::addRandomObstacle()
 {
   // TODO: Add different obstacle orientations
+  grid_map_.erase("elevation");
+  grid_map_.add("elevation", 0.0);
 
   Obstacle new_obstacle;
   new_obstacle.length = randomGenerator(min_obstacle_length_, max_obstacle_length_);
@@ -178,6 +178,17 @@ bool RandomMapGen::resetMapServiceCallback(std_srvs::EmptyRequest& req, std_srvs
   loadParams();
   generateNewMap();
   return true;
+}
+
+
+void RandomMapGen::addObstacle(Obstacle new_obs) {
+  obstacle_list.push_back(new_obs);
+  populateMap();
+}
+
+void RandomMapGen::deleteObstacle(int index) {
+  obstacle_list.erase(obstacle_list.begin() + index);
+  populateMap();
 }
 
 }  // namespace rand_grid_map_gen
