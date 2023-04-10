@@ -60,6 +60,8 @@ void RandomMapGen::addRandomObstacle()
 {
   // TODO: Add different obstacle orientations
 
+  static int number = 1;
+
   Obstacle new_obstacle;
   new_obstacle.length = randomGenerator(min_obstacle_length_, max_obstacle_length_);
   new_obstacle.width = randomGenerator(min_obstacle_width_, max_obstacle_width_);
@@ -76,6 +78,8 @@ void RandomMapGen::addRandomObstacle()
   new_obstacle.slope3 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
   new_obstacle.slope4 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
 
+  new_obstacle.name = "Random Obstacle " + std::to_string(number);
+  number++;
   obstacle_list.push_back(new_obstacle);
 }
 
@@ -180,15 +184,38 @@ bool RandomMapGen::resetMapServiceCallback(std_srvs::EmptyRequest& req, std_srvs
   return true;
 }
 
-
-void RandomMapGen::addObstacle(Obstacle new_obs) {
+void RandomMapGen::addObstacle(Obstacle new_obs)
+{
   obstacle_list.push_back(new_obs);
   populateMap();
 }
 
-void RandomMapGen::deleteObstacle(int index) {
-  obstacle_list.erase(obstacle_list.begin() + index);
+void RandomMapGen::deleteObstacle(std::string name)
+{
+  for (auto it = obstacle_list.begin(); it != obstacle_list.end(); it++)
+  {
+    if (it->name == name)
+    {
+      obstacle_list.erase(it);
+      break;
+    }
+  }
+
   populateMap();
+}
+
+Obstacle RandomMapGen::getObstacle(std::string name) {
+  for (auto it = obstacle_list.begin(); it != obstacle_list.end(); it++)
+  {
+    if (it->name == name)
+    {
+      return *it;
+    }
+  }
+
+  Obstacle obs;
+  obs.name = "No obstacle found";
+  return obs;
 }
 
 }  // namespace rand_grid_map_gen

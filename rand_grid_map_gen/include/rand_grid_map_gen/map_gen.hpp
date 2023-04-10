@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <std_srvs/Empty.h>
+#include <string>
 
 namespace rand_grid_map_gen
 {
@@ -21,6 +22,8 @@ struct Obstacle
 
   double x;
   double y;
+
+  std::string name;
 };
 
 // TODO: Add dynamic adding and changing of obstacles from some external interface
@@ -35,15 +38,16 @@ public:
   grid_map_msgs::GridMap getROSMessage();
   void generateNewMap();
   bool resetMapServiceCallback(std_srvs::EmptyRequest& req, std_srvs::EmptyResponse& resp);
-  
+
   void addObstacle(Obstacle new_obst);
-  void deleteObstacle(int index);
-  
+  void deleteObstacle(std::string name);
+
+  Obstacle getObstacle(std::string name);
   inline Obstacle getObstacle(int index)
   {
     return obstacle_list[index];
   }
-  
+
   inline int getNumObstacles()
   {
     return obstacle_list.size();

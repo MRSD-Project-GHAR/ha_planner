@@ -11,24 +11,27 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
   map_ = map;
   QObject::connect(ui->publish_map_button, &QPushButton::clicked, this, &MainWindow::publishMapButtonPressed);
   QObject::connect(ui->delete_button, &QPushButton::clicked, this, &MainWindow::deleteButtonPressed);
-  QObject::connect(ui->obstacle_num_dropdown, &QComboBox::currentIndexChanged, this, &MainWindow::obstacleDropDownChanged);
+  QObject::connect(ui->obstacle_num_dropdown, &QComboBox::currentIndexChanged, this,
+                   &MainWindow::obstacleDropDownChanged);
 
   for (int i = 0; i < map_->getNumObstacles(); i++)
   {
-    ui->obstacle_num_dropdown->addItem(QString::number(i));
+    rand_grid_map_gen::Obstacle obs = map_->getObstacle(i);
+    ui->obstacle_num_dropdown->addItem(QString::fromStdString(obs.name));
   }
 
-  if (map_->getNumObstacles() > 0) {
+  if (map_->getNumObstacles() > 0)
+  {
     changeObstacleFields(map_->getObstacle(0));
-  } 
+  }
 
   ui->x->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
   ui->y->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
-  
+
   ui->length->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
   ui->width->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
   ui->height->setValidator(new QDoubleValidator(0.0, 10000000000000000.00, 2, this));
-  
+
   ui->slope_1->setValidator(new QDoubleValidator(0.0, 89.0, 2, this));
   ui->slope_2->setValidator(new QDoubleValidator(0.0, 89.0, 2, this));
   ui->slope_3->setValidator(new QDoubleValidator(0.0, 89.0, 2, this));
@@ -52,19 +55,24 @@ void MainWindow::publishMapButtonPressed()
 void MainWindow::obstacleDropDownChanged()
 {
   int index = ui->obstacle_num_dropdown->currentIndex();
-  changeObstacleFields(map_->getObstacle(index));
+  std::string name = ui->obstacle_num_dropdown->itemText(index).toStdString();
+  changeObstacleFields(map_->getObstacle(name));
 }
 
 void MainWindow::deleteButtonPressed()
 {
   int index = ui->obstacle_num_dropdown->currentIndex();
-  map_->deleteObstacle(index);
-  if (map_->getNumObstacles() > 0) {
+  std::string name = ui->obstacle_num_dropdown->itemText(index).toStdString();
+  map_->deleteObstacle(name);
+
+  if (map_->getNumObstacles() > 0)
+  {
     changeObstacleFields(map_->getObstacle(0));
     ui->obstacle_num_dropdown->removeItem(index);
     ui->obstacle_num_dropdown->setCurrentIndex(0);
-  } else {
-    clearObstacleFields();
+  }
+  else
+  {
     ui->obstacle_num_dropdown->clear();
   }
 }
@@ -85,7 +93,7 @@ void MainWindow::changeObstacleFields(rand_grid_map_gen::Obstacle obs)
   ui->slope_4->setText(QString::number(obs.slope4));
 
   ui->orientation->setText(QString::number(obs.orientation));
-  
+
   ui->roughness->setText(QString::number(obs.roughness));
 }
 
@@ -104,10 +112,8 @@ void MainWindow::clearObstacleFields()
   ui->slope_4->clear();
 
   ui->orientation->clear();
-  
+
   ui->roughness->clear();
 }
-
-
 
 #include "rand_grid_map_gen/moc_control_panel.cpp"
