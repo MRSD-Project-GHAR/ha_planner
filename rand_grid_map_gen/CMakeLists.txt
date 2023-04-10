@@ -14,6 +14,10 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
 )
 
+set(CMAKE_PREFIX_PATH "/home/kshitij/Qt/6.5.0/gcc_64")
+
+find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -140,7 +144,16 @@ add_executable(map_gen_pub_node src/map_gen_pub_node.cpp)
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
+
+add_library(ui src/control_panel.cpp)
+
+set_target_properties(ui PROPERTIES
+    AUTOUIC ON
+    AUTOMOC ON
+    AUTOUIC_SEARCH_PATHS forms
+)
+
+target_link_libraries(ui PUBLIC Qt6::Core Qt6::Widgets)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -154,6 +167,7 @@ target_link_libraries(map_gen
 target_link_libraries(map_gen_pub_node
   ${catkin_LIBRARIES}
   map_gen
+  ui
 )
 
 #############
