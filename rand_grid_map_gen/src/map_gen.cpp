@@ -73,10 +73,10 @@ void RandomMapGen::addRandomObstacle()
   ROS_INFO("Adding obstacle with dimensions %lf x %lf and height %lf at (%lf, %lf)", new_obstacle.length,
            new_obstacle.width, new_obstacle.height, new_obstacle.x, new_obstacle.y);
 
-  new_obstacle.slope1 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
-  new_obstacle.slope2 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
-  new_obstacle.slope3 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
-  new_obstacle.slope4 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
+  new_obstacle.slope1 = randomGenerator(min_slope_, 90);
+  new_obstacle.slope2 = randomGenerator(min_slope_, 90);
+  new_obstacle.slope3 = randomGenerator(min_slope_, 90);
+  new_obstacle.slope4 = randomGenerator(min_slope_, 90);
 
   new_obstacle.name = "Random Obstacle " + std::to_string(number);
   number++;
@@ -116,7 +116,7 @@ void RandomMapGen::populateMap()
         }
 
         y -= resolution_ / 2.0;
-        current_height -= new_obstacle.slope1;
+        current_height -= angleToLengthDecrement(new_obstacle.slope1);
       }
     }
 
@@ -132,7 +132,7 @@ void RandomMapGen::populateMap()
         }
 
         y += resolution_ / 2.0;
-        current_height -= new_obstacle.slope2;
+        current_height -= angleToLengthDecrement(new_obstacle.slope2);
       }
     }
 
@@ -148,7 +148,7 @@ void RandomMapGen::populateMap()
         }
 
         x -= resolution_ / 2.0;
-        current_height -= new_obstacle.slope3;
+        current_height -= angleToLengthDecrement(new_obstacle.slope3);
       }
     }
 
@@ -164,7 +164,7 @@ void RandomMapGen::populateMap()
         }
 
         x += resolution_ / 2.0;
-        current_height -= new_obstacle.slope4;
+        current_height -= angleToLengthDecrement(new_obstacle.slope4);
       }
     }
   }

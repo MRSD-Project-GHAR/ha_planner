@@ -9,7 +9,6 @@
 
 /**
  * TODOs
- * 2) Implement Delete obstacle
  * 3) Implement Add obstacle
  * 4) Implement Change Obstacle
  * */
@@ -30,12 +29,15 @@ protected:
   void publishMapButtonPressed();
   void obstacleDropDownChanged();
   void deleteButtonPressed();
+  void addButtonPressed();
 
 private:
   Ui::MainWindow* ui;
   rand_grid_map_gen::RandomMapGen* map_;
   ros::NodeHandle nh_;
   ros::Publisher grid_map_publisher_;
+
+  int obstacle_index = 0;
 
   void changeObstacleFields(rand_grid_map_gen::Obstacle obs);
   void clearObstacleFields();

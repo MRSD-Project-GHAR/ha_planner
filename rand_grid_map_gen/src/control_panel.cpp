@@ -11,6 +11,7 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
   map_ = map;
   QObject::connect(ui->publish_map_button, &QPushButton::clicked, this, &MainWindow::publishMapButtonPressed);
   QObject::connect(ui->delete_button, &QPushButton::clicked, this, &MainWindow::deleteButtonPressed);
+  QObject::connect(ui->add_button, &QPushButton::clicked, this, &MainWindow::addButtonPressed);
   QObject::connect(ui->obstacle_num_dropdown, &QComboBox::currentIndexChanged, this,
                    &MainWindow::obstacleDropDownChanged);
 
@@ -75,6 +76,35 @@ void MainWindow::deleteButtonPressed()
   {
     ui->obstacle_num_dropdown->clear();
   }
+}
+
+void MainWindow::addButtonPressed()
+{
+  rand_grid_map_gen::Obstacle new_obs;
+
+  new_obs.x = ui->x->text().toDouble();
+  new_obs.y = ui->y->text().toDouble();
+
+  new_obs.length = ui->length->text().toDouble();
+  new_obs.width = ui->width->text().toDouble();
+  new_obs.height = ui->height->text().toDouble();
+
+  new_obs.slope1 = ui->slope_1->text().toDouble();
+  new_obs.slope2 = ui->slope_2->text().toDouble();
+  new_obs.slope3 = ui->slope_3->text().toDouble();
+  new_obs.slope4 = ui->slope_4->text().toDouble();
+
+  new_obs.orientation = ui->orientation->text().toDouble();
+
+  new_obs.roughness = ui->roughness->text().toDouble();
+
+  new_obs.name = "Custom Obstacle " + std::to_string(obstacle_index);
+  obstacle_index++;
+
+  map_->addObstacle(new_obs);
+  ui->obstacle_num_dropdown->addItem(QString::fromStdString(new_obs.name));
+  ui->obstacle_num_dropdown->setCurrentText(QString::fromStdString(new_obs.name));
+  changeObstacleFields(new_obs);
 }
 
 void MainWindow::changeObstacleFields(rand_grid_map_gen::Obstacle obs)

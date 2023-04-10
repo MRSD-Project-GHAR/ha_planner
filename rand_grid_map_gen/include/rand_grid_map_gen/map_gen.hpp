@@ -83,6 +83,11 @@ private:
   void loadParams();
   void addRandomObstacle();
 
+  inline double angleToLengthDecrement(double angle)
+  {
+    return (resolution_ / 2.0) * tanf64((M_PI / 180) * angle);
+  }
+
   inline double randomGenerator(double min, double max)
   {
     return min + ((1.0 + (rand() % 1000)) / 1000.0) * (max - min);
