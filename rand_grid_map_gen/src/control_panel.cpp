@@ -13,10 +13,12 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
   QObject::connect(ui->delete_button, &QPushButton::clicked, this, &MainWindow::deleteButtonPressed);
   QObject::connect(ui->add_button, &QPushButton::clicked, this, &MainWindow::addButtonPressed);
   QObject::connect(ui->change_button, &QPushButton::clicked, this, &MainWindow::changeButtonPressed);
-  QObject::connect(ui->save_map_button, &QPushButton::clicked, this, &MainWindow::saveButtonPressed);
+  QObject::connect(ui->save_map_button, &QPushButton::clicked, this, &MainWindow::saveMapButtonPressed);
+  QObject::connect(ui->load_map_button, &QPushButton::clicked, this, &MainWindow::loadMapButtonPressed);
   QObject::connect(ui->obstacle_num_dropdown, &QComboBox::currentIndexChanged, this,
                    &MainWindow::obstacleDropDownChanged);
 
+  ui->obstacle_num_dropdown->clear();
   for (int i = 0; i < map_->getNumObstacles(); i++)
   {
     rand_grid_map_gen::Obstacle obs = map_->getObstacle(i);
@@ -55,9 +57,26 @@ void MainWindow::publishMapButtonPressed()
   grid_map_publisher_.publish(map_->getROSMessage());
 }
 
-void MainWindow::saveButtonPressed()
+void MainWindow::saveMapButtonPressed()
 {
   map_->saveMap(ui->map_name_textbox->text().toStdString());
+}
+
+void MainWindow::loadMapButtonPressed()
+{
+  map_->loadMap(ui->map_name_textbox->text().toStdString());
+
+  ui->obstacle_num_dropdown->clear();
+  for (int i = 0; i < map_->getNumObstacles(); i++)
+  {
+    rand_grid_map_gen::Obstacle obs = map_->getObstacle(i);
+    ui->obstacle_num_dropdown->addItem(QString::fromStdString(obs.name));
+  }
+
+  if (map_->getNumObstacles() > 0)
+  {
+    changeObstacleFields(map_->getObstacle(0));
+  }
 }
 
 void MainWindow::obstacleDropDownChanged()
@@ -114,7 +133,8 @@ void MainWindow::addButtonPressed()
   changeObstacleFields(new_obs);
 }
 
-void MainWindow::changeButtonPressed() {
+void MainWindow::changeButtonPressed()
+{
   rand_grid_map_gen::Obstacle obs;
 
   obs.x = ui->x->text().toDouble();

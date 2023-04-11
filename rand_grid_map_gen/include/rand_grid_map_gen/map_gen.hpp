@@ -62,6 +62,8 @@ public:
 
   void saveMap(std::string name);
 
+  void loadMap(std::string name);
+
 private:
   ros::NodeHandle nh_private_;
   ros::ServiceServer reset_map_service_;

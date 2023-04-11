@@ -29,7 +29,8 @@ protected:
   void deleteButtonPressed();
   void addButtonPressed();
   void changeButtonPressed();
-  void saveButtonPressed();
+  void saveMapButtonPressed();
+  void loadMapButtonPressed();
 
 private:
   Ui::MainWindow* ui;

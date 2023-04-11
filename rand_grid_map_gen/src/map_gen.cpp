@@ -264,18 +264,52 @@ void RandomMapGen::saveMap(std::string name)
     em << YAML::Key << "roughness" << YAML::Value << obstacle_list[i].roughness;
     em << YAML::Key << "orientation" << YAML::Value << obstacle_list[i].orientation;
 
+    em << YAML::Key << "name" << YAML::Value << obstacle_list[i].name;
+
     em << YAML::EndMap;
   }
 
   em << YAML::EndSeq;
   em << YAML::EndMap;
 
-  std::cout << em.c_str();
-
   std::ofstream myfile;
   myfile.open(yaml_savepath + name);
   myfile << em.c_str();
   myfile.close();
+}
+
+void RandomMapGen::loadMap(std::string name)
+{
+  YAML::Node map_params = YAML::LoadFile(yaml_savepath + name);
+
+  std::cout << map_params["Obstacles"].size();
+
+  obstacle_list.clear();
+
+  for (int i = 0; i < map_params["Obstacles"].size(); i++) {
+    Obstacle obs;
+
+    obs.x = map_params["Obstacles"][i]["x"].as<double>();
+    obs.y = map_params["Obstacles"][i]["y"].as<double>();
+
+    obs.width = map_params["Obstacles"][i]["width"].as<double>();
+    obs.length = map_params["Obstacles"][i]["length"].as<double>();
+    obs.height = map_params["Obstacles"][i]["height"].as<double>();
+  
+    obs.slope1 = map_params["Obstacles"][i]["slope1"].as<double>();
+    obs.slope2 = map_params["Obstacles"][i]["slope2"].as<double>();
+    obs.slope3 = map_params["Obstacles"][i]["slope3"].as<double>();
+    obs.slope4 = map_params["Obstacles"][i]["slope4"].as<double>();
+  
+    obs.roughness = map_params["Obstacles"][i]["roughness"].as<double>();
+    obs.orientation = map_params["Obstacles"][i]["orientation"].as<double>();
+
+    obs.name = map_params["Obstacles"][i]["name"].as<std::string>();
+
+    obstacle_list.push_back(obs);
+  }
+
+  populateMap();
 }
 
 }  // namespace rand_grid_map_gen
