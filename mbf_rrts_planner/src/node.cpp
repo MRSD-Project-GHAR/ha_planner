@@ -24,11 +24,12 @@ RRTNode::RRTNode(GridMapPtr map, std::string layer_name, std::default_random_eng
 
   auto layers = map->getLayers();
 
-  while (map->atPosition(layer_name_, { x, y }) > -0.5)
-  {
-    x = x_generator(generator);
-    y = y_generator(generator);
-  }
+  // while (map->atPosition(layer_name_, { x, y }) > -0.5)
+  // {
+  //   std::cout << "Here " << layer_name_ << "\n";
+  //   x = x_generator(generator);
+  //   y = y_generator(generator);
+  // }
 
   // std::cout << "The new node is generated with coordinates " << x << "," << y << "\n";
 }

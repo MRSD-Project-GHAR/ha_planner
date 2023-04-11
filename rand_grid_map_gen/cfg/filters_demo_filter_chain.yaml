@@ -95,11 +95,23 @@ grid_map_filters:
   #     window_size: 3 # Make sure to make this compatible with the kernel matrix.
 
   # Compute traversability as normalized weighted sum of slope and roughness.
-  - name: traversability
+  - name: traversability_A
     type: gridMapFilters/MathExpressionFilter
     params:
-      output_layer: traversability
+      output_layer: traversability_A
       expression:   0.5*(step(elevation-0.5) + 1) .* slope
+
+  - name: traversability_B
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: traversability_B
+      expression:   0.0*(step(elevation-0.5) + 1) .* slope
+
+  - name: traversability_C
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: traversability_C
+      expression:   5*(step(elevation-0.5) + 1) .* slope
 
   # Set lower threshold on traversability.
   # - name: traversability_lower_threshold

@@ -14,7 +14,9 @@ public:
     start_sub_ = nh.subscribe("start_topic", 10, &PlanVisualizer::startPoseCallback, this);
     goal_sub_ = nh.subscribe("goal_topic", 10, &PlanVisualizer::goalPoseCallback, this);
 
-    path_pub_ = nh.advertise<nav_msgs::Path>("planned_path", 10);
+    path_pub_A_ = nh.advertise<nav_msgs::Path>("planned_path_A", 10);
+    path_pub_B_ = nh.advertise<nav_msgs::Path>("planned_path_B", 10);
+    path_pub_C_ = nh.advertise<nav_msgs::Path>("planned_path_C", 10);
 
     start_.pose.position.x = 0;
     start_.pose.position.y = 1;
@@ -42,22 +44,40 @@ public:
     goal_ = goal_msg;
   }
 
+  void publishPlan()
+  {
+    nav_msgs::Path planned_path;
+    planned_path.header.frame_id = "map";
+    planned_path.header.stamp = ros::Time::now();
+
+    planned_path.poses = plan_A_;
+    path_pub_A_.publish(planned_path);
+    planned_path.poses = plan_B_;
+    path_pub_B_.publish(planned_path);
+    planned_path.poses = plan_C_;
+    path_pub_C_.publish(planned_path);
+
+  }
+
 private:
   void makeAndPublishPlan()
   {
     std::vector<geometry_msgs::PoseStamped> plan;
     double cost;
     std::string message;
+    plan_A_.clear();
+    plan_B_.clear();
+    plan_C_.clear();
 
-    planner_.makePlan(start_, goal_, 0.1, plan, cost, message);
+    planner_.setLayerName("traversability_A");
+    planner_.makePlan(start_, goal_, 0.1, plan_A_, cost, message);
 
-    nav_msgs::Path planned_path;
-    planned_path.header.frame_id = "map";
-    planned_path.header.stamp = ros::Time::now();
-
-    planned_path.poses = plan;
-
-    path_pub_.publish(planned_path);
+    planner_.setLayerName("traversability_B");
+    planner_.makePlan(start_, goal_, 0.1, plan_B_, cost, message);
+    
+    planner_.setLayerName("traversability_B");
+    planner_.makePlan(start_, goal_, 0.1, plan_C_, cost, message);
+    
   }
 
   grid_map::GridMap map_;
@@ -69,8 +89,13 @@ private:
   ros::Subscriber map_sub_;
   ros::Subscriber start_sub_;
   ros::Subscriber goal_sub_;
-  ros::Publisher path_pub_;
+  ros::Publisher path_pub_A_;
+  ros::Publisher path_pub_B_;
+  ros::Publisher path_pub_C_;
 
+  std::vector<geometry_msgs::PoseStamped> plan_A_;
+  std::vector<geometry_msgs::PoseStamped> plan_B_;
+  std::vector<geometry_msgs::PoseStamped> plan_C_;
   bool received_map_;
 };
 
@@ -82,10 +107,15 @@ int main(int argc, char** argv)
   ros::NodeHandle nh_private("~");
 
   PlanVisualizer plan_visualizer(nh, nh_private);
-
+  ros::Rate loop_rate(10);
   // std::cout << (DBL_MAX);
-
-  ros::spin();
+  while (ros::ok())
+  {
+    plan_visualizer.publishPlan();
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
+  // ros::spin();
 
   return 0;
 }

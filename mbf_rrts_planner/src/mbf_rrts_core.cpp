@@ -27,7 +27,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   int count = 0;
 
   // TODO: Remove Hardcoded parameters
-  int max_iterations = 200;
+  int max_iterations = 50;
   int seed = 10;
   double neighbourhood_radius = 2.0;
 
@@ -47,13 +47,13 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
   for (int i = 0; i < max_iterations; i++)
   {
-    // std::cout << "Iteration: " << i << "\n";
+    std::cout << "Iteration: " << i << "\n";
 
     RRTNode::RRTNodePtr random_node = std::make_shared<RRTNode>(grid_map_, layer_name_, generator);
-    // std::cout << "Random Node formed\n";
+    std::cout << "Random Node formed\n";
 
     std::vector<RRTNode::RRTNodePtr> neighbours = node_tree.findNearestNeighbours(random_node, neighbourhood_radius);
-    // std::cout << "Neighbours found. Number of neighbours found = " << neighbours.size() << "\n";
+    std::cout << "Neighbours found. Number of neighbours found = " << neighbours.size() << "\n";
 
     RRTNode::RRTNodePtr nearest_neighbour = neighbours[0];
 
@@ -64,18 +64,18 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
         nearest_neighbour = neighbour;
       }
     }
-    // std::cout << "Nearest neighbour found. Cost to this neighbour is : " << nearest_neighbour->cost <<"\n";
+    std::cout << "Nearest neighbour found. Cost to this neighbour is : " << nearest_neighbour->cost <<"\n";
 
     if (random_node->getCost(nearest_neighbour) == DBL_MAX)
     {
       continue;
     }
-    // std::cout << "This doesn't cross over obstacles\n\n";
+    std::cout << "This doesn't cross over obstacles\n\n";
 
     random_node->setParent(nearest_neighbour);
     node_tree.addNode(start_node);
 
-    // std::cout << "This neighbour has now been set as a parent\n";
+    std::cout << "This neighbour has now been set as a parent\n";
 
     for (auto neighbour : neighbours)
     {
@@ -88,7 +88,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
       {
         neighbour->setParent(random_node);
       }
-      // std::cout << "Reordered some nodes to make them more efficient\n";
+      std::cout << "Reordered some nodes to make them more efficient\n";
     }
 
     if ((random_node->cost + random_node->getCost(goal_node)) < goal_node->cost)
@@ -96,7 +96,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
       goal_node->setParent(random_node);
     }
 
-    // std::cout << "\n\n";
+    std::cout << "\n\n";
 
     // std::cout << "Time taken: " << exec_time.count() << "\n";
 
@@ -106,14 +106,14 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
       return 51;
     }
   }
-  // std::cout << "RRT tree made. The number of nodes added are : " << nodes.size() << "\n";
-  // std::cout << "RRT tree made. Cost is : " << goal_node->cost << "\n";
+  std::cout << "RRT tree made. The number of nodes added are : " << nodes.size() << "\n";
+  std::cout << "RRT tree made. Cost is : " << goal_node->cost << "\n";
 
   if (goal_node->cost == DBL_MAX)
   {
     return 54;
   }
-  // std::cout << "Planning Complete. Generating plan from the RRT tree\n";
+  std::cout << "Planning Complete. Generating plan from the RRT tree\n";
 
   node_tree.generatePlanFromTree(plan, goal_node);
   cost = goal_node->cost;
@@ -136,7 +136,7 @@ std::vector<RRTNode::RRTNodePtr> RRTSPlanner::findNearestNeighbours(RRTNode::RRT
     {
       nearest_neighbours.push_back(neighbour);
       neighbours_found = true;
-      // std::cout << "A Neighbour has been found within radius\n";
+      std::cout << "A Neighbour has been found within radius\n";
     }
 
     if (neighbour->getCost(node) < closest_neighbour->getCost(node))
@@ -148,7 +148,7 @@ std::vector<RRTNode::RRTNodePtr> RRTSPlanner::findNearestNeighbours(RRTNode::RRT
   if (!neighbours_found)
   {
     nearest_neighbours.push_back(closest_neighbour);
-    // std::cout << "No neighbours found within this radius, returning the closest neighbour\n";
+    std::cout << "No neighbours found within this radius, returning the closest neighbour\n";
   }
 
   return nearest_neighbours;
