@@ -46,6 +46,7 @@ void RandomMapGen::loadParams()
   nh_private_.param("num_obstacles", num_obstacles_, 2);
 
   nh_private_.param("min_slope", min_slope_, 45.0);
+  nh_private_.param("max_obstacle_roughness", max_roughness_, 0.0);
 }
 
 void RandomMapGen::generateNewMap()
@@ -81,6 +82,8 @@ void RandomMapGen::addRandomObstacle()
   new_obstacle.slope3 = randomGenerator(min_slope_, 90);
   new_obstacle.slope4 = randomGenerator(min_slope_, 90);
 
+  new_obstacle.roughness = randomGenerator(0, max_roughness_);
+
   new_obstacle.name = "Random Obstacle " + std::to_string(number);
   number++;
   obstacle_list.push_back(new_obstacle);
@@ -102,7 +105,8 @@ void RandomMapGen::populateMap()
       {
         if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = new_obstacle.height;
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+              new_obstacle.height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
       }
     }
@@ -115,7 +119,8 @@ void RandomMapGen::populateMap()
       {
         if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+              current_height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
 
         y -= resolution_ / 2.0;
@@ -147,7 +152,8 @@ void RandomMapGen::populateMap()
       {
         if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+              current_height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
 
         x -= resolution_ / 2.0;
@@ -163,7 +169,8 @@ void RandomMapGen::populateMap()
       {
         if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+              current_height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
 
         x += resolution_ / 2.0;
@@ -286,7 +293,8 @@ void RandomMapGen::loadMap(std::string name)
 
   obstacle_list.clear();
 
-  for (int i = 0; i < map_params["Obstacles"].size(); i++) {
+  for (int i = 0; i < map_params["Obstacles"].size(); i++)
+  {
     Obstacle obs;
 
     obs.x = map_params["Obstacles"][i]["x"].as<double>();
@@ -295,12 +303,12 @@ void RandomMapGen::loadMap(std::string name)
     obs.width = map_params["Obstacles"][i]["width"].as<double>();
     obs.length = map_params["Obstacles"][i]["length"].as<double>();
     obs.height = map_params["Obstacles"][i]["height"].as<double>();
-  
+
     obs.slope1 = map_params["Obstacles"][i]["slope1"].as<double>();
     obs.slope2 = map_params["Obstacles"][i]["slope2"].as<double>();
     obs.slope3 = map_params["Obstacles"][i]["slope3"].as<double>();
     obs.slope4 = map_params["Obstacles"][i]["slope4"].as<double>();
-  
+
     obs.roughness = map_params["Obstacles"][i]["roughness"].as<double>();
     obs.orientation = map_params["Obstacles"][i]["orientation"].as<double>();
 

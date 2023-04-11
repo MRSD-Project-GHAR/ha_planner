@@ -82,6 +82,7 @@ private:
   double min_obstacle_height_;
 
   double min_slope_;
+  double max_roughness_;
 
   double resolution_;
   int num_obstacles_;
