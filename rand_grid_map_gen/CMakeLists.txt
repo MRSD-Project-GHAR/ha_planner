@@ -14,6 +14,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
 )
 
+find_package(PkgConfig)
+pkg_check_modules(YAMLCPP REQUIRED yaml-cpp>=0.5)
+
 set(CMAKE_PREFIX_PATH "/home/kshitij/Qt/6.5.0/gcc_64")
 
 find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
@@ -162,6 +165,7 @@ target_link_libraries(ui PUBLIC Qt6::Core Qt6::Widgets)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(map_gen
   ${catkin_LIBRARIES}
+  ${YAMLCPP_LIBRARIES}
 )
 
 target_link_libraries(map_gen_pub_node

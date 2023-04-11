@@ -13,6 +13,7 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
   QObject::connect(ui->delete_button, &QPushButton::clicked, this, &MainWindow::deleteButtonPressed);
   QObject::connect(ui->add_button, &QPushButton::clicked, this, &MainWindow::addButtonPressed);
   QObject::connect(ui->change_button, &QPushButton::clicked, this, &MainWindow::changeButtonPressed);
+  QObject::connect(ui->save_map_button, &QPushButton::clicked, this, &MainWindow::saveButtonPressed);
   QObject::connect(ui->obstacle_num_dropdown, &QComboBox::currentIndexChanged, this,
                    &MainWindow::obstacleDropDownChanged);
 
@@ -52,6 +53,11 @@ MainWindow::~MainWindow()
 void MainWindow::publishMapButtonPressed()
 {
   grid_map_publisher_.publish(map_->getROSMessage());
+}
+
+void MainWindow::saveButtonPressed()
+{
+  map_->saveMap(ui->map_name_textbox->text().toStdString());
 }
 
 void MainWindow::obstacleDropDownChanged()

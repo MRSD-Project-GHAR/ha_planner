@@ -29,6 +29,7 @@ protected:
   void deleteButtonPressed();
   void addButtonPressed();
   void changeButtonPressed();
+  void saveButtonPressed();
 
 private:
   Ui::MainWindow* ui;

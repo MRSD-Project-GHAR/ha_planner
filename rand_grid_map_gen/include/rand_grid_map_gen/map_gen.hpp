@@ -4,6 +4,8 @@
 #include <std_srvs/Empty.h>
 #include <string>
 
+#include <yaml-cpp/yaml.h>
+
 namespace rand_grid_map_gen
 {
 struct Obstacle
@@ -24,8 +26,10 @@ struct Obstacle
   double y;
 
   std::string name;
+
 };
 
+// TODO: Do checking of slope parameter: want to avoid iterating over cells for a long time.
 // TODO: Add dynamic adding and changing of obstacles from some external interface
 // TODO: Add walls
 // TODO: Add saving and loading maps from memory
@@ -56,6 +60,8 @@ public:
     return obstacle_list.size();
   }
 
+  void saveMap(std::string name);
+
 private:
   ros::NodeHandle nh_private_;
   ros::ServiceServer reset_map_service_;
@@ -82,6 +88,8 @@ private:
   grid_map::GridMapRosConverter grid_map_converter_;
 
   std::vector<Obstacle> obstacle_list;
+
+  std::string yaml_savepath;
 
   void loadParams();
   void addRandomObstacle();

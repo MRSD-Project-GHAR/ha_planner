@@ -1,4 +1,5 @@
 #include "rand_grid_map_gen/map_gen.hpp"
+#include <fstream>
 
 namespace rand_grid_map_gen
 {
@@ -11,6 +12,8 @@ RandomMapGen::RandomMapGen(ros::NodeHandle& nh_private)
   grid_map_.setBasicLayers({ "elevation" });
   grid_map_.setGeometry({ map_length_, map_width_ }, resolution_);
   grid_map_.setFrameId("map");
+
+  nh_private.param("yaml_file_name", yaml_savepath, std::string("/opt/ros/"));
 
   reset_map_service_ = nh_private_.advertiseService("reset_map", &RandomMapGen::resetMapServiceCallback, this);
 
@@ -231,6 +234,48 @@ Obstacle RandomMapGen::getObstacle(std::string name)
   Obstacle obs;
   obs.name = "No obstacle found";
   return obs;
+}
+
+void RandomMapGen::saveMap(std::string name)
+{
+  static int count = 0;
+  YAML::Emitter em;
+  em << YAML::BeginMap;
+  em << YAML::Key << "Obstacles";
+  em << YAML::Value;
+  em << YAML::BeginSeq;
+
+  for (int i = 0; i < obstacle_list.size(); i++)
+  {
+    em << YAML::BeginMap;
+
+    em << YAML::Key << "x" << YAML::Value << obstacle_list[i].x;
+    em << YAML::Key << "y" << YAML::Value << obstacle_list[i].y;
+
+    em << YAML::Key << "height" << YAML::Value << obstacle_list[i].height;
+    em << YAML::Key << "width" << YAML::Value << obstacle_list[i].width;
+    em << YAML::Key << "length" << YAML::Value << obstacle_list[i].length;
+
+    em << YAML::Key << "slope1" << YAML::Value << obstacle_list[i].slope1;
+    em << YAML::Key << "slope2" << YAML::Value << obstacle_list[i].slope2;
+    em << YAML::Key << "slope3" << YAML::Value << obstacle_list[i].slope3;
+    em << YAML::Key << "slope4" << YAML::Value << obstacle_list[i].slope4;
+
+    em << YAML::Key << "roughness" << YAML::Value << obstacle_list[i].roughness;
+    em << YAML::Key << "orientation" << YAML::Value << obstacle_list[i].orientation;
+
+    em << YAML::EndMap;
+  }
+
+  em << YAML::EndSeq;
+  em << YAML::EndMap;
+
+  std::cout << em.c_str();
+
+  std::ofstream myfile;
+  myfile.open(yaml_savepath + name);
+  myfile << em.c_str();
+  myfile.close();
 }
 
 }  // namespace rand_grid_map_gen
