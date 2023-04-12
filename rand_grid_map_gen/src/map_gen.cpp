@@ -1,4 +1,5 @@
 #include "rand_grid_map_gen/map_gen.hpp"
+#include <fstream>
 
 namespace rand_grid_map_gen
 {
@@ -11,6 +12,8 @@ RandomMapGen::RandomMapGen(ros::NodeHandle& nh_private)
   grid_map_.setBasicLayers({ "elevation" });
   grid_map_.setGeometry({ map_length_, map_width_ }, resolution_);
   grid_map_.setFrameId("map");
+
+  nh_private.param("yaml_file_name", yaml_savepath, std::string("/opt/ros/"));
 
   reset_map_service_ = nh_private_.advertiseService("reset_map", &RandomMapGen::resetMapServiceCallback, this);
 
@@ -43,13 +46,12 @@ void RandomMapGen::loadParams()
   nh_private_.param("num_obstacles", num_obstacles_, 2);
 
   nh_private_.param("min_slope", min_slope_, 45.0);
+  nh_private_.param("max_obstacle_roughness", max_roughness_, 0.0);
 }
 
 void RandomMapGen::generateNewMap()
 {
-  grid_map_.erase("elevation");
-  grid_map_.add("elevation", 0.0);
-
+  obstacle_list.clear();
   for (int i = 0; i < num_obstacles_; i++)
   {
     addRandomObstacle();
@@ -62,6 +64,8 @@ void RandomMapGen::addRandomObstacle()
 {
   // TODO: Add different obstacle orientations
 
+  static int number = 1;
+
   Obstacle new_obstacle;
   new_obstacle.length = randomGenerator(min_obstacle_length_, max_obstacle_length_);
   new_obstacle.width = randomGenerator(min_obstacle_width_, max_obstacle_width_);
@@ -73,17 +77,23 @@ void RandomMapGen::addRandomObstacle()
   ROS_INFO("Adding obstacle with dimensions %lf x %lf and height %lf at (%lf, %lf)", new_obstacle.length,
            new_obstacle.width, new_obstacle.height, new_obstacle.x, new_obstacle.y);
 
-  new_obstacle.slope1 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
-  new_obstacle.slope2 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
-  new_obstacle.slope3 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
-  new_obstacle.slope4 = (resolution_ / 2.0) * tanf64((M_PI / 180) * randomGenerator(min_slope_, 90));
+  new_obstacle.slope1 = randomGenerator(min_slope_, 90);
+  new_obstacle.slope2 = randomGenerator(min_slope_, 90);
+  new_obstacle.slope3 = randomGenerator(min_slope_, 90);
+  new_obstacle.slope4 = randomGenerator(min_slope_, 90);
 
+  new_obstacle.roughness = randomGenerator(0, max_roughness_);
+
+  new_obstacle.name = "Random Obstacle " + std::to_string(number);
+  number++;
   obstacle_list.push_back(new_obstacle);
 }
 
 void RandomMapGen::populateMap()
 {
   // TODO: Add different obstacle orientations
+  grid_map_.erase("elevation");
+  grid_map_.add("elevation", 0.0);
 
   for (int i = 0; i < obstacle_list.size(); i++)
   {
@@ -95,7 +105,8 @@ void RandomMapGen::populateMap()
       {
         if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = new_obstacle.height;
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+              new_obstacle.height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
       }
     }
@@ -108,11 +119,12 @@ void RandomMapGen::populateMap()
       {
         if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+              current_height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
 
         y -= resolution_ / 2.0;
-        current_height -= new_obstacle.slope1;
+        current_height -= angleToLengthDecrement(new_obstacle.slope1);
       }
     }
 
@@ -128,7 +140,7 @@ void RandomMapGen::populateMap()
         }
 
         y += resolution_ / 2.0;
-        current_height -= new_obstacle.slope2;
+        current_height -= angleToLengthDecrement(new_obstacle.slope2);
       }
     }
 
@@ -140,11 +152,12 @@ void RandomMapGen::populateMap()
       {
         if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+              current_height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
 
         x -= resolution_ / 2.0;
-        current_height -= new_obstacle.slope3;
+        current_height -= angleToLengthDecrement(new_obstacle.slope3);
       }
     }
 
@@ -156,11 +169,12 @@ void RandomMapGen::populateMap()
       {
         if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+              current_height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
 
         x += resolution_ / 2.0;
-        current_height -= new_obstacle.slope4;
+        current_height -= angleToLengthDecrement(new_obstacle.slope4);
       }
     }
   }
@@ -178,6 +192,132 @@ bool RandomMapGen::resetMapServiceCallback(std_srvs::EmptyRequest& req, std_srvs
   loadParams();
   generateNewMap();
   return true;
+}
+
+void RandomMapGen::addObstacle(Obstacle new_obs)
+{
+  obstacle_list.push_back(new_obs);
+  populateMap();
+}
+
+void RandomMapGen::changeObstacle(Obstacle obs)
+{
+  for (auto it = obstacle_list.begin(); it != obstacle_list.end(); it++)
+  {
+    if (it->name == obs.name)
+    {
+      *it = obs;
+      break;
+    }
+  }
+
+  populateMap();
+}
+
+void RandomMapGen::deleteObstacle(std::string name)
+{
+  for (auto it = obstacle_list.begin(); it != obstacle_list.end(); it++)
+  {
+    if (it->name == name)
+    {
+      obstacle_list.erase(it);
+      break;
+    }
+  }
+
+  populateMap();
+}
+
+Obstacle RandomMapGen::getObstacle(std::string name)
+{
+  for (auto it = obstacle_list.begin(); it != obstacle_list.end(); it++)
+  {
+    if (it->name == name)
+    {
+      return *it;
+    }
+  }
+
+  Obstacle obs;
+  obs.name = "No obstacle found";
+  return obs;
+}
+
+void RandomMapGen::saveMap(std::string name)
+{
+  static int count = 0;
+  YAML::Emitter em;
+  em << YAML::BeginMap;
+  em << YAML::Key << "Obstacles";
+  em << YAML::Value;
+  em << YAML::BeginSeq;
+
+  for (int i = 0; i < obstacle_list.size(); i++)
+  {
+    em << YAML::BeginMap;
+
+    em << YAML::Key << "x" << YAML::Value << obstacle_list[i].x;
+    em << YAML::Key << "y" << YAML::Value << obstacle_list[i].y;
+
+    em << YAML::Key << "height" << YAML::Value << obstacle_list[i].height;
+    em << YAML::Key << "width" << YAML::Value << obstacle_list[i].width;
+    em << YAML::Key << "length" << YAML::Value << obstacle_list[i].length;
+
+    em << YAML::Key << "slope1" << YAML::Value << obstacle_list[i].slope1;
+    em << YAML::Key << "slope2" << YAML::Value << obstacle_list[i].slope2;
+    em << YAML::Key << "slope3" << YAML::Value << obstacle_list[i].slope3;
+    em << YAML::Key << "slope4" << YAML::Value << obstacle_list[i].slope4;
+
+    em << YAML::Key << "roughness" << YAML::Value << obstacle_list[i].roughness;
+    em << YAML::Key << "orientation" << YAML::Value << obstacle_list[i].orientation;
+
+    em << YAML::Key << "name" << YAML::Value << obstacle_list[i].name;
+
+    em << YAML::EndMap;
+  }
+
+  em << YAML::EndSeq;
+  em << YAML::EndMap;
+
+  std::ofstream myfile;
+  myfile.open(yaml_savepath + name);
+  myfile << em.c_str();
+  myfile.close();
+}
+
+void RandomMapGen::loadMap(std::string name)
+{
+  YAML::Node map_params = YAML::LoadFile(yaml_savepath + name);
+
+  std::cout << map_params["Obstacles"].size();
+
+  obstacle_list.clear();
+
+  for (int i = 0; i < map_params["Obstacles"].size(); i++)
+  {
+    Obstacle obs;
+
+    obs.x = map_params["Obstacles"][i]["x"].as<double>();
+    obs.y = map_params["Obstacles"][i]["y"].as<double>();
+
+    obs.width = map_params["Obstacles"][i]["width"].as<double>();
+    obs.length = map_params["Obstacles"][i]["length"].as<double>();
+    obs.height = map_params["Obstacles"][i]["height"].as<double>();
+
+    obs.slope1 = map_params["Obstacles"][i]["slope1"].as<double>();
+    obs.slope2 = map_params["Obstacles"][i]["slope2"].as<double>();
+    obs.slope3 = map_params["Obstacles"][i]["slope3"].as<double>();
+    obs.slope4 = map_params["Obstacles"][i]["slope4"].as<double>();
+
+    obs.roughness = map_params["Obstacles"][i]["roughness"].as<double>();
+    obs.orientation = map_params["Obstacles"][i]["orientation"].as<double>();
+
+    obs.name = map_params["Obstacles"][i]["name"].as<std::string>();
+
+    obstacle_list.push_back(obs);
+  }
+
+  populateMap();
 }
 
 }  // namespace rand_grid_map_gen

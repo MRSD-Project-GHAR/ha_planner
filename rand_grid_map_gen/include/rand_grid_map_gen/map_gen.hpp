@@ -2,6 +2,9 @@
 #include <ros/ros.h>
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <std_srvs/Empty.h>
+#include <string>
+
+#include <yaml-cpp/yaml.h>
 
 namespace rand_grid_map_gen
 {
@@ -21,8 +24,12 @@ struct Obstacle
 
   double x;
   double y;
+
+  std::string name;
+
 };
 
+// TODO: Do checking of slope parameter: want to avoid iterating over cells for a long time.
 // TODO: Add dynamic adding and changing of obstacles from some external interface
 // TODO: Add walls
 // TODO: Add saving and loading maps from memory
@@ -35,6 +42,27 @@ public:
   grid_map_msgs::GridMap getROSMessage();
   void generateNewMap();
   bool resetMapServiceCallback(std_srvs::EmptyRequest& req, std_srvs::EmptyResponse& resp);
+
+  void addObstacle(Obstacle new_obst);
+  void deleteObstacle(std::string name);
+
+  Obstacle getObstacle(std::string name);
+
+  void changeObstacle(Obstacle obs);
+
+  inline Obstacle getObstacle(int index)
+  {
+    return obstacle_list[index];
+  }
+
+  inline int getNumObstacles()
+  {
+    return obstacle_list.size();
+  }
+
+  void saveMap(std::string name);
+
+  void loadMap(std::string name);
 
 private:
   ros::NodeHandle nh_private_;
@@ -54,6 +82,7 @@ private:
   double min_obstacle_height_;
 
   double min_slope_;
+  double max_roughness_;
 
   double resolution_;
   int num_obstacles_;
@@ -63,8 +92,15 @@ private:
 
   std::vector<Obstacle> obstacle_list;
 
+  std::string yaml_savepath;
+
   void loadParams();
   void addRandomObstacle();
+
+  inline double angleToLengthDecrement(double angle)
+  {
+    return (resolution_ / 2.0) * tanf64((M_PI / 180) * angle);
+  }
 
   inline double randomGenerator(double min, double max)
   {
