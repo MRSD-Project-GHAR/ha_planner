@@ -73,7 +73,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
     std::cout << "This doesn't cross over obstacles\n\n";
 
     random_node->setParent(nearest_neighbour);
-    node_tree.addNode(start_node);
+    node_tree.addNode(random_node);
 
     std::cout << "This neighbour has now been set as a parent\n";
 
