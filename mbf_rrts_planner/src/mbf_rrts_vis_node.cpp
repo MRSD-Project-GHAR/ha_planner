@@ -4,6 +4,7 @@
 
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
+#include <std_srvs/Empty.h>
 
 class PlanVisualizer
 {
@@ -17,6 +18,8 @@ public:
     path_pub_A_ = nh.advertise<nav_msgs::Path>("planned_path_A", 10);
     path_pub_B_ = nh.advertise<nav_msgs::Path>("planned_path_B", 10);
     path_pub_C_ = nh.advertise<nav_msgs::Path>("planned_path_C", 10);
+
+    plan_service_ = nh.advertiseService("generate_plan", &PlanVisualizer::planServiceCallback, this);
 
     start_.pose.position.x = 0;
     start_.pose.position.y = 1;
@@ -35,8 +38,6 @@ public:
   void startPoseCallback(const geometry_msgs::PoseStamped& start_msg)
   {
     start_ = start_msg;
-    if (received_map_)
-      makeAndPublishPlan();
   }
 
   void goalPoseCallback(const geometry_msgs::PoseStamped& goal_msg)
@@ -57,6 +58,17 @@ public:
     planned_path.poses = plan_C_;
     path_pub_C_.publish(planned_path);
 
+  bool planServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
+  {
+    if (received_map_)
+    {
+      makeAndPublishPlan();
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 
 private:
@@ -92,6 +104,7 @@ private:
   ros::Publisher path_pub_A_;
   ros::Publisher path_pub_B_;
   ros::Publisher path_pub_C_;
+  ros::ServiceServer plan_service_;
 
   std::vector<geometry_msgs::PoseStamped> plan_A_;
   std::vector<geometry_msgs::PoseStamped> plan_B_;

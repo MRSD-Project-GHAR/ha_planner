@@ -4,12 +4,12 @@
     "mainwindow": {
       "keys": {
         "geometry": {
-          "repr(QByteArray.hex)": "QtCore.QByteArray(b'01d9d0cb00030000000000480000001b0000077f00000437000000480000003b0000077f0000043700000000000000000780000000480000003b0000077f00000437')",
+          "repr(QByteArray.hex)": "QtCore.QByteArray(b'01d9d0cb00020000000001100000011a0000077f000002fb000001100000013a0000077f000002fb00000000000000000780')",
           "type": "repr(QByteArray.hex)",
-          "pretty-print": "     H     7 H ;   7      H ;   7"
+          "pretty-print": "               :         "
         },
         "state": {
-          "repr(QByteArray.hex)": "QtCore.QByteArray(b'000000ff00000000fd000000010000000300000738000003d1fc0100000004fb00000072007200710074005f0073006500720076006900630065005f00630061006c006c00650072005f005f005300650072007600690063006500430061006c006c00650072005f005f0031005f005f005300650072007600690063006500430061006c006c006500720057006900640067006500740100000000000002620000000000000000fb00000026007200710074005f007200760069007a005f005f005200560069007a005f005f0031005f005f0100000000000007380000000000000000fb00000058007200710074005f007000750062006c00690073006800650072005f005f005000750062006c00690073006800650072005f005f0031005f005f005000750062006c006900730068006500720057006900640067006500740100000000000003990000023d00fffffffb00000058007200710074005f007000750062006c00690073006800650072005f005f005000750062006c00690073006800650072005f005f0032005f005f005000750062006c00690073006800650072005700690064006700650074010000039f000003990000023d00ffffff000007380000000000000004000000040000000800000008fc00000001000000030000000100000036004d0069006e0069006d0069007a006500640044006f0063006b00570069006400670065007400730054006f006f006c0062006100720000000000ffffffff0000000000000000')",
+          "repr(QByteArray.hex)": "QtCore.QByteArray(b'000000ff00000000fd00000001000000030000067000000198fc0100000004fb00000072007200710074005f0073006500720076006900630065005f00630061006c006c00650072005f005f005300650072007600690063006500430061006c006c00650072005f005f0031005f005f005300650072007600690063006500430061006c006c0065007200570069006400670065007401000000000000020e0000020e00fffffffb00000026007200710074005f007200760069007a005f005f005200560069007a005f005f0031005f005f0100000000000007380000000000000000fb00000058007200710074005f007000750062006c00690073006800650072005f005f005000750062006c00690073006800650072005f005f0031005f005f005000750062006c0069007300680065007200570069006400670065007401000002140000022b0000022b00fffffffb00000058007200710074005f007000750062006c00690073006800650072005f005f005000750062006c00690073006800650072005f005f0032005f005f005000750062006c0069007300680065007200570069006400670065007401000004450000022b0000022b00ffffff000006700000000000000004000000040000000800000008fc00000001000000030000000100000036004d0069006e0069006d0069007a006500640044006f0063006b00570069006400670065007400730054006f006f006c0062006100720000000000ffffffff0000000000000000')",
           "type": "repr(QByteArray.hex)",
           "pretty-print": "                 rrqt_service_caller__ServiceCaller__1__ServiceCallerWidget          &rqt_rviz__RViz__1__          Xrqt_publisher__Publisher__1__PublisherWidget          Xrqt_publisher__Publisher__2__PublisherWidget                            6MinimizedDockWidgetsToolbar        "
         }
@@ -29,7 +29,7 @@
     "pluginmanager": {
       "keys": {
         "running-plugins": {
-          "repr": "{'rqt_publisher/Publisher': [1, 2]}",
+          "repr": "{'rqt_publisher/Publisher': [1, 2], 'rqt_service_caller/ServiceCaller': [1]}",
           "type": "repr"
         }
       },
@@ -101,7 +101,7 @@
             "plugin": {
               "keys": {
                 "publishers": {
-                  "repr": "\"[{'topic_name': '/goal_topic', 'type_name': 'geometry_msgs/PoseStamped', 'rate': 0.1, 'enabled': False, 'publisher_id': 0, 'counter': 4, 'expressions': {'/goal_topic/pose/position/x': '0.0', '/goal_topic/pose/position/y': '0.0'}}]\"",
+                  "repr": "\"[{'topic_name': '/goal_topic', 'type_name': 'geometry_msgs/PoseStamped', 'rate': 1.0, 'enabled': False, 'publisher_id': 0, 'counter': 10, 'expressions': {'/goal_topic/pose/position/x': '4', '/goal_topic/pose/position/y': '4'}}]\"",
                   "type": "repr"
                 }
               },
@@ -132,7 +132,7 @@
             "plugin": {
               "keys": {
                 "publishers": {
-                  "repr": "\"[{'topic_name': '/start_topic', 'type_name': 'geometry_msgs/PoseStamped', 'rate': 0.1, 'enabled': False, 'publisher_id': 0, 'counter': 3, 'expressions': {'/start_topic/pose/position/x': '4.9', '/start_topic/pose/position/y': '4.9'}}]\"",
+                  "repr": "\"[{'topic_name': '/start_topic', 'type_name': 'geometry_msgs/PoseStamped', 'rate': 1.0, 'enabled': False, 'publisher_id': 0, 'counter': 8, 'expressions': {'/start_topic/pose/position/x': '1', '/start_topic/pose/position/y': '-4'}}]\"",
                   "type": "repr"
                 }
               },
@@ -185,7 +185,7 @@
                   "type": "repr"
                 },
                 "dockable": {
-                  "repr": "'true'",
+                  "repr": "True",
                   "type": "repr"
                 },
                 "parent": {
@@ -198,11 +198,11 @@
             "plugin": {
               "keys": {
                 "current_service_name": {
-                  "repr": "'/random_map_publisher/get_loggers'",
+                  "repr": "'/generate_plan'",
                   "type": "repr"
                 },
                 "splitter_orientation": {
-                  "repr": "'2'",
+                  "repr": "2",
                   "type": "repr"
                 }
               },
