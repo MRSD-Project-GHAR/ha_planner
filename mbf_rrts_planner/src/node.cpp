@@ -67,7 +67,7 @@ double RRTNode::getCost(RRTNodePtr node)
     double new_x = node->x + length * cos(slope);
     double new_y = node->y + length * sin(slope);
 
-    cost -= map_->atPosition(layer_name_, { new_x, new_y });
+    cost += map_->atPosition(layer_name_, { new_x, new_y });
   }
 
   // std::cout << "Cost to this node is " << cost << "\n";
