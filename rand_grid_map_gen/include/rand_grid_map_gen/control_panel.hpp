@@ -9,6 +9,7 @@
 
 /**
  * TODOs
+ * TODO: Check for bad file names while loading and saving maps
  * */
 namespace Ui
 {

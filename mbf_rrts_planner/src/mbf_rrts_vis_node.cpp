@@ -50,7 +50,8 @@ public:
     nav_msgs::Path planned_path;
     planned_path.header.frame_id = "map";
     planned_path.header.stamp = ros::Time::now();
-
+    
+    //TODO: add some height offset to the path so that it is visible in rviz
     planned_path.poses = plan_A_;
     path_pub_A_.publish(planned_path);
     planned_path.poses = plan_B_;

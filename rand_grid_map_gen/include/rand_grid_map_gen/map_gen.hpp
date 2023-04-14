@@ -30,10 +30,6 @@ struct Obstacle
 };
 
 // TODO: Do checking of slope parameter: want to avoid iterating over cells for a long time.
-// TODO: Add dynamic adding and changing of obstacles from some external interface
-// TODO: Add walls
-// TODO: Add saving and loading maps from memory
-// TODO: Add dynamic changing of other parameters as well
 class RandomMapGen
 {
 public:
