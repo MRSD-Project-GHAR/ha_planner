@@ -1,0 +1,85 @@
+Obstacles:
+  - x: 0
+    y: 4.75
+    height: 3
+    width: 0.5
+    length: 9
+    slope1: 89
+    slope2: 89
+    slope3: 89
+    slope4: 89
+    roughness: 0
+    orientation: 0
+    name: Custom Obstacle 0
+  - x: 0
+    y: -4.75
+    height: 3
+    width: 0.5
+    length: 9
+    slope1: 89
+    slope2: 89
+    slope3: 89
+    slope4: 89
+    roughness: 0
+    orientation: 0
+    name: Custom Obstacle 1
+  - x: 4.75
+    y: 0
+    height: 3
+    width: 10
+    length: 0.5
+    slope1: 89
+    slope2: 89
+    slope3: 89
+    slope4: 89
+    roughness: 0
+    orientation: 0
+    name: Custom Obstacle 2
+  - x: -4.75
+    y: 0
+    height: 3
+    width: 10
+    length: 0.5
+    slope1: 89
+    slope2: 89
+    slope3: 89
+    slope4: 89
+    roughness: 0
+    orientation: 0
+    name: Custom Obstacle 3
+  - x: 2.25
+    y: 0
+    height: 1
+    width: 0.5
+    length: 4.5
+    slope1: 89
+    slope2: 89
+    slope3: 89
+    slope4: 89
+    roughness: 0
+    orientation: 0
+    name: Custom Obstacle 4
+  - x: -1
+    y: 0
+    height: 0.75
+    width: 0.5
+    length: 2
+    slope1: 15
+    slope2: 15
+    slope3: 89
+    slope4: 89
+    roughness: 0
+    orientation: 0
+    name: Custom Obstacle 5
+  - x: 3
+    y: 3
+    height: 0
+    width: 3
+    length: 0.5
+    slope1: 89
+    slope2: 89
+    slope3: 89
+    slope4: 89
+    roughness: 0.05
+    orientation: 0
+    name: Custom Obstacle 6
