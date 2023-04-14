@@ -49,7 +49,7 @@ double RRTNode::getDistance(RRTNodePtr node)
 }
 
 // TODO: Use Bresenham's Line Algorithm for faster speed
-double RRTNode::getCost(RRTNodePtr node)
+double RRTNode::getCost(RRTNodePtr node, double distance_factor)
 {
   double total_length = getDistance(node);
 
@@ -61,7 +61,7 @@ double RRTNode::getCost(RRTNodePtr node)
   // std::cout << "Original point : " << node->x << ", " << node->y << "\n";
   // std::cout << "New point : " << x << ", " << y << "\n";
 
-  double cost = total_length;
+  double cost = distance_factor * total_length;
   for (double length = 0; length < total_length; length += resolution)
   {
     double new_x = node->x + length * cos(slope);
@@ -74,7 +74,7 @@ double RRTNode::getCost(RRTNodePtr node)
   return cost;
 }
 
-void RRTNode::setParent(RRTNodePtr parent)
+void RRTNode::setParent(RRTNodePtr parent, double distance_factor)
 {
   RRTNodePtr this_node_ptr = shared_from_this();
 
@@ -89,7 +89,7 @@ void RRTNode::setParent(RRTNodePtr parent)
   parent_ = parent;
 
   parent_->children_.push_back(this_node_ptr);
-  cost = parent_->cost + getCost(parent_);
+  cost = parent_->cost + getCost(parent_, distance_factor);
 
   // std::cout << "Parent Set! Parent: " << parent_->x << ", " << parent_->y << "; Child: " << x << ", " << y
   //           << "; Parent cost: " << parent_->cost << "; Child cost: " << cost << "\n";

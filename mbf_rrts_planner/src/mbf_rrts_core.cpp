@@ -26,13 +26,8 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
   int count = 0;
 
-  // TODO: Remove Hardcoded parameters
-  int max_iterations = 1200;
-  int seed = 10;
-  double neighbourhood_radius = 2.0;
-
   std::default_random_engine generator;
-  generator.seed(seed);
+  generator.seed(seed_);
 
   RRTree node_tree(grid_map_);
 
@@ -45,34 +40,36 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   goal_node->cost = DBL_MAX;
   // std::cout << "Added start and goal node\n";
 
-  for (int i = 0; i < max_iterations; i++)
+  std::cout << "Starting the iterations" << iterations_ << "\n";
+
+  for (int i = 0; i < iterations_; i++)
   {
     std::cout << "Iteration: " << i << "\n";
 
     RRTNode::RRTNodePtr random_node = std::make_shared<RRTNode>(grid_map_, layer_name_, generator);
     // std::cout << "Random Node formed\n";
 
-    std::vector<RRTNode::RRTNodePtr> neighbours = node_tree.findNearestNeighbours(random_node, neighbourhood_radius);
+    std::vector<RRTNode::RRTNodePtr> neighbours = node_tree.findNearestNeighbours(random_node, neighbourhood_size_);
     // std::cout << "Neighbours found. Number of neighbours found = " << neighbours.size() << "\n";
 
     RRTNode::RRTNodePtr nearest_neighbour = neighbours[0];
 
     for (auto neighbour : neighbours)
     {
-      if (neighbour->getCost(random_node) < nearest_neighbour->getCost(random_node))
+      if (neighbour->getCost(random_node, distance_factor_) < nearest_neighbour->getCost(random_node, distance_factor_))
       {
         nearest_neighbour = neighbour;
       }
     }
     // std::cout << "Nearest neighbour found. Cost to this neighbour is : " << nearest_neighbour->cost <<"\n";
 
-    if (random_node->getCost(nearest_neighbour) == DBL_MAX)
+    if (random_node->getCost(nearest_neighbour, distance_factor_) == DBL_MAX)
     {
       continue;
     }
     // std::cout << "This doesn't cross over obstacles\n\n";
 
-    random_node->setParent(nearest_neighbour);
+    random_node->setParent(nearest_neighbour, distance_factor_);
     node_tree.addNode(random_node);
 
     // std::cout << "This neighbour has now been set as a parent\n";
@@ -84,16 +81,16 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
         continue;
       }
 
-      if (neighbour->cost > (random_node->cost + neighbour->getCost(random_node)))
+      if (neighbour->cost > (random_node->cost + neighbour->getCost(random_node, distance_factor_)))
       {
-        neighbour->setParent(random_node);
+        neighbour->setParent(random_node, distance_factor_);
       }
       // std::cout << "Reordered some nodes to make them more efficient\n";
     }
 
-    if ((random_node->cost + random_node->getCost(goal_node)) < goal_node->cost)
+    if ((random_node->cost + random_node->getCost(goal_node, distance_factor_)) < goal_node->cost)
     {
-      goal_node->setParent(random_node);
+      goal_node->setParent(random_node, distance_factor_);
     }
 
     std::cout << "\n\n";
@@ -106,7 +103,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
       return 51;
     }
   }
-  std::cout << "RRT tree made. The number of nodes added are : " << nodes.size() << "\n";
+  // std::cout << "RRT tree made. The number of nodes added are : " << nodes.size() << "\n";
   std::cout << "RRT tree made. Cost is : " << goal_node->cost << "\n";
 
   if (goal_node->cost == DBL_MAX)
@@ -132,14 +129,14 @@ std::vector<RRTNode::RRTNodePtr> RRTSPlanner::findNearestNeighbours(RRTNode::RRT
 
   for (auto neighbour : nodes)
   {
-    if (neighbour->getCost(node) < threshold)
+    if (neighbour->getCost(node, distance_factor_) < threshold)
     {
       nearest_neighbours.push_back(neighbour);
       neighbours_found = true;
-      std::cout << "A Neighbour has been found within radius\n";
+      // std::cout << "A Neighbour has been found within radius\n";
     }
 
-    if (neighbour->getCost(node) < closest_neighbour->getCost(node))
+    if (neighbour->getCost(node, distance_factor_) < closest_neighbour->getCost(node, distance_factor_))
     {
       closest_neighbour = neighbour;
     }
@@ -148,7 +145,7 @@ std::vector<RRTNode::RRTNodePtr> RRTSPlanner::findNearestNeighbours(RRTNode::RRT
   if (!neighbours_found)
   {
     nearest_neighbours.push_back(closest_neighbour);
-    std::cout << "No neighbours found within this radius, returning the closest neighbour\n";
+    // std::cout << "No neighbours found within this radius, returning the closest neighbour\n";
   }
 
   return nearest_neighbours;
@@ -169,6 +166,26 @@ void RRTSPlanner::setMapPtr(GridMapPtr grid_map)
 void RRTSPlanner::setLayerName(std::string layer_name)
 {
   layer_name_ = layer_name;
+}
+
+void RRTSPlanner::setIterations(int iterations)
+{
+  iterations_ = iterations;
+}
+
+void RRTSPlanner::setNeighbourhoodSize(double neighbourhood_size)
+{
+  neighbourhood_size_ = neighbourhood_size;
+}
+
+void RRTSPlanner::setDistanceFactor(double distance_factor)
+{
+  distance_factor_ = distance_factor;
+}
+
+void RRTSPlanner::setSeed(int seed)
+{
+  seed_ = seed;
 }
 
 }  // namespace mbf_rrts_core

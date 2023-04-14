@@ -3,6 +3,9 @@
 #include <grid_map_ros/grid_map_ros.hpp>
 
 #include <ros/ros.h>
+#include <dynamic_reconfigure/server.h>
+#include <mbf_rrts_planner/mbf_rrts_plannerConfig.h>
+
 #include <nav_msgs/Path.h>
 #include <std_srvs/Empty.h>
 
@@ -45,19 +48,29 @@ public:
     goal_ = goal_msg;
   }
 
+  void reconfigureCallback(mbf_rrts_planner::mbf_rrts_plannerConfig& config, uint32_t level)
+  {
+    // planner_.setParams(config);
+    planner_.setDistanceFactor(config.distance_factor);
+    planner_.setIterations(config.iterations);
+    planner_.setSeed(config.seed);
+    planner_.setNeighbourhoodSize(config.neighbourhood_size);
+  }
+
   void publishPlan()
   {
     nav_msgs::Path planned_path;
     planned_path.header.frame_id = "map";
     planned_path.header.stamp = ros::Time::now();
-    
-    //TODO: add some height offset to the path so that it is visible in rviz
+
+    // TODO: add some height offset to the path so that it is visible in rviz
     planned_path.poses = plan_A_;
     path_pub_A_.publish(planned_path);
-    planned_path.poses = plan_B_;
-    path_pub_B_.publish(planned_path);
-    planned_path.poses = plan_C_;
-    path_pub_C_.publish(planned_path);
+    // planned_path.poses = plan_B_;
+    // path_pub_B_.publish(planned_path);
+    // planned_path.poses = plan_C_;
+    // path_pub_C_.publish(planned_path);
+  }
 
   bool planServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
   {
@@ -85,11 +98,11 @@ private:
     planner_.setLayerName("traversability_A");
     planner_.makePlan(start_, goal_, 0.1, plan_A_, cost, message);
 
-    planner_.setLayerName("traversability_B");
-    planner_.makePlan(start_, goal_, 0.1, plan_B_, cost, message);
+    // planner_.setLayerName("traversability_B");
+    // planner_.makePlan(start_, goal_, 0.1, plan_B_, cost, message);
     
-    planner_.setLayerName("traversability_B");
-    planner_.makePlan(start_, goal_, 0.1, plan_C_, cost, message);
+    // planner_.setLayerName("traversability_B");
+    // planner_.makePlan(start_, goal_, 0.1, plan_C_, cost, message);
     
   }
 
@@ -122,6 +135,12 @@ int main(int argc, char** argv)
 
   PlanVisualizer plan_visualizer(nh, nh_private);
   ros::Rate loop_rate(10);
+
+  dynamic_reconfigure::Server<mbf_rrts_planner::mbf_rrts_plannerConfig> server;
+  dynamic_reconfigure::Server<mbf_rrts_planner::mbf_rrts_plannerConfig>::CallbackType f;
+
+  f = boost::bind(&PlanVisualizer::reconfigureCallback, &plan_visualizer, _1, _2);
+  server.setCallback(f);
   // std::cout << (DBL_MAX);
   while (ros::ok())
   {

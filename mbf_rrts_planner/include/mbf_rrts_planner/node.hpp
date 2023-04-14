@@ -55,7 +55,7 @@ public:
    * @param node The pointer to the node to which the cost needs to be calculated
    * @return The cost to traverse between this node and the passed node parameter
    */
-  double getCost(RRTNodePtr node);
+  double getCost(RRTNodePtr node, double distance_factor);
 
   /**
    * @brief Sets the parent of this node.
@@ -63,7 +63,7 @@ public:
    * cases.
    * @param parent The pointer to the node that is going to be the new parent of this node
    */
-  void setParent(RRTNodePtr parent);
+  void setParent(RRTNodePtr parent, double distance_factor);
 
   /**
    * @return Returns the pointer to the current parent of this node

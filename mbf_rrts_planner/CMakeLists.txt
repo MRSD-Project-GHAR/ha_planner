@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   grid_map_ros
   mbf_abstract_core
   roscpp
+  dynamic_reconfigure
 )
 
 ## System dependencies are found with CMake's conventions
@@ -93,6 +94,10 @@ find_package(catkin REQUIRED COMPONENTS
 #   cfg/DynReconf2.cfg
 # )
 
+generate_dynamic_reconfigure_options(
+  cfg/planner_params.cfg
+)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -131,11 +136,11 @@ add_library(${PROJECT_NAME}_core
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(mbf_rrts_vis_node src/mbf_rrts_vis_node.cpp)
+add_dependencies(mbf_rrts_vis_node ${PROJECT_NAME}_gencfg)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
