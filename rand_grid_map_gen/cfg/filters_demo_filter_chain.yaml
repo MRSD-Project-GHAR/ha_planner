@@ -99,7 +99,8 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: traversability_A
-      expression:   0.5*(step(elevation-0.5) + 1) .* slope
+      # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
+      expression: (step(elevation - 0.2) + 1) .* (roughness*slope + 10*(step(slope - 0.27) + 1))
 
   - name: traversability_B
     type: gridMapFilters/MathExpressionFilter
