@@ -27,7 +27,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   int count = 0;
 
   // TODO: Remove Hardcoded parameters
-  int max_iterations = 50;
+  int max_iterations = 1200;
   int seed = 10;
   double neighbourhood_radius = 2.0;
 
@@ -50,10 +50,10 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
     std::cout << "Iteration: " << i << "\n";
 
     RRTNode::RRTNodePtr random_node = std::make_shared<RRTNode>(grid_map_, layer_name_, generator);
-    std::cout << "Random Node formed\n";
+    // std::cout << "Random Node formed\n";
 
     std::vector<RRTNode::RRTNodePtr> neighbours = node_tree.findNearestNeighbours(random_node, neighbourhood_radius);
-    std::cout << "Neighbours found. Number of neighbours found = " << neighbours.size() << "\n";
+    // std::cout << "Neighbours found. Number of neighbours found = " << neighbours.size() << "\n";
 
     RRTNode::RRTNodePtr nearest_neighbour = neighbours[0];
 
@@ -64,18 +64,18 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
         nearest_neighbour = neighbour;
       }
     }
-    std::cout << "Nearest neighbour found. Cost to this neighbour is : " << nearest_neighbour->cost <<"\n";
+    // std::cout << "Nearest neighbour found. Cost to this neighbour is : " << nearest_neighbour->cost <<"\n";
 
     if (random_node->getCost(nearest_neighbour) == DBL_MAX)
     {
       continue;
     }
-    std::cout << "This doesn't cross over obstacles\n\n";
+    // std::cout << "This doesn't cross over obstacles\n\n";
 
     random_node->setParent(nearest_neighbour);
     node_tree.addNode(random_node);
 
-    std::cout << "This neighbour has now been set as a parent\n";
+    // std::cout << "This neighbour has now been set as a parent\n";
 
     for (auto neighbour : neighbours)
     {
@@ -88,7 +88,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
       {
         neighbour->setParent(random_node);
       }
-      std::cout << "Reordered some nodes to make them more efficient\n";
+      // std::cout << "Reordered some nodes to make them more efficient\n";
     }
 
     if ((random_node->cost + random_node->getCost(goal_node)) < goal_node->cost)
