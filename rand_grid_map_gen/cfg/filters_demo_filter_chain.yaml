@@ -15,20 +15,20 @@ grid_map_filters:
   #     output_layer: ...
 
   # Fill holes in the map with inpainting.
-  - name: inpaint
-    type: gridMapCv/InpaintFilter
-    params:
-      input_layer: elevation
-      output_layer: elevation_inpainted
-      radius: 0.1
+  # - name: inpaint
+  #   type: gridMapCv/InpaintFilter
+  #   params:
+  #     input_layer: elevation
+  #     output_layer: elevation_inpainted
+  #     radius: 0.1
 
   # Reduce noise with a radial blurring filter.
-  - name: mean_in_radius
-    type: gridMapFilters/MeanInRadiusFilter
-    params:
-      input_layer: elevation_inpainted
-      output_layer: elevation_smooth
-      radius: 0.06
+  # - name: mean_in_radius
+  #   type: gridMapFilters/MeanInRadiusFilter
+  #   params:
+  #     input_layer: elevation_inpainted
+  #     output_layer: elevation_smooth
+  #     radius: 0.06
 
   # Boxblur as an alternative to the inpaint and radial blurring filter above.
   # - name: boxblur
@@ -45,9 +45,9 @@ grid_map_filters:
   - name: surface_normals
     type: gridMapFilters/NormalVectorsFilter
     params:
-      input_layer: elevation_inpainted
+      input_layer: elevation
       output_layers_prefix: normal_vectors_
-      radius: 0.15
+      radius: 0.2
       normal_vector_positive_axis: z
 
   # Add a color layer for visualization based on the surface normal.
@@ -65,22 +65,22 @@ grid_map_filters:
       expression: acos(normal_vectors_z)
 
   # Compute roughness as absolute difference from map to smoothened map.
-  - name: roughness
-    type: gridMapFilters/MathExpressionFilter
-    params:
-      output_layer: roughness
-      expression: abs(elevation_inpainted - elevation_smooth)
+  # - name: roughness
+  #   type: gridMapFilters/MathExpressionFilter
+  #   params:
+  #     output_layer: roughness
+  #     expression: abs(elevation_inpainted - elevation_smooth)
 
   # Edge detection by computing the standard deviation from slope.
-  - name: edge_detection
-    type: gridMapFilters/SlidingWindowMathExpressionFilter
-    params:
-      input_layer: slope
-      output_layer: edges
-      expression: sqrt(sumOfFinites(square(slope - meanOfFinites(slope))) ./ numberOfFinites(slope)) # Standard deviation
-      compute_empty_cells: false
-      edge_handling: crop # options: inside, crop, empty, mean
-      window_length: 0.1
+  # - name: edge_detection
+  #   type: gridMapFilters/SlidingWindowMathExpressionFilter
+  #   params:
+  #     input_layer: slope
+  #     output_layer: edges
+  #     expression: sqrt(sumOfFinites(square(slope - meanOfFinites(slope))) ./ numberOfFinites(slope)) # Standard deviation
+  #     compute_empty_cells: false
+  #     edge_handling: crop # options: inside, crop, empty, mean
+  #     window_length: 0.1
 
   # # Edge detection on elevation layer with convolution filter as alternative to filter above.
   # - name: edge_detection
@@ -100,19 +100,19 @@ grid_map_filters:
     params:
       output_layer: traversability_A
       # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
-      expression: (step(elevation - 0.2) + 1) .* (1.0*slope + 100*(step(slope - 0.27) + 1))
+      expression: 0.005*((step(elevation - 0.2) + 1) .* (1.0*slope + 100*(step(slope - 21*(3.14/180)) + 1)))
 
-  - name: traversability_B
-    type: gridMapFilters/MathExpressionFilter
-    params:
-      output_layer: traversability_B
-      expression:   0.0*(step(elevation-0.5) + 1) .* slope
+  # - name: traversability_B
+  #   type: gridMapFilters/MathExpressionFilter
+  #   params:
+  #     output_layer: traversability_B
+  #     expression:   0.0*(step(elevation-0.5) + 1) .* slope
 
-  - name: traversability_C
-    type: gridMapFilters/MathExpressionFilter
-    params:
-      output_layer: traversability_C
-      expression:   5*(step(elevation-0.5) + 1) .* slope
+  # - name: traversability_C
+  #   type: gridMapFilters/MathExpressionFilter
+  #   params:
+  #     output_layer: traversability_C
+  #     expression:   5*(step(elevation-0.5) + 1) .* slope
 
   # Set lower threshold on traversability.
   # - name: traversability_lower_threshold
