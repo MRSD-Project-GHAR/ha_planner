@@ -95,7 +95,7 @@ private:
 
   inline double angleToLengthDecrement(double angle)
   {
-    return (resolution_ / 2.0) * tanf64((M_PI / 180) * angle);
+    return resolution_ * tanf64((M_PI / 180) * angle);
   }
 
   inline double randomGenerator(double min, double max)
@@ -104,6 +104,7 @@ private:
   }
 
   void populateMap();
+  bool validIndex(grid_map::Index index);
 };
 
 }  // namespace rand_grid_map_gen

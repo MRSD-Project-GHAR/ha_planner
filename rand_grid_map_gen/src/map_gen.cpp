@@ -99,81 +99,95 @@ void RandomMapGen::populateMap()
   {
     Obstacle new_obstacle = obstacle_list[i];
 
-    for (float x = -new_obstacle.length / 2.0; x < new_obstacle.length / 2.0; x += resolution_ / 2.0)
+    grid_map::Index bottom_left;
+    grid_map::Index top_right;
+
+    grid_map_.getIndex({ new_obstacle.x + new_obstacle.length / 2.0, new_obstacle.y + new_obstacle.width / 2.0 },
+                       bottom_left);
+    grid_map_.getIndex({ new_obstacle.x - new_obstacle.length / 2.0, new_obstacle.y - new_obstacle.width / 2.0 },
+                       top_right);
+
+    int x_left = bottom_left(0);
+    int x_right = top_right(0);
+    int y_bottom = bottom_left(1);
+    int y_top = top_right(1);
+
+    for (int x = x_left; x <= x_right; x++)
     {
-      for (float y = -new_obstacle.width / 2.0; y < new_obstacle.width / 2.0; y += resolution_ / 2.0)
+      for (float y = y_bottom; y <= y_top; y++)
       {
-        if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+        if (validIndex({ x, y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+          grid_map_.at("elevation", { x, y }) =
               new_obstacle.height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
       }
     }
 
-    for (float x = -new_obstacle.length / 2.0; x < new_obstacle.length / 2.0; x += resolution_ / 2.0)
+    for (int x = x_left; x <= x_right; x++)
     {
       double current_height = new_obstacle.height;
-      double y = -new_obstacle.width / 2.0;
+      int y = y_bottom;
       while (current_height > 0)
       {
-        if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+        if (validIndex({ x, y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+          grid_map_.at("elevation", { x, y }) =
               current_height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
 
-        y -= resolution_ / 2.0;
+        y--;
         current_height -= angleToLengthDecrement(new_obstacle.slope1);
       }
     }
 
-    for (float x = -new_obstacle.length / 2.0; x < new_obstacle.length / 2.0; x += resolution_ / 2.0)
+    for (int x = x_left; x <= x_right; x++)
     {
       double current_height = new_obstacle.height;
-      double y = new_obstacle.width / 2.0;
+      int y = y_top;
       while (current_height > 0)
       {
-        if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+        if (validIndex({ x, y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) = current_height;
+          grid_map_.at("elevation", { x, y }) =
+              current_height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
 
-        y += resolution_ / 2.0;
+        y++;
         current_height -= angleToLengthDecrement(new_obstacle.slope2);
       }
     }
 
-    for (float y = -new_obstacle.width / 2.0; y < new_obstacle.width / 2.0; y += resolution_ / 2.0)
+    for (int y = y_bottom; y <= y_top; y++)
     {
-      double x = -new_obstacle.length / 2.0;
+      int x = x_left;
       double current_height = new_obstacle.height;
       while (current_height > 0)
       {
-        if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+        if (validIndex({ x, y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+          grid_map_.at("elevation", { x, y }) =
               current_height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
 
-        x -= resolution_ / 2.0;
+        x--;
         current_height -= angleToLengthDecrement(new_obstacle.slope3);
       }
     }
 
-    for (float y = -new_obstacle.width / 2.0; y < new_obstacle.width / 2.0; y += resolution_ / 2.0)
+    for (int y = y_bottom; y <= y_top; y++)
     {
-      double x = new_obstacle.length / 2.0;
+      int x = x_right;
       double current_height = new_obstacle.height;
       while (current_height > 0)
       {
-        if (grid_map_.isInside({ new_obstacle.x + x, new_obstacle.y + y }))
+        if (validIndex({ x, y }))
         {
-          grid_map_.atPosition("elevation", { new_obstacle.x + x, new_obstacle.y + y }) =
+          grid_map_.at("elevation", { x, y }) =
               current_height + randomGenerator(-new_obstacle.roughness, new_obstacle.roughness);
         }
 
-        x += resolution_ / 2.0;
+        x++;
         current_height -= angleToLengthDecrement(new_obstacle.slope4);
       }
     }
@@ -318,6 +332,15 @@ void RandomMapGen::loadMap(std::string name)
   }
 
   populateMap();
+}
+
+bool RandomMapGen::validIndex(grid_map::Index index)
+{
+  if (index(0) < 0 || index(0) >= grid_map_.getSize()(0) || index(1) < 0 || index(1) >= grid_map_.getSize()(1))
+  {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace rand_grid_map_gen
