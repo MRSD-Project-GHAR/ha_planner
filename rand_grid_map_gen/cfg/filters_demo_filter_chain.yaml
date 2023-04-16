@@ -47,7 +47,7 @@ grid_map_filters:
     params:
       input_layer: elevation
       output_layers_prefix: normal_vectors_
-      radius: 0.2
+      radius: 0.15
       normal_vector_positive_axis: z
 
   # Add a color layer for visualization based on the surface normal.
@@ -100,7 +100,7 @@ grid_map_filters:
     params:
       output_layer: traversability_A
       # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
-      expression: 0.005*((step(elevation - 0.2) + 1) .* (1.0*slope + 100*(step(slope - 21*(3.14/180)) + 1)))
+      expression: ((step(elevation - 0.2) + 1.5) .* (1.0*slope + 10000*(step(slope - 21*(3.14/180)) + 1)))
 
   # - name: traversability_B
   #   type: gridMapFilters/MathExpressionFilter

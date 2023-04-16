@@ -1,7 +1,7 @@
 seed: 3
 
-map_length: 10.0
-map_width: 10.0
+map_length: 30.0
+map_width: 15.0
 
 max_obstacle_length: 2.0
 max_obstacle_width: 2.0
