@@ -23,7 +23,9 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
   {
     rand_grid_map_gen::Obstacle obs = map_->getObstacle(i);
     ui->obstacle_num_dropdown->addItem(QString::fromStdString(obs.name));
+    obstacle_index++;
   }
+  obstacle_index++;
 
   if (map_->getNumObstacles() > 0)
   {
@@ -67,11 +69,14 @@ void MainWindow::loadMapButtonPressed()
   map_->loadMap(ui->map_name_textbox->text().toStdString());
 
   ui->obstacle_num_dropdown->clear();
+  obstacle_index = 0;
   for (int i = 0; i < map_->getNumObstacles(); i++)
   {
     rand_grid_map_gen::Obstacle obs = map_->getObstacle(i);
     ui->obstacle_num_dropdown->addItem(QString::fromStdString(obs.name));
+    obstacle_index++;
   }
+  obstacle_index++;
 
   if (map_->getNumObstacles() > 0)
   {
