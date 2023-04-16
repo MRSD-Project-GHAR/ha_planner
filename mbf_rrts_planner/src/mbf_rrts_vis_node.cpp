@@ -66,8 +66,8 @@ public:
     // TODO: add some height offset to the path so that it is visible in rviz
     planned_path.poses = plan_A_;
     path_pub_A_.publish(planned_path);
-    // planned_path.poses = plan_B_;
-    // path_pub_B_.publish(planned_path);
+    planned_path.poses = plan_B_;
+    path_pub_B_.publish(planned_path);
     // planned_path.poses = plan_C_;
     // path_pub_C_.publish(planned_path);
   }
@@ -98,8 +98,8 @@ private:
     planner_.setLayerName("traversability_A");
     planner_.makePlan(start_, goal_, 0.1, plan_A_, cost, message);
 
-    // planner_.setLayerName("traversability_B");
-    // planner_.makePlan(start_, goal_, 0.1, plan_B_, cost, message);
+    planner_.setLayerName("traversability_B");
+    planner_.makePlan(start_, goal_, 0.1, plan_B_, cost, message);
     
     // planner_.setLayerName("traversability_B");
     // planner_.makePlan(start_, goal_, 0.1, plan_C_, cost, message);
