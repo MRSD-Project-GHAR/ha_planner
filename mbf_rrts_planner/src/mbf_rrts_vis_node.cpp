@@ -14,7 +14,8 @@ class PlanVisualizer
 public:
   PlanVisualizer(ros::NodeHandle nh, ros::NodeHandle nh_private)
   {
-    map_sub_ = nh.subscribe("map_topic", 10, &PlanVisualizer::mapCallback, this);
+    map_sub_a_ = nh.subscribe("map_topic_robot_A", 10, &PlanVisualizer::mapACallback, this);
+    map_sub_b_ = nh.subscribe("map_topic_robot_B", 10, &PlanVisualizer::mapBCallback, this);
     start_sub_ = nh.subscribe("start_topic", 10, &PlanVisualizer::startPoseCallback, this);
     goal_sub_ = nh.subscribe("goal_topic", 10, &PlanVisualizer::goalPoseCallback, this);
 
@@ -31,11 +32,18 @@ public:
     goal_.pose.position.y = 0;
   }
 
-  void mapCallback(const grid_map_msgs::GridMap& map_msg)
+  void mapACallback(const grid_map_msgs::GridMap& map_msg)
   {
-    grid_map::GridMapRosConverter::fromMessage(map_msg, map_);
-    planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_));
-    received_map_ = true;
+    grid_map::GridMapRosConverter::fromMessage(map_msg, map_a_);
+    planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_a_));
+    received_map_a_ = true;
+  }
+
+  void mapBCallback(const grid_map_msgs::GridMap& map_msg)
+  {
+    grid_map::GridMapRosConverter::fromMessage(map_msg, map_b_);
+    planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_b_));
+    received_map_b_ = true;
   }
 
   void startPoseCallback(const geometry_msgs::PoseStamped& start_msg)
@@ -74,7 +82,7 @@ public:
 
   bool planServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
   {
-    if (received_map_)
+    if (received_map_a_ && received_map_b_)
     {
       makeAndPublishPlan();
       return true;
@@ -96,9 +104,11 @@ private:
     plan_C_.clear();
 
     planner_.setLayerName("traversability_A");
+    planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_a_));
     planner_.makePlan(start_, goal_, 0.1, plan_A_, cost, message);
 
     planner_.setLayerName("traversability_B");
+    planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_b_));
     planner_.makePlan(start_, goal_, 0.1, plan_B_, cost, message);
     
     // planner_.setLayerName("traversability_B");
@@ -106,13 +116,14 @@ private:
     
   }
 
-  grid_map::GridMap map_;
+  grid_map::GridMap map_a_;
+  grid_map::GridMap map_b_;
   mbf_rrts_core::RRTSPlanner planner_;
-  mbf_rrts_core::GridMapPtr map_ptr;
   geometry_msgs::PoseStamped start_;
   geometry_msgs::PoseStamped goal_;
 
-  ros::Subscriber map_sub_;
+  ros::Subscriber map_sub_a_;
+  ros::Subscriber map_sub_b_;
   ros::Subscriber start_sub_;
   ros::Subscriber goal_sub_;
   ros::Publisher path_pub_A_;
@@ -123,7 +134,8 @@ private:
   std::vector<geometry_msgs::PoseStamped> plan_A_;
   std::vector<geometry_msgs::PoseStamped> plan_B_;
   std::vector<geometry_msgs::PoseStamped> plan_C_;
-  bool received_map_;
+  bool received_map_a_;
+  bool received_map_b_;
 };
 
 int main(int argc, char** argv)
