@@ -32,6 +32,8 @@ protected:
   void changeButtonPressed();
   void saveMapButtonPressed();
   void loadMapButtonPressed();
+  void robotAParamButtonPressed();
+  void robotBParamButtonPressed();
 
 private:
   Ui::MainWindow* ui;
@@ -40,6 +42,8 @@ private:
   ros::Publisher grid_map_publisher_;
 
   int obstacle_index = 0;
+
+  std::string yaml_savepath;
 
   void changeObstacleFields(rand_grid_map_gen::Obstacle obs);
   void clearObstacleFields();
