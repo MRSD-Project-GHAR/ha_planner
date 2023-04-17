@@ -79,13 +79,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>Orientation (degrees)</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QLabel" name="label">
             <property name="text">
              <string>Length</string>
@@ -134,13 +127,6 @@
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QLabel" name="label_11">
-            <property name="text">
-             <string>Surface roughness</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>
@@ -150,9 +136,6 @@
           </item>
           <item>
            <widget class="QLineEdit" name="y"/>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="orientation"/>
           </item>
           <item>
            <widget class="QLineEdit" name="length"/>
@@ -174,9 +157,6 @@
           </item>
           <item>
            <widget class="QLineEdit" name="slope_4"/>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="roughness"/>
           </item>
          </layout>
         </item>

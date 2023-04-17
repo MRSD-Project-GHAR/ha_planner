@@ -44,7 +44,7 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
   ui->slope_3->setValidator(new QDoubleValidator(0.0, 89.0, 2, this));
   ui->slope_4->setValidator(new QDoubleValidator(0.0, 89.0, 2, this));
 
-  ui->orientation->setValidator(new QDoubleValidator(0.0, 360.0, 2, this));
+  // ui->orientation->setValidator(new QDoubleValidator(0.0, 360.0, 2, this));
 
   grid_map_publisher_ = nh.advertise<grid_map_msgs::GridMap>("dummy_map", 1000);
 }
@@ -125,9 +125,11 @@ void MainWindow::addButtonPressed()
   new_obs.slope3 = ui->slope_3->text().toDouble();
   new_obs.slope4 = ui->slope_4->text().toDouble();
 
-  new_obs.orientation = ui->orientation->text().toDouble();
+  // new_obs.orientation = ui->orientation->text().toDouble();
+  new_obs.orientation = 0;
 
-  new_obs.roughness = ui->roughness->text().toDouble();
+  // new_obs.roughness = ui->roughness->text().toDouble();
+  new_obs.roughness = 0;
 
   new_obs.name = "Custom Obstacle " + std::to_string(obstacle_index);
   obstacle_index++;
@@ -154,9 +156,9 @@ void MainWindow::changeButtonPressed()
   obs.slope3 = ui->slope_3->text().toDouble();
   obs.slope4 = ui->slope_4->text().toDouble();
 
-  obs.orientation = ui->orientation->text().toDouble();
+  // obs.orientation = ui->orientation->text().toDouble();
 
-  obs.roughness = ui->roughness->text().toDouble();
+  // obs.roughness = ui->roughness->text().toDouble();
 
   obs.name = ui->obstacle_num_dropdown->currentText().toStdString();
 
@@ -178,9 +180,9 @@ void MainWindow::changeObstacleFields(rand_grid_map_gen::Obstacle obs)
   ui->slope_3->setText(QString::number(obs.slope3));
   ui->slope_4->setText(QString::number(obs.slope4));
 
-  ui->orientation->setText(QString::number(obs.orientation));
+  // ui->orientation->setText(QString::number(obs.orientation));
 
-  ui->roughness->setText(QString::number(obs.roughness));
+  // ui->roughness->setText(QString::number(obs.roughness));
 }
 
 void MainWindow::clearObstacleFields()
@@ -197,9 +199,9 @@ void MainWindow::clearObstacleFields()
   ui->slope_3->clear();
   ui->slope_4->clear();
 
-  ui->orientation->clear();
+  // ui->orientation->clear();
 
-  ui->roughness->clear();
+  // ui->roughness->clear();
 }
 
 #include "rand_grid_map_gen/moc_control_panel.cpp"
