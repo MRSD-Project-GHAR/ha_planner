@@ -7,7 +7,7 @@ grid_map_filters:
   - name: buffer_normalizer
     type: gridMapFilters/BufferNormalizerFilter
 
-  - name: surface_normals
+  - name: surface_normals_original
     type: gridMapFilters/NormalVectorsFilter
     params:
       input_layer: elevation
@@ -22,12 +22,45 @@ grid_map_filters:
       output_layer: original_slope
       expression: acos(normal_vectors_z)
 
-  - name: slope_factor_A
+  - name: elevation_threshold_A
     type: gridMapFilters/MathExpressionFilter
     params:
-      output_layer: slope_factor_A
-      # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
-      expression: (step(elevation) .* (step(elevation - 0.2))) + 1
+      output_layer: elevation_threshold_A
+      expression: ((step(elevation - 0.2) + 2) .* (step(original_slope - 20*(3.14/180)) + 2)) - 1
+
+  - name: elevation_threshold_B
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: elevation_threshold_B
+      expression: ((step(elevation - 0.02) + 2) .* (step(original_slope - 15*(3.14/180)) + 2)) - 1
+
+  - name: elevation_threshold_A_clamped
+    type: gridMapFilters/ThresholdFilter
+    params:
+      condition_layer: elevation_threshold_A
+      output_layer: elevation_threshold_A
+      upper_threshold: 0.1 # alternative: upper_threshold
+      set_to: 1.0 # # Other uses: .nan, .inf
+
+  - name: elevation_threshold_B_clamped
+    type: gridMapFilters/ThresholdFilter
+    params:
+      condition_layer: elevation_threshold_B
+      output_layer: elevation_threshold_B
+      upper_threshold: 0.1 # alternative: upper_threshold
+      set_to: 1.0 # # Other uses: .nan, .inf
+
+  - name: final_elevation_A
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: elevation_A
+      expression: elevation_threshold_A .* elevation
+
+  - name: final_elevation_B
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: elevation_B
+      expression: elevation_threshold_B .* elevation
 
   - name: slope_factor_A
     type: gridMapFilters/MathExpressionFilter
@@ -59,24 +92,36 @@ grid_map_filters:
       lower_threshold: 1.0 # alternative: upper_threshold
       set_to: 1.0 # # Other uses: .nan, .inf
 
+  - name: surface_normals_A
+    type: gridMapFilters/NormalVectorsFilter
+    params:
+      input_layer: elevation_A
+      output_layers_prefix: A_normal_vectors_
+      radius: 0.2
+      normal_vector_positive_axis: z
+      parallelization_enabled: true
+
+  - name: surface_normals_B
+    type: gridMapFilters/NormalVectorsFilter
+    params:
+      input_layer: elevation_B
+      output_layers_prefix: B_normal_vectors_
+      radius: 0.2
+      normal_vector_positive_axis: z
+      parallelization_enabled: true
+
   # Compute slope from surface normal.
-  - name: slope
+  - name: slope_A
     type: gridMapFilters/MathExpressionFilter
     params:
-      output_layer: slope
-      expression: acos(normal_vectors_z)
+      output_layer: slope_A
+      expression: acos(A_normal_vectors_z)
 
-
-  # Edge detection by computing the standard deviation from slope.
-  - name: edge_detection
-    type: gridMapFilters/SlidingWindowMathExpressionFilter
+  - name: slope_B
+    type: gridMapFilters/MathExpressionFilter
     params:
-      input_layer: slope
-      output_layer: edges
-      expression: sqrt(sumOfFinites(square(slope - meanOfFinites(slope))) ./ numberOfFinites(slope)) # Standard deviation
-      compute_empty_cells: false
-      edge_handling: crop # options: inside, crop, empty, mean
-      window_length: 0.1
+      output_layer: slope_B
+      expression: acos(A_normal_vectors_z)
 
   # Compute traversability as normalized weighted sum of slope and roughness.
   - name: traversability_A
@@ -84,7 +129,7 @@ grid_map_filters:
     params:
       output_layer: traversability_A
       # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
-      expression: (slope_factor_A .* (1.0*slope + 10000*(step(slope - 20*(3.14/180)) + 1)))
+      expression: (slope_factor_A .* (1.0*slope_A + 10000*(step(slope_A - 20*(3.14/180)) + 1)))
 
   # Compute traversability as normalized weighted sum of slope and roughness.
   - name: traversability_B
@@ -92,5 +137,5 @@ grid_map_filters:
     params:
       output_layer: traversability_B
       # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
-      expression: (slope_factor_B .* (1.0*slope + 10000*(step(slope - 15*(3.14/180)) + 1)))
+      expression: (slope_factor_B .* (1.0*slope_B + 10000*(step(slope_B - 15*(3.14/180)) + 1)))
 
