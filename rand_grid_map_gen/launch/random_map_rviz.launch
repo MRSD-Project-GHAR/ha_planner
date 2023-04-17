@@ -11,7 +11,7 @@
   	<!-- Output topic -->
   	<param name="output_topic" value="dummy_filtered_map" />
   	<!-- Load grid map filter chain configuration -->
-    <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/filters_demo_filter_chain.yaml" />
+    <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/filters_demo_filter_chain_experiment.yaml" />
   </node>
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" />
