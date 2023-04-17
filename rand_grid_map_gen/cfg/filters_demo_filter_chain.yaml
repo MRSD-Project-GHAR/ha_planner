@@ -42,27 +42,56 @@ grid_map_filters:
   #     window_size: 5 # optional
 
   # Compute surface normals.
-  - name: surface_normals
+  - name: elevation_filtered_A
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: elevation_filtered_A
+      # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
+      expression: (step(elevation - 0.2) + 1.0) .* elevation
+
+  - name: elevation_filtered_B
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: elevation_filtered_B
+      # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
+      expression: (step(elevation - 0.02) + 1.0) .* elevation
+
+
+  - name: surface_normals_A
     type: gridMapFilters/NormalVectorsFilter
     params:
-      input_layer: elevation
-      output_layers_prefix: normal_vectors_
+      input_layer: elevation_filtered_A
+      output_layers_prefix: A_normal_vectors_
+      radius: 0.2
+      normal_vector_positive_axis: z
+
+  - name: surface_normals_B
+    type: gridMapFilters/NormalVectorsFilter
+    params:
+      input_layer: elevation_filtered_B
+      output_layers_prefix: B_normal_vectors_
       radius: 0.2
       normal_vector_positive_axis: z
 
   # Add a color layer for visualization based on the surface normal.
-  - name: normal_color_map
-    type: gridMapFilters/NormalColorMapFilter
-    params:
-      input_layers_prefix: normal_vectors_
-      output_layer: normal_color
+  # - name: normal_color_map
+  #   type: gridMapFilters/NormalColorMapFilter
+  #   params:
+  #     input_layers_prefix: normal_vectors_
+  #     output_layer: normal_color
 
   # Compute slope from surface normal.
-  - name: slope
+  - name: slope_A
     type: gridMapFilters/MathExpressionFilter
     params:
-      output_layer: slope
-      expression: acos(normal_vectors_z)
+      output_layer: slope_A
+      expression: acos(A_normal_vectors_z)
+
+  - name: slope_B
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: slope_B
+      expression: acos(B_normal_vectors_z)
 
   # Compute roughness as absolute difference from map to smoothened map.
   # - name: roughness
@@ -100,7 +129,7 @@ grid_map_filters:
     params:
       output_layer: traversability_A
       # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
-      expression: ((step(elevation - 0.2) + 1.5) .* (1.0*slope + 10000*(step(slope - 20*(3.14/180)) + 1)))
+      expression: 1.0*slope_A + 10000*(step(slope_A - 20*(3.14/180)) + 1)
 
   # Compute traversability as normalized weighted sum of slope and roughness.
   - name: traversability_B
@@ -108,7 +137,7 @@ grid_map_filters:
     params:
       output_layer: traversability_B
       # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
-      expression: ((step(elevation - 0.02) + 1.5) .* (1.0*slope + 10000*(step(slope - 15*(3.14/180)) + 1)))
+      expression: 1.0*slope_B + 10000*(step(slope_B - 15*(3.14/180)) + 1)
 
   # - name: traversability_B
   #   type: gridMapFilters/MathExpressionFilter
