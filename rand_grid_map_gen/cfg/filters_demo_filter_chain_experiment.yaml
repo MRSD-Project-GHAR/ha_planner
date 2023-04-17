@@ -66,14 +66,12 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: slope_factor_A
-      # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
       expression: (step(elevation) .* (step(elevation - 0.2))) + 1
 
   - name: slope_factor_B
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: slope_factor_B
-      # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
       expression: (step(elevation) .* (step(elevation - 0.02))) + 1
 
   - name: slope_factor_A_clamped
@@ -128,14 +126,12 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: traversability_A
-      # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
-      expression: (slope_factor_A .* (1.0*slope_A + 10000*(step(slope_A - 20*(3.14/180)) + 1)))
+      expression: (slope_factor_A .* (5.0*slope_A + 10000*(step(slope_A - 20*(3.14/180)) + 1)))
 
   # Compute traversability as normalized weighted sum of slope and roughness.
   - name: traversability_B
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: traversability_B
-      # Expression would be: (step(elevation - FSOH) + 1) .* (Slope_cost_factor * slope + max_cost * (step(slope - MTS) + 1))
       expression: (slope_factor_B .* (1.0*slope_B + 10000*(step(slope_B - 15*(3.14/180)) + 1)))
 
