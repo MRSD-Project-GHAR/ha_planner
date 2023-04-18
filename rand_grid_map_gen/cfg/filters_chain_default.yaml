@@ -73,9 +73,9 @@ grid_map_filters:
       expression: acos(normal_vectors_z)
 
   # Compute traversability as normalized weighted sum of slope and roughness.
-  - name: traversability_A
+  - name: traversability
     type: gridMapFilters/MathExpressionFilter
     params:
-      output_layer: traversability_A
+      output_layer: traversability
       expression: (slope_factor .* (5.0*slope + 10000*(step(slope - 20*(3.14/180)) + 1)))
 

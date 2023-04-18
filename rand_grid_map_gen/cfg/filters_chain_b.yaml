@@ -23,7 +23,7 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: elevation_threshold
-      expression: ((step(elevation - 0.020000) + 2) .* (-step(original_slope - 20.000000*(3.14/180)) + 2)) - 1
+      expression: ((step(elevation - 0.020000) + 2) .* (-step(original_slope - 15.000000*(3.14/180)) + 2)) - 1
   - name: elevation_threshold_clamped
     type: gridMapFilters/ThresholdFilter
     params:
@@ -61,8 +61,8 @@ grid_map_filters:
     params:
       output_layer: slope
       expression: acos(normal_vectors_z)
-  - name: traversability_A
+  - name: traversability
     type: gridMapFilters/MathExpressionFilter
     params:
-      output_layer: traversability_A
-      expression: (slope_factor .* (1.000000*slope + 10000*(step(slope - 20.000000*(3.14/180)) + 1)))
+      output_layer: traversability
+      expression: (slope_factor .* (1.000000*slope + 10000*(step(slope - 15.000000*(3.14/180)) + 1)))

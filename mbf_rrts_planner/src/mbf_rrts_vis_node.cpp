@@ -103,11 +103,10 @@ private:
     plan_B_.clear();
     plan_C_.clear();
 
-    planner_.setLayerName("traversability_A");
+    planner_.setLayerName("traversability");
     planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_a_));
     planner_.makePlan(start_, goal_, 0.1, plan_A_, cost, message);
 
-    planner_.setLayerName("traversability_B");
     planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_b_));
     planner_.makePlan(start_, goal_, 0.1, plan_B_, cost, message);
     
