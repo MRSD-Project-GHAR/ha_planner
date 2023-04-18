@@ -44,8 +44,12 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
   for (int i = 0; i < iterations_; i++)
   {
-    std::cout << "Iteration: " << i << "\n";
-
+    
+    if (i % 50 == 0)
+    {
+      std::cout << "Iteration: " << i << "\n";
+    }
+    
     RRTNode::RRTNodePtr random_node = std::make_shared<RRTNode>(grid_map_, layer_name_, generator);
     // std::cout << "Random Node formed\n";
 
@@ -93,7 +97,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
       goal_node->setParent(random_node, distance_factor_);
     }
 
-    std::cout << "\n\n";
+    // std::cout << "\n\n";
 
     // std::cout << "Time taken: " << exec_time.count() << "\n";
 
