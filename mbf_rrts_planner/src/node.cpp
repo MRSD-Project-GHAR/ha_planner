@@ -108,6 +108,8 @@ geometry_msgs::PoseStamped RRTNode::getPoseStampedMsg()
   node.pose.position.y = y;
   node.pose.position.z = 0.5;
 
+  node.pose.orientation.w = 1;
+
   return node;
 }
 

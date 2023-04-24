@@ -1,0 +1,25 @@
+Obstacles:
+  - x: 4
+    y: 0.3
+    height: 1
+    width: 0.8
+    length: 0.8
+    slope1: 89
+    slope2: 89
+    slope3: 89
+    slope4: 89
+    roughness: 4.637224614062629e-310
+    orientation: 0
+    name: Custom Obstacle 6
+  - x: 2
+    y: -0.2
+    height: 1
+    width: 0.8
+    length: 0.8
+    slope1: 89
+    slope2: 89
+    slope3: 89
+    slope4: 89
+    roughness: 4.637224614062629e-310
+    orientation: 0
+    name: Custom Obstacle 7

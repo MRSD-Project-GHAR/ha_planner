@@ -11,10 +11,12 @@
 class PlanExecutor
 {
 public:
-  PlanExecutor(ros::NodeHandle nh, ros::NodeHandle nh_private) : action_client_("move_base", true)
+  PlanExecutor(ros::NodeHandle nh, ros::NodeHandle nh_private) : action_client_("locobot/move_base", true)
 
   {
+    ROS_INFO_STREAM("Waiting for move_base action server to start.");
     action_client_.waitForServer();
+    ROS_INFO_STREAM("move_base action server started.");
     map_sub_ = nh.subscribe("map_topic", 10, &PlanExecutor::mapCallback, this);
     start_sub_ = nh.subscribe("start_topic", 10, &PlanExecutor::startPoseCallback, this);
     goal_sub_ = nh.subscribe("goal_topic", 10, &PlanExecutor::goalPoseCallback, this);
@@ -35,7 +37,6 @@ public:
   {
     if (received_map_)
     {
-      
       makePlan();
       plan_made_ = true;
       return true;
@@ -86,6 +87,11 @@ public:
     planner_.setLayerName("traversability");
     planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_));
     planner_.makePlan(start_, goal_, 0.1, plan_, cost, message);
+
+    for (auto pose : plan_)
+    {
+      ROS_INFO_STREAM(pose);
+    }
   }
 
   void executePlan()
@@ -94,8 +100,14 @@ public:
     {
       move_base_msgs::MoveBaseGoal goal;
       goal.target_pose = pose;
+      goal.target_pose.header.frame_id = "map";
+      
+      ROS_INFO_STREAM("Sending new  ");
+      ROS_INFO_STREAM(goal.target_pose);
+
       action_client_.sendGoal(goal);
       action_client_.waitForResult();
+      ROS_INFO_STREAM("Goal reached");
     }
   }
 
