@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   mbf_abstract_core
   roscpp
   dynamic_reconfigure
+  move_base_msgs
+  actionlib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -140,6 +142,7 @@ add_library(${PROJECT_NAME}_core
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(mbf_rrts_vis_node src/mbf_rrts_vis_node.cpp)
+add_executable(mbf_rrts_exec_node src/rrts_mb_action_server.cpp)
 add_dependencies(mbf_rrts_vis_node ${PROJECT_NAME}_gencfg)
 
 ## Rename C++ executable without prefix
@@ -154,6 +157,11 @@ add_dependencies(mbf_rrts_vis_node ${PROJECT_NAME}_gencfg)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(mbf_rrts_vis_node
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}_core
+)
+
+target_link_libraries(mbf_rrts_exec_node
   ${catkin_LIBRARIES}
   ${PROJECT_NAME}_core
 )

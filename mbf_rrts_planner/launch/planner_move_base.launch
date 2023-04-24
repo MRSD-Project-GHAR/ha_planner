@@ -1,0 +1,25 @@
+<launch>
+
+    <node pkg="mbf_rrts_planner" type="mbf_rrts_vis_node" name="rrts_planner" output="screen">
+        <remap from="map_topic_" to="grid_map_filter_A/dummy_filtered_map" />
+    </node>
+
+    <node pkg="rand_grid_map_gen" type="map_gen_pub_node" name="random_map_publisher"
+        output="screen">
+        <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/map_params.yaml" />
+        <param name="yaml_file_name" value="$(find rand_grid_map_gen)/cfg/" />
+    </node>
+
+    <node pkg="grid_map_demos" type="filters_demo" name="grid_map_filter" output="screen">
+        <!-- Input topic -->
+        <param name="input_topic" value="/random_map_publisher/dummy_map" />
+        <!-- Output topic -->
+        <param name="output_topic" value="dummy_filtered_map" />
+        <!-- Load grid map filter chain configuration -->
+        <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/filters_chain.yaml" />
+    </node>
+
+    <node name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" />
+
+</launch>
