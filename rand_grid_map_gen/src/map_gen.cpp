@@ -261,7 +261,14 @@ void RandomMapGen::saveMap(std::string name)
 {
   static int count = 0;
   YAML::Emitter em;
+
   em << YAML::BeginMap;
+  em << YAML::Key << "Map_length";
+  em << YAML::Value << map_length_;
+
+  em << YAML::Key << "Map_width";
+  em << YAML::Value << map_width_;
+
   em << YAML::Key << "Obstacles";
   em << YAML::Value;
   em << YAML::BeginSeq;
@@ -312,7 +319,15 @@ void RandomMapGen::loadMap(std::string name)
     return;
   }
 
-  std::cout << map_params["Obstacles"].size();
+  // std::cout << map_params["Obstacles"].size();
+
+  map_length_ = map_params["Map_length"].as<double>();
+  map_width_ = map_params["Map_width"].as<double>();
+
+  ROS_INFO("Map length: %lf", map_length_);
+  ROS_INFO("Map width: %lf", map_width_);
+
+  grid_map_.setGeometry({ map_length_, map_width_ }, resolution_);
 
   obstacle_list.clear();
 
