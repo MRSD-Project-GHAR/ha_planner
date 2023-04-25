@@ -301,7 +301,16 @@ void RandomMapGen::saveMap(std::string name)
 
 void RandomMapGen::loadMap(std::string name)
 {
-  YAML::Node map_params = YAML::LoadFile(yaml_savepath + name);
+  YAML::Node map_params;
+  try
+  {
+    map_params = YAML::LoadFile(yaml_savepath + name);
+  }
+  catch (YAML::BadFile e)
+  {
+    ROS_ERROR_STREAM("This file doesn't exist on disk! Can't load map.");
+    return;
+  }
 
   std::cout << map_params["Obstacles"].size();
 
