@@ -1,3 +1,5 @@
+Map_length: 20.0 
+Map_width: 20.0
 Obstacles:
   - x: 0
     y: 9.800000000000001

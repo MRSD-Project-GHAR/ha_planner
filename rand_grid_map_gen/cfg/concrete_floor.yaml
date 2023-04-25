@@ -1,3 +1,5 @@
+Map_length: 12.0 
+Map_width: 2.0
 Obstacles:
   - x: 3.5
     y: 0.5
