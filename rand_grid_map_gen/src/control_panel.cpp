@@ -136,7 +136,7 @@ void MainWindow::addButtonPressed()
   // new_obs.roughness = ui->roughness->text().toDouble();
   new_obs.roughness = 0;
 
-  new_obs.name = "Custom Obstacle " + std::to_string(obstacle_index);
+  new_obs.name = "Custom Obstacle " + std::to_string(obstacle_index + 10);
   obstacle_index++;
 
   map_->addObstacle(new_obs);
