@@ -1,0 +1,9 @@
+<launch>
+
+  <node pkg="mbf_rrts_planner" type="mbf_rrts_vis_separate_node" name="rrts_planner_B" output="screen" >
+    <remap from="map_topic" to="grid_map_filter_B/dummy_filtered_map"/>
+    <remap from="planned_path" to="planned_path_B" />
+    <remap from="generate_plan" to="generate_plan_B" />
+  </node>
+  
+</launch>

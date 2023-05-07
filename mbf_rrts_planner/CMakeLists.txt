@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(rand_grid_map_gen)
+project(mbf_rrts_planner)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -9,17 +9,12 @@ project(rand_grid_map_gen)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   grid_map_ros
+  mbf_abstract_core
   roscpp
-  visualization_msgs
-  std_srvs
+  dynamic_reconfigure
+  move_base_msgs
+  actionlib
 )
-
-find_package(PkgConfig)
-pkg_check_modules(YAMLCPP REQUIRED yaml-cpp>=0.5)
-
-set(CMAKE_PREFIX_PATH "/home/kshitij/Qt/6.5.0/gcc_64")
-
-find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -78,7 +73,7 @@ find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   visualization_msgs
+#   std_msgs  # Or other packages containing msgs
 # )
 
 ################################################
@@ -101,6 +96,10 @@ find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
 #   cfg/DynReconf2.cfg
 # )
 
+generate_dynamic_reconfigure_options(
+  cfg/planner_params.cfg
+)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -112,8 +111,8 @@ find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
  INCLUDE_DIRS include
- LIBRARIES rand_grid_map_gen
- CATKIN_DEPENDS grid_map_ros roscpp visualization_msgs std_srvs
+ LIBRARIES mbf_rrts_core
+ CATKIN_DEPENDS grid_map_ros mbf_abstract_core roscpp
 #  DEPENDS system_lib
 )
 
@@ -124,54 +123,53 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-add_library(map_gen
-  src/map_gen.cpp
+add_library(${PROJECT_NAME}_core
+  src/node.cpp
+  src/mbf_rrts_core.cpp
+  src/rrtree.cpp
 )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(map_gen_pub_node src/map_gen_pub_node.cpp)
+add_executable(mbf_rrts_vis_node src/mbf_rrts_vis_node.cpp)
+add_executable(mbf_rrts_vis_separate_node src/mbf_rrts_vis_separate_node.cpp)
+add_executable(mbf_rrts_exec_node src/rrts_mb_action_server.cpp)
+add_dependencies(mbf_rrts_vis_node ${PROJECT_NAME}_gencfg)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-
-add_library(ui src/control_panel.cpp)
-
-set_target_properties(ui PROPERTIES
-    AUTOUIC ON
-    AUTOMOC ON
-    AUTOUIC_SEARCH_PATHS forms
-)
-
-target_link_libraries(ui PUBLIC Qt6::Core Qt6::Widgets)
+# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(map_gen
+target_link_libraries(mbf_rrts_vis_node
   ${catkin_LIBRARIES}
-  ${YAMLCPP_LIBRARIES}
+  ${PROJECT_NAME}_core
 )
 
-target_link_libraries(map_gen_pub_node
+target_link_libraries(mbf_rrts_vis_separate_node
   ${catkin_LIBRARIES}
-  map_gen
-  ui
+  ${PROJECT_NAME}_core
+)
+
+target_link_libraries(mbf_rrts_exec_node
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}_core
 )
 
 #############
@@ -221,7 +219,7 @@ target_link_libraries(map_gen_pub_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_rand_grid_map_gen.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_mbf_rrts_planner.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

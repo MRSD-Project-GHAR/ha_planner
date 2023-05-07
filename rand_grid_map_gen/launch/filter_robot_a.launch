@@ -1,0 +1,12 @@
+<launch>
+
+  <node pkg="grid_map_demos" type="filters_demo" name="grid_map_filter_A" output="screen">
+    <!-- Input topic -->
+  	<param name="input_topic" value="/random_map_publisher/dummy_map" />
+  	<!-- Output topic -->
+  	<param name="output_topic" value="dummy_filtered_map" />
+  	<!-- Load grid map filter chain configuration -->
+    <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/filters_chain_a.yaml" />
+  </node>
+
+</launch>
