@@ -25,6 +25,7 @@ public:
   /**
    * @brief Constructor for constructing a randomly initialized node
    * @param map The pointer to the grid map on which this node is going to be created
+   * @param layer_name The name of the layer in the grid map that will be accessed for planning
    * @param generator The random generator object that will be used to generate the node's parameters. This allows you
    * to pass a seeded generator for repeatability
    */
@@ -33,7 +34,8 @@ public:
   /**
    * @brief Constructor for constructing a Node initialized from a ROS PoseStamped message
    * @param map The pointer to the grid map on which this node is going to be created
-   * @param generator The PoseStamped message used to intialize the Node
+   * @param layer_name The name of the layer in the grid map that will be accessed for planning
+   * @param pose The PoseStamped message used to intialize the Node
    */
   RRTNode(GridMapPtr map, std::string layer_name, const geometry_msgs::PoseStamped& pose);
 
@@ -44,7 +46,7 @@ public:
 
   /**
    * @brief Gives the physical euclidean distance to another node
-   * @deprecated For our problem statement, just the distance would not suffice
+   * @deprecated For our problem statement, just the distance would not suffice, so this function is deprecated
    * @param node The pointer to the node to which the distance needs to be calculated
    * @return The distance between this node and the passed node parameter
    */
@@ -74,8 +76,8 @@ public:
    * @return Returns the node data converted to a ROS PoseStamped message
    */
   geometry_msgs::PoseStamped getPoseStampedMsg();
+  
   double cost;
-
   double x, y;
 
 private:
