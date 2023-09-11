@@ -77,6 +77,7 @@ private:
    * @details This function finds the neighbours nearest to the given node. The function checks for nodes that are
    * within a certain neighbourhood of the given node. If no such node exists, it just returns the closest node to the
    * given node. Hence, it is always guaranteed to return at least one neighbour if the tree is not empty.
+   * @deprecated This function is not used anymore. It has been replaced by the function findNearestNeighbours in RRTree
    * @param node The node whose nearest neighbours need to be found
    * @param neighbourhood_size The size of the bounding box within which neighbours have to be found
    * @return A vector of nearest neighbours.

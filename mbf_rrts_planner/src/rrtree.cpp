@@ -18,7 +18,6 @@ RRTree::RRTree(GridMapPtr grid_map)
   long int num_cells_x = std::ceil(x_len / (resolution * scale_up_factor_));
   long int num_cells_y = std::ceil(y_len / (resolution * scale_up_factor_));
 
-  std::list<RRTNode::RRTNodePtr> empty_node_list;
   std::vector<std::list<RRTNode::RRTNodePtr>> empty_row(num_cells_y + 1);
 
   node_map_ = NodeMap(num_cells_x + 1, empty_row);
