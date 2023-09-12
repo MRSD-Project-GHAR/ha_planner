@@ -11,7 +11,7 @@ RandomMapGen::RandomMapGen(ros::NodeHandle& nh_private)
 
   grid_map_.setBasicLayers({ "elevation" });
   grid_map_.setGeometry({ map_length_, map_width_ }, resolution_);
-  grid_map_.setFrameId("map");
+  grid_map_.setFrameId("odom");
 
   nh_private.param("yaml_file_name", yaml_savepath, std::string("/opt/ros/"));
 

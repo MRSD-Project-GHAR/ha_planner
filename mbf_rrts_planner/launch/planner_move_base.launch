@@ -20,6 +20,6 @@
     </node>
 
     <node name="rviz" pkg="rviz" type="rviz"
-        args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" />
+        args="-d $(find rand_grid_map_gen)/rviz/grid_map_move_base_sim.rviz" />
 
 </launch>
