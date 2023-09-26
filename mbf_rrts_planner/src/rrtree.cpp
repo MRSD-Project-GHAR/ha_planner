@@ -1,4 +1,6 @@
 #include "mbf_rrts_planner/rrtree.hpp"
+#include "CubicSpline.hpp"
+#include <tf/transform_datatypes.h>
 
 namespace mbf_rrts_core
 {
@@ -38,6 +40,72 @@ void RRTree::generatePlanFromTree(std::vector<geometry_msgs::PoseStamped>& plan,
 
   // std::cout << "Plan made with " << plan.size() << " nodes\n";
   reverse(plan.begin(), plan.end());
+}
+
+void RRTree::SmoothPath(std::vector<geometry_msgs::PoseStamped>& plan){
+  // The path smoothing can be implemented in two ways:
+  // 1) By iteratively sampling points between nodes on the overall path and then checking if
+  // two points could be connected to reduce the overall path length
+
+  // This method will not do much because the path that is generated has already been checked for collisions...
+  // std::vector<geometry_msgs::PoseStamped> smooth_path;
+  // smooth_path.push_back(plan[0]);
+
+  // for (size_t i = 1; i < plan.size() - i; ++i){
+  //   geometry_msgs::PoseStamped current_pt = plan[i];
+  //   geometry_msgs::PoseStamped next_point = plan[i+1];
+  // }
+
+  // 2) Extract waypoints from the path, waypoints will serve as control points for the path-smoothing
+  // algorithm. Choose these points at regular intervals along the path
+  // for each waypoint, calculate the orientation that the path should have at that point.
+  // this can be computed using the direction of the path at that point (tangent vector at each waypoint by looking at the neighboring waypoints)
+  // Can use various path-smoothing techniques: Bezier Curvers or polynomial interpolation
+
+  //Sample waypoints along path
+  const double waypt_int = 0.1; //intervals at which the waypoints are sampled froom the path
+  std::vector<geometry_msgs::PoseStamped> smooth_path;
+  std::vector<geometry_msgs::PoseStamped> waypoints;
+  std::vector<geometry_msgs::PoseStamped> spline_pt;
+   
+
+  //Get waypoints
+  for (size_t i=0; i<plan.size(); i++){
+    waypoints.push_back(plan[i]);
+  
+  //Calculate the orientation that the path should have at that point using the tangent vector at each waypoint by looking at the neighboring waypoints
+  }
+  for (size_t i = 0; i <plan.size(); i++){
+    smooth_path.push_back(plan[i]); 
+    if (i<plan.size() - 1){
+      double x1 = plan[i].pose.position.x, y1 = plan[i].pose.position.y;
+      double x2 = plan[i+1].pose.position.x, y2 = plan[i+1].pose.position.y;
+      double y_t = y2-y1;
+      double x_t = x2-x1;
+
+      
+      double yaw = atan2(y_t,x_t);
+      smooth_path.back().pose.orientation = tf::createQuaternionMsgFromYaw(yaw);
+    }
+
+  //Smooth out le curves :) 
+  if (plan.size() >= 4){
+    // add first waypoint to plan
+    smooth_path.push_back(plan[0]);
+
+    for (size_t i =1; i<plan.size() -2, i++){
+      CubicSpline spline(plan[i -1], plan[i], plan[i+1], plan[i+2]);
+      spline_pt = spline.sampleSpline(0.1);
+
+      for (const auto& point : spline_pt){
+        smooth_path.push_back(point)
+      }
+    }
+    smooth_path.push_back(plan[plan.size()-1]);
+    plan = smooth_path;
+  }
+  }
+  // plan = smooth_path;
 }
 
 void RRTree::addNode(RRTNode::RRTNodePtr node)

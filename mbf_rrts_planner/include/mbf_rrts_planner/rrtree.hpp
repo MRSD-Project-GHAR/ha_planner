@@ -10,6 +10,7 @@ public:
   typedef std::vector<std::vector<std::list<RRTNode::RRTNodePtr>>> NodeMap;
   RRTree(GridMapPtr grid_map);
   void generatePlanFromTree(std::vector<geometry_msgs::PoseStamped>& plan, RRTNode::RRTNodePtr goal);
+  void RRTree::SmoothPath(std::vector<geometry_msgs::PoseStamped>& plan);
   void addNode(RRTNode::RRTNodePtr node);
   std::vector<RRTNode::RRTNodePtr> findNearestNeighbours(RRTNode::RRTNodePtr node, double size_of_bounds);
 
