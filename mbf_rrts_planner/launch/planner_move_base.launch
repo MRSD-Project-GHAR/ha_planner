@@ -1,18 +1,18 @@
 <launch>
-
+    <env name="ROSCONSOLE_CONFIG_FILE" value="$(find elevation_mapping)/test/input_sources/config/rosconsole.config"/>
     <node pkg="mbf_rrts_planner" type="mbf_rrts_exec_node" name="rrts_planner" output="screen">
         <remap from="map_topic" to="grid_map_filter/dummy_filtered_map" />
     </node>
 
-    <node pkg="rand_grid_map_gen" type="map_gen_pub_node" name="random_map_publisher"
+    <!-- <node pkg="rand_grid_map_gen" type="map_gen_pub_node" name="random_map_publisher"
         output="screen">
         <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/map_params.yaml" />
         <param name="yaml_file_name" value="$(find rand_grid_map_gen)/cfg/" />
-    </node>
+    </node> -->
 
     <node pkg="grid_map_demos" type="filters_demo" name="grid_map_filter" output="screen">
         <!-- Input topic -->
-        <param name="input_topic" value="/random_map_publisher/dummy_map" />
+        <param name="input_topic" value="/elevation_mapping/elevation_map" />
         <!-- Output topic -->
         <param name="output_topic" value="dummy_filtered_map" />
         <!-- Load grid map filter chain configuration -->

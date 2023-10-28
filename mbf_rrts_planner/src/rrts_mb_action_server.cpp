@@ -7,11 +7,12 @@
 #include <actionlib/client/simple_action_client.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <std_srvs/Empty.h>
+#include <nav_msgs/Path.h>
 
 class PlanExecutor
 {
 public:
-  PlanExecutor(ros::NodeHandle nh, ros::NodeHandle nh_private) : action_client_("locobot/move_base", true)
+  PlanExecutor(ros::NodeHandle nh, ros::NodeHandle nh_private) : action_client_("move_base", true)
 
   {
     ROS_INFO_STREAM("Waiting for move_base action server to start.");
@@ -20,6 +21,8 @@ public:
     map_sub_ = nh.subscribe("map_topic", 10, &PlanExecutor::mapCallback, this);
     start_sub_ = nh.subscribe("start_topic", 10, &PlanExecutor::startPoseCallback, this);
     goal_sub_ = nh.subscribe("goal_topic", 10, &PlanExecutor::goalPoseCallback, this);
+    path_pub_ = nh.advertise<nav_msgs::Path>("path", 10);
+    timer_ = nh.createTimer(ros::Duration(0.1), &PlanExecutor::publishPlan, this);
 
     plan_service_ = nh.advertiseService("generate_plan", &PlanExecutor::planServiceCallback, this);
     execute_service_ = nh.advertiseService("execute_plan", &PlanExecutor::executeServiceCallback, this);
@@ -111,6 +114,24 @@ public:
     }
   }
 
+  void publishPlan(const ros::TimerEvent& event)
+  {
+    nav_msgs::Path path;
+    ROS_ERROR("PUBLISHING PATH");
+    static long int seq = 0;
+    for (int i = 0; i < plan_.size(); i++)
+    {
+      path.poses.push_back(plan_[i]);
+    }
+
+    path.header.frame_id = "map";
+    path.header.stamp = ros::Time::now();
+    path.header.seq = seq;
+    seq++;
+
+    path_pub_.publish(path);
+  }
+
 private:
   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> action_client_;
   grid_map::GridMap map_;
@@ -123,10 +144,12 @@ private:
   ros::Subscriber map_sub_;
   ros::ServiceServer plan_service_;
   ros::ServiceServer execute_service_;
+  ros::Publisher path_pub_;
 
   std::vector<geometry_msgs::PoseStamped> plan_;
   bool received_map_;
   bool plan_made_;
+  ros::Timer timer_;
 };
 
 int main(int argc, char** argv)
