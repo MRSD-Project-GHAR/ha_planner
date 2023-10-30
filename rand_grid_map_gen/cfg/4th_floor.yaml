@@ -1,0 +1,51 @@
+Map_length: 14.2
+Map_width: 12.5
+Obstacles:
+  - x: 2.08
+    y: 1.98
+    height: 1
+    width: 3.95
+    length: 4.15
+    slope1: 90
+    slope2: 90
+    slope3: 90
+    slope4: 90
+    roughness: 6.953247270603027e-310
+    orientation: 4.650355344515342e-310
+    name: Custom Obstacle 19
+  - x: -2.55
+    y: 1.98
+    height: 1
+    width: 3.95
+    length: 5.1
+    slope1: 90
+    slope2: 90
+    slope3: 90
+    slope4: 90
+    roughness: 6.953247270603027e-310
+    orientation: 4.650355344515342e-310
+    name: Custom Obstacle 21
+  - x: 2.08
+    y: -2.13
+    height: 1
+    width: 4.25
+    length: 4.15
+    slope1: 90
+    slope2: 90
+    slope3: 90
+    slope4: 90
+    roughness: 6.953247270603027e-310
+    orientation: 4.650355344515342e-310
+    name: Custom Obstacle 23
+  - x: -2.55
+    y: -2.13
+    height: 1
+    width: 4.25
+    length: 5.1
+    slope1: 90
+    slope2: 90
+    slope3: 90
+    slope4: 90
+    roughness: 6.953247270603027e-310
+    orientation: 4.650355344515342e-310
+    name: Custom Obstacle 24
