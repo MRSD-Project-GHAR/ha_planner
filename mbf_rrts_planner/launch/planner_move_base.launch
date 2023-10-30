@@ -1,5 +1,5 @@
 <launch>
-    <env name="ROSCONSOLE_CONFIG_FILE" value="$(find elevation_mapping)/test/input_sources/config/rosconsole.config"/>
+    <!-- <env name="ROSCONSOLE_CONFIG_FILE" value="$(find elevation_mapping)/test/input_sources/config/rosconsole.config"/> -->
     <node pkg="mbf_rrts_planner" type="mbf_rrts_exec_node" name="rrts_planner" output="screen">
         <remap from="map_topic" to="grid_map_filter/dummy_filtered_map" />
     </node>
@@ -19,7 +19,7 @@
         <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/filters_chain_b.yaml" />
     </node>
 
-    <node name="rviz" pkg="rviz" type="rviz"
+    <node name="rviz_planner" pkg="rviz" type="rviz"
         args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" />
 
 </launch>
