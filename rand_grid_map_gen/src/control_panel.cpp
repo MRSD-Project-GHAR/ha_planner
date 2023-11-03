@@ -50,7 +50,7 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
 
   // ui->orientation->setValidator(new QDoubleValidator(0.0, 360.0, 2, this));
 
-  grid_map_publisher_ = nh.advertise<grid_map_msgs::GridMap>("dummy_map", 1000);
+  grid_map_publisher_ = nh.advertise<grid_map_msgs::GridMap>("map", 1000);
   nh.param("yaml_file_name", yaml_savepath, std::string("/opt/ros/"));
 }
 

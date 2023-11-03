@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   int loop_rate;
   nh_private.param("loop_rate", loop_rate, 10);
 
-  ros::Publisher grid_map_publisher = nh_private.advertise<grid_map_msgs::GridMap>("dummy_map", 1000);
+  ros::Publisher grid_map_publisher = nh_private.advertise<grid_map_msgs::GridMap>("map", 1000);
 
   ros::Rate rate(loop_rate);
 

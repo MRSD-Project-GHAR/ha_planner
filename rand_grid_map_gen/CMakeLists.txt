@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(PkgConfig)
 pkg_check_modules(YAMLCPP REQUIRED yaml-cpp>=0.5)
 
-set(CMAKE_PREFIX_PATH "/home/kshitij/Qt/6.5.0/gcc_64")
+set(CMAKE_PREFIX_PATH "/home/eels/Qt/6.6.0/gcc_64")
 
 find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
 

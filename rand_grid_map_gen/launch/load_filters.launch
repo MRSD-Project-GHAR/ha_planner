@@ -1,0 +1,5 @@
+<launch>
+    <arg name="ns" default="grid_map_filter"/>
+
+    <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/filters_chain_a.yaml" ns="$(arg ns)" />
+</launch>

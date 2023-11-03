@@ -1,9 +1,25 @@
 <launch>
 
-  <node pkg="rand_grid_map_gen" type="map_gen_pub_node" name="random_map_publisher" output="screen" >
-    <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/map_params.yaml" />
-    <param name="yaml_file_name" value="$(find rand_grid_map_gen)/cfg/" />
-  </node>
+    <arg name="robot_name" default="a" />
+
+    <include file="$(find rand_grid_map_gen)/launch/load_filters.launch" >
+      <arg name="ns" value="grid_map_filter_$(arg robot_name)" />
+    </include>
+
+    <node pkg="rand_grid_map_gen" type="map_gen_pub_node" name="map_publisher"
+        output="screen">
+        <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/map_params.yaml" />
+        <param name="yaml_file_name" value="$(find rand_grid_map_gen)/cfg/" />
+        <remap from="dummy_map" to="map" />
+    </node>
+
+    <node pkg="grid_map_demos" type="filters_demo" name="grid_map_filter_$(arg robot_name)" output="screen">
+        <!-- Input topic -->
+        <param name="input_topic" value="/map_publisher/map" />
+        <!-- Output topic -->
+        <param name="output_topic" value="dummy_filtered_map" />
+        <!-- Load grid mrap filter chain configuration -->
+    </node>
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" />
 
