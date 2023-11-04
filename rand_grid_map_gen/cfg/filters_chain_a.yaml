@@ -11,7 +11,7 @@ grid_map_filters:
     params:
       input_layer: elevation
       output_layers_prefix: orig_normal_vectors_
-      radius: 0.2
+      radius: 10
       normal_vector_positive_axis: z
       parallelization_enabled: true
   - name: original_slope
@@ -23,7 +23,7 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: elevation_threshold
-      expression: ((step(elevation - 0.200000) + 2) .* (-step(original_slope - 20.000000*(3.14/180)) + 2)) - 1
+      expression: ((step(elevation - 20.000000) + 2) .* (-step(original_slope - 30.000000*(3.14/180)) + 2)) - 1
   - name: elevation_threshold_clamped
     type: gridMapFilters/ThresholdFilter
     params:
@@ -40,7 +40,7 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: slope_factor
-      expression: (step(elevation) .* (step(elevation - 0.200000))) + 1
+      expression: (step(elevation) .* (step(elevation - 20.000000))) + 1
   - name: slope_factor_clamped
     type: gridMapFilters/ThresholdFilter
     params:
@@ -53,7 +53,7 @@ grid_map_filters:
     params:
       input_layer: final_elevation
       output_layers_prefix: normal_vectors_
-      radius: 0.2
+      radius: 10
       normal_vector_positive_axis: z
       parallelization_enabled: true
   - name: slope
@@ -65,4 +65,4 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: traversability
-      expression: (slope_factor .* (1.000000*slope + 10000*(step(slope - 20.000000*(3.14/180)) + 1)))
+      expression: (slope_factor .* (1000.000000*slope + 10000*(step(slope - 30.000000*(3.14/180)) + 1)))
