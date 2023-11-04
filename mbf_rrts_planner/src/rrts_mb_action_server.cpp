@@ -11,7 +11,7 @@
 class PlanExecutor
 {
 public:
-  PlanExecutor(ros::NodeHandle nh, ros::NodeHandle nh_private) : action_client_("locobot/move_base", true)
+  PlanExecutor(ros::NodeHandle nh, ros::NodeHandle nh_private) : action_client_("/move_base", true)
 
   {
     ROS_INFO_STREAM("Waiting for move_base action server to start.");
@@ -100,7 +100,7 @@ public:
     {
       move_base_msgs::MoveBaseGoal goal;
       goal.target_pose = pose;
-      goal.target_pose.header.frame_id = "map";
+      goal.target_pose.header.frame_id = "locobot/odom";
       
       ROS_INFO_STREAM("Sending new  ");
       ROS_INFO_STREAM(goal.target_pose);
