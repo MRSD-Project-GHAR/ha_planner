@@ -77,7 +77,7 @@ Visualization Manager:
       Min Intensity: 0
       Name: GridMap
       Show Grid Lines: true
-      Topic: /elevation_mapping/elevation_map
+      Topic: /grid_map_filter_a/dummy_filtered_map
       Unreliable: false
       Use ColorMap: true
       Value: true
@@ -192,7 +192,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 18.576644897460938
+      Distance: 40.777130126953125
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -208,9 +208,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.2247964143753052
+      Pitch: 1.1797964572906494
       Target Frame: <Fixed Frame>
-      Yaw: 0.7136461138725281
+      Yaw: 1.1686457395553589
     Saved:
       - Class: rviz/Orbit
         Distance: 13.063237190246582

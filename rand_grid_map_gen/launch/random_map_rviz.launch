@@ -21,6 +21,6 @@
         <!-- Load grid mrap filter chain configuration -->
     </node> 
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" respawn="true"/>
 
 </launch>
