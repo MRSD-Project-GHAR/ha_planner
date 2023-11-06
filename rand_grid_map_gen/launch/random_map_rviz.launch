@@ -3,7 +3,7 @@
     <arg name="robot_name" />
 
     <include file="$(find rand_grid_map_gen)/launch/load_filters.launch" >
-      <arg name="ns" value="grid_map_filter" />
+      <arg name="ns" value="grid_map_filter_$(arg robot_name)" />
       <arg name="filename" value="filters_chain_$(arg robot_name).yaml" />
     </include>
 
@@ -17,9 +17,9 @@
         <!-- Input topic -->
         <param name="input_topic" value="/map_publisher/map" />
         <!-- Output topic -->
-        <param name="output_topic" value="dummy_filtered_map" />
+        <param name="output_topic" value="filtered_map" />
         <!-- Load grid mrap filter chain configuration -->
-    </node>
+    </node> 
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" />
 
