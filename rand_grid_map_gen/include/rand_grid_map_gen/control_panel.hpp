@@ -5,6 +5,8 @@
 #include <QMainWindow>
 #include <QTableView>
 
+#include <std_srvs/Empty.h>
+
 #include "rand_grid_map_gen/map_gen.hpp"
 
 /**
@@ -21,7 +23,7 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh, QWidget* parent = nullptr);
+  explicit MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh_private, ros::NodeHandle nh, QWidget* parent = nullptr);
   ~MainWindow();
 
 protected:
@@ -34,12 +36,14 @@ protected:
   void loadMapButtonPressed();
   void robotAParamButtonPressed();
   void robotBParamButtonPressed();
+  void setParamButtonPressed();
 
 private:
   Ui::MainWindow* ui;
   rand_grid_map_gen::RandomMapGen* map_;
   ros::NodeHandle nh_;
   ros::Publisher grid_map_publisher_;
+  ros::ServiceClient reload_params_srv_;
 
   int obstacle_index = 0;
 

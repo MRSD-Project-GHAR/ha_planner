@@ -537,11 +537,11 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_16" stretch="20,8,10,5,10,8">
+         <layout class="QHBoxLayout" name="horizontalLayout_16" stretch="20,8,0,5,10,8">
           <item>
            <widget class="QLabel" name="label_12">
             <property name="text">
-             <string>Set parameters for: </string>
+             <string>Set parameters for this robot: </string>
             </property>
            </widget>
           </item>
@@ -559,11 +559,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="Robot_a_gen">
-            <property name="text">
-             <string>Robot A</string>
-            </property>
-           </widget>
+           <widget class="QLineEdit" name="robot_name"/>
           </item>
           <item>
            <spacer name="horizontalSpacer_26">
@@ -579,9 +575,9 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="robot_b_gen">
+           <widget class="QPushButton" name="set_param_button">
             <property name="text">
-             <string>Robot B</string>
+             <string>Set Parameters</string>
             </property>
            </widget>
           </item>

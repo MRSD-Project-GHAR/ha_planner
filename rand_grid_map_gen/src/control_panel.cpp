@@ -6,7 +6,8 @@
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 
-MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh, QWidget* parent)
+MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh_private, ros::NodeHandle nh,
+                       QWidget* parent)
   : QMainWindow(parent), ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
@@ -17,8 +18,7 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
   QObject::connect(ui->change_button, &QPushButton::clicked, this, &MainWindow::changeButtonPressed);
   QObject::connect(ui->save_map_button, &QPushButton::clicked, this, &MainWindow::saveMapButtonPressed);
   QObject::connect(ui->load_map_button, &QPushButton::clicked, this, &MainWindow::loadMapButtonPressed);
-  QObject::connect(ui->Robot_a_gen, &QPushButton::clicked, this, &MainWindow::robotAParamButtonPressed);
-  QObject::connect(ui->robot_b_gen, &QPushButton::clicked, this, &MainWindow::robotBParamButtonPressed);
+  QObject::connect(ui->set_param_button, &QPushButton::clicked, this, &MainWindow::setParamButtonPressed);
   QObject::connect(ui->obstacle_num_dropdown, &QComboBox::currentIndexChanged, this,
                    &MainWindow::obstacleDropDownChanged);
 
@@ -50,8 +50,9 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh,
 
   // ui->orientation->setValidator(new QDoubleValidator(0.0, 360.0, 2, this));
 
-  grid_map_publisher_ = nh.advertise<grid_map_msgs::GridMap>("map", 1000);
-  nh.param("yaml_file_name", yaml_savepath, std::string("/opt/ros/"));
+  grid_map_publisher_ = nh_private.advertise<grid_map_msgs::GridMap>("map", 1000);
+  reload_params_srv_ = nh.serviceClient<std_srvs::Empty>("/grid_map_filter_a/reload_filters");
+  nh_private.param("yaml_file_name", yaml_savepath, std::string("/opt/ros/"));
 }
 
 MainWindow::~MainWindow()
@@ -209,66 +210,48 @@ void MainWindow::clearObstacleFields()
   // ui->roughness->clear();
 }
 
-void MainWindow::robotAParamButtonPressed()
+void MainWindow::setParamButtonPressed()
 {
   YAML::Node default_params = YAML::LoadFile(yaml_savepath + "filters_chain_default.yaml");
-  YAML::Node robot_a_params = default_params;
+  YAML::Node robot_params = default_params;
 
   double fsoh = ui->fsoh->text().toDouble();
   double mts = ui->mts->text().toDouble();
   double rr = ui->rr->text().toDouble();
   double ef = ui->ef->text().toDouble();
 
-  robot_a_params["grid_map_filters"][2]["params"]["radius"] = rr;
-  robot_a_params["grid_map_filters"][4]["params"]["expression"] = "((step(elevation - " + std::to_string(fsoh) +
-                                                                  ") + 2) .* "
-                                                                  "(-step(original_slope - " +
-                                                                  std::to_string(mts) + "*(3.14/180)) + 2)) - 1";
+  robot_params["grid_map_filters"][2]["params"]["radius"] = rr;
+  robot_params["grid_map_filters"][4]["params"]["expression"] = "((step(elevation - " + std::to_string(fsoh) +
+                                                                ") + 2) .* "
+                                                                "(-step(original_slope - " +
+                                                                std::to_string(mts) + "*(3.14/180)) + 2)) - 1";
 
-  robot_a_params["grid_map_filters"][7]["params"]["expression"] =
+  robot_params["grid_map_filters"][7]["params"]["expression"] =
       "(step(elevation) .* (step(elevation - " + std::to_string(fsoh) + "))) + 1";
 
-  robot_a_params["grid_map_filters"][9]["params"]["radius"] = rr;
+  robot_params["grid_map_filters"][9]["params"]["radius"] = rr;
 
-  robot_a_params["grid_map_filters"][11]["params"]["expression"] = "(slope_factor .* (" + std::to_string(ef) +
-                                                                   "*slope + 10000*(step(slope - " +
-                                                                   std::to_string(mts) + "*(3.14/180)) + 1)))";
-
-  std::ofstream myfile;
-  myfile.open(yaml_savepath + "filters_chain_a.yaml");
-  myfile << robot_a_params;
-  myfile.close();
-}
-
-void MainWindow::robotBParamButtonPressed()
-{
-  YAML::Node default_params = YAML::LoadFile(yaml_savepath + "filters_chain_default.yaml");
-  YAML::Node robot_b_params = default_params;
-
-  double fsoh = ui->fsoh->text().toDouble();
-  double mts = ui->mts->text().toDouble();
-  double rr = ui->rr->text().toDouble();
-  double ef = ui->ef->text().toDouble();
-
-  robot_b_params["grid_map_filters"][2]["params"]["radius"] = rr;
-  robot_b_params["grid_map_filters"][4]["params"]["expression"] = "((step(elevation - " + std::to_string(fsoh) +
-                                                                  ") + 2) .* "
-                                                                  "(-step(original_slope - " +
-                                                                  std::to_string(mts) + "*(3.14/180)) + 2)) - 1";
-
-  robot_b_params["grid_map_filters"][7]["params"]["expression"] =
-      "(step(elevation) .* (step(elevation - " + std::to_string(fsoh) + "))) + 1";
-
-  robot_b_params["grid_map_filters"][9]["params"]["radius"] = rr;
-
-  robot_b_params["grid_map_filters"][11]["params"]["expression"] = "(slope_factor .* (" + std::to_string(ef) +
-                                                                   "*slope + 10000*(step(slope - " +
-                                                                   std::to_string(mts) + "*(3.14/180)) + 1)))";
+  robot_params["grid_map_filters"][11]["params"]["expression"] = "(slope_factor .* (" + std::to_string(ef) +
+                                                                 "*slope + 10000*(step(slope - " + std::to_string(mts) +
+                                                                 "*(3.14/180)) + 1)))";
 
   std::ofstream myfile;
-  myfile.open(yaml_savepath + "filters_chain_b.yaml");
-  myfile << robot_b_params;
+  // ui->map_name_textbox->text().toStdString()
+  std::string robot_name = ui->robot_name->text().toStdString();
+  std::string filename = "filters_chain_" + robot_name + ".yaml";
+  myfile.open(yaml_savepath + filename);
+  myfile << robot_params;
   myfile.close();
+
+  std::string roslaunch_command =
+      "roslaunch rand_grid_map_gen load_filters.launch ns:=grid_map_filter filename:=" + filename;
+  int result = system(roslaunch_command.c_str());
+
+  std_srvs::EmptyRequest req;
+  std_srvs::EmptyResponse resp;
+  reload_params_srv_.call(req, resp);
+
+  grid_map_publisher_.publish(map_->getROSMessage());
 }
 
 #include "rand_grid_map_gen/moc_control_panel.cpp"
