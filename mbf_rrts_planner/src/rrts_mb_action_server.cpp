@@ -16,17 +16,17 @@ public:
   PlanExecutor(ros::NodeHandle nh, ros::NodeHandle nh_private) : action_client_("move_base", true)
 
   {
-    map_sub_ = nh.subscribe("map_topic", 10, &PlanExecutor::mapCallback, this);
-    start_sub_ = nh.subscribe("start_topic", 10, &PlanExecutor::startPoseCallback, this);
-    goal_sub_ = nh.subscribe("goal_topic", 10, &PlanExecutor::goalPoseCallback, this);
-    clicked_point_sub_ = nh.subscribe("clicked_point", 10, &PlanExecutor::clickedPointCallback, this);
-    path_pub_ = nh.advertise<nav_msgs::Path>("path", 10);
-    timer_ = nh.createTimer(ros::Duration(0.1), &PlanExecutor::publishPlan, this);
+    map_sub_ = nh_private.subscribe("map_topic", 10, &PlanExecutor::mapCallback, this);
+    start_sub_ = nh_private.subscribe("start_topic", 10, &PlanExecutor::startPoseCallback, this);
+    goal_sub_ = nh_private.subscribe("goal_topic", 10, &PlanExecutor::goalPoseCallback, this);
+    clicked_point_sub_ = nh_private.subscribe("clicked_point", 10, &PlanExecutor::clickedPointCallback, this);
+    path_pub_ = nh_private.advertise<nav_msgs::Path>("path", 10);
+    timer_ = nh_private.createTimer(ros::Duration(0.1), &PlanExecutor::publishPlan, this);
 
-    plan_service_ = nh.advertiseService("generate_plan", &PlanExecutor::planServiceCallback, this);
-    execute_service_ = nh.advertiseService("execute_plan", &PlanExecutor::executeServiceCallback, this);
-    get_start_service_ = nh.advertiseService("get_start_pose", &PlanExecutor::getStartServiceCallback, this);
-    get_goal_service_ = nh.advertiseService("get_goal_pose", &PlanExecutor::getGoalServiceCallback, this);
+    plan_service_ = nh_private.advertiseService("generate_plan", &PlanExecutor::planServiceCallback, this);
+    execute_service_ = nh_private.advertiseService("execute_plan", &PlanExecutor::executeServiceCallback, this);
+    get_start_service_ = nh_private.advertiseService("get_start_pose", &PlanExecutor::getStartServiceCallback, this);
+    get_goal_service_ = nh_private.advertiseService("get_goal_pose", &PlanExecutor::getGoalServiceCallback, this);
 
     start_.pose.position.x = 0;
     start_.pose.position.y = 1;

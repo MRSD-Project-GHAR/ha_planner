@@ -1,17 +1,17 @@
 <launch>
 
-    <arg name="robot_name" />
+    <arg name="robot_name" default="locobot"/>
+
+    <!-- <node pkg="rand_grid_map_gen" type="map_gen_pub_node" name="map_publisher"
+        output="screen">
+        <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/map_params.yaml" />
+        <param name="yaml_file_name" value="$(find rand_grid_map_gen)/cfg/" />
+    </node> -->
 
     <include file="$(find rand_grid_map_gen)/launch/load_filters.launch" >
       <arg name="ns" value="grid_map_filter_$(arg robot_name)" />
       <arg name="filename" value="filters_chain_$(arg robot_name).yaml" />
     </include>
-
-    <node pkg="rand_grid_map_gen" type="map_gen_pub_node" name="map_publisher"
-        output="screen">
-        <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/map_params.yaml" />
-        <param name="yaml_file_name" value="$(find rand_grid_map_gen)/cfg/" />
-    </node>
 
     <node pkg="grid_map_demos" type="filters_demo" name="grid_map_filter_$(arg robot_name)" output="screen">
         <!-- Input topic -->
@@ -21,6 +21,8 @@
         <!-- Load grid mrap filter chain configuration -->
     </node> 
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" respawn="true"/>
+  <node name="rviz_$(arg robot_name)" pkg="rviz" type="rviz" args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization_$(arg robot_name).rviz" respawn="true">
+    <remap from="clicked_point" to="$(arg robot_name)_rrts_planner/clicked_point" />
+  </node>
 
 </launch>

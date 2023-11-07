@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="rand_grid_map_gen" type="map_gen_pub_node" name="map_publisher" output="screen">
+        <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/map_params.yaml" />
+        <param name="yaml_file_name" value="$(find rand_grid_map_gen)/cfg/" />
+    </node>
+</launch>

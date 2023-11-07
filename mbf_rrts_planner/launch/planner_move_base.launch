@@ -1,7 +1,16 @@
 <launch>
-    <!-- <env name="ROSCONSOLE_CONFIG_FILE" value="$(find elevation_mapping)/test/input_sources/config/rosconsole.config"/> -->
-    <node pkg="mbf_rrts_planner" type="mbf_rrts_exec_node" name="rrts_planner" output="screen">
-        <remap from="map_topic" to="grid_map_filter_go1/filtered_map" />
+    <!-- <env name="ROSCONSOLE_CONFIG_FILE" value="$(find
+    elevation_mapping)/test/input_sources/config/rosconsole.config"/> -->
+
+    <arg name="robot_name" default="locobot" />
+    <node pkg="mbf_rrts_planner" type="mbf_rrts_exec_node" name="$(arg robot_name)_rrts_planner"
+        output="screen">
+        <remap from="$(arg robot_name)_rrts_planner/map_topic" to="grid_map_filter_$(arg robot_name)/filtered_map" />
+        <remap from="/move_base/feedback" to="/$(arg robot_name)/move_base/feedback" />
+        <remap from="/move_base/status" to="/$(arg robot_name)/move_base/status" />
+        <remap from="/move_base/result" to="/$(arg robot_name)/move_base/result" />
+        <remap from="/move_base/goal" to="/$(arg robot_name)/move_base/goal" />
+        <remap from="/move_base/cancel" to="/$(arg robot_name)/move_base/cancel" />
     </node>
 
     <!-- <node pkg="rand_grid_map_gen" type="map_gen_pub_node" name="random_map_publisher"
@@ -11,15 +20,15 @@
     </node> -->
 
     <!-- <node pkg="grid_map_demos" type="filters_demo" name="grid_map_filter" output="screen"> -->
-        <!-- Input topic -->
-        <!-- <param name="input_topic" value="/elevation_mapping/elevation_map" /> -->
-        <!-- Output topic -->
-        <!-- <param name="output_topic" value="dummy_filtered_map" /> -->
-        <!-- Load grid map filter chain configuration -->
-        <!-- <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/filters_chain_b.yaml" /> -->
+    <!-- Input topic -->
+    <!-- <param name="input_topic" value="/elevation_mapping/elevation_map" /> -->
+    <!-- Output topic -->
+    <!-- <param name="output_topic" value="dummy_filtered_map" /> -->
+    <!-- Load grid map filter chain configuration -->
+    <!-- <rosparam command="load" file="$(find rand_grid_map_gen)/cfg/filters_chain_b.yaml" /> -->
     <!-- </node> -->
 
     <!-- <node name="rviz_planner" pkg="rviz" type="rviz" -->
-        <!-- args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" /> -->
+    <!-- args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization.rviz" /> -->
 
 </launch>
