@@ -17,7 +17,20 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(PkgConfig)
 pkg_check_modules(YAMLCPP REQUIRED yaml-cpp>=0.5)
 
-set(CMAKE_PREFIX_PATH "/home/kshitij/Qt/6.5.0/gcc_64")
+IF(DEFINED ENV{QT_DIR})
+  MESSAGE(WARNING "Using QT Installation DIR- "
+                 $ENV{QT_DIR} 
+                 ". Compilation will fail if this is incorrect. "
+                 "Make sure to set it to the directory where gcc_64 is located. "
+                 "For example - /home/kshitij/Qt/6.5.0/gcc_64")
+ELSE()
+  MESSAGE(FATAL_ERROR "The environment variable QT_DIR is not set. "
+                      "Please set it to the directory where Qt is installed. "
+                      "Make sure to set it to the directory where gcc_64 is located. "
+                      "For example - /home/kshitij/Qt/6.5.0/gcc_64")
+ENDIF()
+
+set(CMAKE_PREFIX_PATH $ENV{QT_DIR})
 
 find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
 
