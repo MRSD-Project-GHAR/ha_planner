@@ -16,6 +16,24 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib
 )
 
+
+IF(DEFINED ENV{QT_DIR})
+  MESSAGE(WARNING "Using QT Installation DIR- "
+                 $ENV{QT_DIR} 
+                 ". Compilation will fail if this is incorrect. "
+                 "Make sure to set it to the directory where gcc_64 is located. "
+                 "For example - /home/kshitij/Qt/6.5.0/gcc_64")
+ELSE()
+  MESSAGE(FATAL_ERROR "The environment variable QT_DIR is not set. "
+                      "Please set it to the directory where Qt is installed. "
+                      "Make sure to set it to the directory where gcc_64 is located. "
+                      "For example - /home/kshitij/Qt/6.5.0/gcc_64")
+ENDIF()
+
+set(CMAKE_PREFIX_PATH $ENV{QT_DIR})
+
+find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -134,6 +152,23 @@ add_library(${PROJECT_NAME}_core
   src/rrtree.cpp
 )
 
+add_library(planner_ui src/control_panel.cpp)
+
+set_target_properties(planner_ui PROPERTIES
+    AUTOUIC ON
+    AUTOMOC ON
+    AUTOUIC_SEARCH_PATHS forms
+)
+  
+target_link_libraries(
+  planner_ui
+  PUBLIC
+  ${PROJECT_NAME}_core
+  ${catkin_LIBRARIES}  
+  Qt6::Core
+  Qt6::Widgets
+)
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -169,7 +204,7 @@ target_link_libraries(mbf_rrts_vis_separate_node
 
 target_link_libraries(mbf_rrts_exec_node
   ${catkin_LIBRARIES}
-  ${PROJECT_NAME}_core
+  planner_ui
 )
 
 #############

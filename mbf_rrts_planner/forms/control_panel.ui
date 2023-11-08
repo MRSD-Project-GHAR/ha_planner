@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PlannerController</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>819</width>
+    <height>424</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Planner Control Panel</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,5">
+        <item>
+         <widget class="QPushButton" name="start_point_button">
+          <property name="text">
+           <string>Get Start Point</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="start_point_label">
+          <property name="text">
+           <string>Start point not recieved yet, using default value of (0,1)</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,5">
+        <item>
+         <widget class="QPushButton" name="goal_point_button">
+          <property name="text">
+           <string>Get Goal Point</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="goal_point_label">
+          <property name="text">
+           <string>Goal point not received yet, using default value of (1,0)</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,5">
+        <item>
+         <widget class="QPushButton" name="generate_plan_button">
+          <property name="text">
+           <string>Generate Plan</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="generate_plan_label">
+          <property name="text">
+           <string>Plan not generated yet.</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,5">
+        <item>
+         <widget class="QPushButton" name="execute_plan_button">
+          <property name="text">
+           <string>Execute Plan</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="execute_plan_label">
+          <property name="text">
+           <string>Plan not executed yet.</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>819</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuPlanner_Control_Panel">
+    <property name="title">
+     <string>Planner Control Panel</string>
+    </property>
+   </widget>
+   <addaction name="menuPlanner_Control_Panel"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

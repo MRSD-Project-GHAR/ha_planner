@@ -161,15 +161,15 @@ add_executable(map_gen_pub_node src/map_gen_pub_node.cpp)
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 
-add_library(ui src/control_panel.cpp)
+add_library(map_ui src/control_panel.cpp)
 
-set_target_properties(ui PROPERTIES
+set_target_properties(map_ui PROPERTIES
     AUTOUIC ON
     AUTOMOC ON
     AUTOUIC_SEARCH_PATHS forms
 )
 
-target_link_libraries(ui PUBLIC Qt6::Core Qt6::Widgets)
+target_link_libraries(map_ui PUBLIC Qt6::Core Qt6::Widgets)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -184,7 +184,7 @@ target_link_libraries(map_gen
 target_link_libraries(map_gen_pub_node
   ${catkin_LIBRARIES}
   map_gen
-  ui
+  map_ui
 )
 
 #############
