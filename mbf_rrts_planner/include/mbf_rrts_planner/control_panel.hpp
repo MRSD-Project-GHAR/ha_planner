@@ -14,6 +14,7 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <std_srvs/Empty.h>
 #include <geometry_msgs/PointStamped.h>
+#include <nav_msgs/Odometry.h>
 #include "mbf_rrts_planner/mbf_rrts_core.hpp"
 
 
@@ -30,21 +31,18 @@ public:
   explicit PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_private, QWidget* parent = nullptr);
   ~PlannerController();
 
-  bool planServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
-
-  bool executeServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
-
-  bool getStartServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
-
-  bool getGoalServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
+  void generatePlanButtonClicked();
+  void executePlanButtonClicked();
+  void getStartOdomButtonClicked();
+  void getStartRVizButtonClicked();
+  void getGoalButtonClicked();
+  void changeIterationButtonClicked();
 
   void clickedPointCallback(const geometry_msgs::PointStamped& point);
 
   void mapCallback(const grid_map_msgs::GridMap& map_msg);
 
-  void startPoseCallback(const geometry_msgs::PoseStamped& start_msg);
-
-  void goalPoseCallback(const geometry_msgs::PoseStamped& goal_msg);
+  void odomCallback(const nav_msgs::Odometry& odom);
 
   void makePlan();
 
@@ -57,8 +55,9 @@ public:
 private:
   enum class MODE
   {
-    GETSTARTPOSE,
-    GETGOALPOSE,
+    GET_START_POSE_FROM_ODOM,
+    GET_START_POSE_FROM_RVIZ,
+    GET_GOAL_POSE,
     IDLE
   };
 
@@ -68,8 +67,7 @@ private:
   geometry_msgs::PoseStamped start_;
   geometry_msgs::PoseStamped goal_;
 
-  ros::Subscriber start_sub_;
-  ros::Subscriber goal_sub_;
+  ros::Subscriber odom_sub_;
   ros::Subscriber map_sub_;
   ros::Subscriber clicked_point_sub_;
   ros::ServiceServer plan_service_;

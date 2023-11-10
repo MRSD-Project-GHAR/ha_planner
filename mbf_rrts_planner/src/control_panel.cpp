@@ -9,16 +9,28 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
 {
   ui->setupUi(this);
   map_sub_ = nh_private.subscribe("map_topic", 10, &PlannerController::mapCallback, this);
-  start_sub_ = nh_private.subscribe("start_topic", 10, &PlannerController::startPoseCallback, this);
-  goal_sub_ = nh_private.subscribe("goal_topic", 10, &PlannerController::goalPoseCallback, this);
   clicked_point_sub_ = nh_private.subscribe("clicked_point", 10, &PlannerController::clickedPointCallback, this);
+  odom_sub_ = nh_private.subscribe("odom", 10, &PlannerController::odomCallback, this);
   path_pub_ = nh_private.advertise<nav_msgs::Path>("path", 10);
   // timer_ = nh_private.createTimer(ros::Duration(0.1), &PlannerController::publishPlan, this);
 
-  plan_service_ = nh_private.advertiseService("generate_plan", &PlannerController::planServiceCallback, this);
-  execute_service_ = nh_private.advertiseService("execute_plan", &PlannerController::executeServiceCallback, this);
-  get_start_service_ = nh_private.advertiseService("get_start_pose", &PlannerController::getStartServiceCallback, this);
-  get_goal_service_ = nh_private.advertiseService("get_goal_pose", &PlannerController::getGoalServiceCallback, this);
+  // plan_service_ = nh_private.advertiseService("generate_plan", &PlannerController::planServiceCallback, this);
+  // execute_service_ = nh_private.advertiseService("execute_plan", &PlannerController::executeServiceCallback, this);
+  // get_start_service_ = nh_private.advertiseService("get_start_pose", &PlannerController::getStartServiceCallback,
+  // this); get_goal_service_ = nh_private.advertiseService("get_goal_pose", &PlannerController::getGoalServiceCallback,
+  // this);
+  QObject::connect(ui->generate_plan_button, &QPushButton::clicked, this,
+                   &PlannerController::generatePlanButtonClicked);
+  QObject::connect(ui->execute_plan_button, &QPushButton::clicked, this, &PlannerController::executePlanButtonClicked);
+  QObject::connect(ui->rviz_start_point_button, &QPushButton::clicked, this,
+                   &PlannerController::getStartRVizButtonClicked);
+  QObject::connect(ui->odom_start_point_button, &QPushButton::clicked, this,
+                   &PlannerController::getStartOdomButtonClicked);
+  QObject::connect(ui->goal_point_button, &QPushButton::clicked, this, &PlannerController::getGoalButtonClicked);
+  QObject::connect(ui->change_iterations_button, &QPushButton::clicked, this,
+                   &PlannerController::changeIterationButtonClicked);
+
+  // PUT BUTTON TO GET ODOMETERY FROM TOPIC
 
   start_.pose.position.x = 0;
   start_.pose.position.y = 1;
@@ -45,7 +57,8 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
   timer->start(100);
 }
 
-void PlannerController::timerCallback() {
+void PlannerController::timerCallback()
+{
   publishPlan();
   ros::spinOnce();
 }
@@ -55,63 +68,84 @@ PlannerController::~PlannerController()
   delete ui;
 }
 
-bool PlannerController::planServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
+void PlannerController::generatePlanButtonClicked()
 {
   if (received_map_)
   {
     makePlan();
     plan_made_ = true;
-    return true;
   }
   else
   {
     ROS_ERROR_STREAM("Global Planner: The map has not been received yet. Cannot generate plan.");
-    return false;
   }
 }
 
-bool PlannerController::executeServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
+void PlannerController::executePlanButtonClicked()
 {
   if (plan_made_ && action_server_initialized_)
   {
     executePlan();
-    return true;
   }
   else
   {
     ROS_ERROR_STREAM("Global Planner: The plan has not been made yet, or the action server has not been initialized. "
                      "Cannot execute plan");
-    return false;
   }
 }
 
-bool PlannerController::getStartServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
+void PlannerController::getStartRVizButtonClicked()
 {
-  mode_ = MODE::GETSTARTPOSE;
+  mode_ = MODE::GET_START_POSE_FROM_RVIZ;
   ROS_INFO("Global Planner: Waiting for Start Pose");
-  return true;
+  ui->start_point_label->setText(QString::fromStdString("Waiting for Start Pose from RViz"));
 }
 
-bool PlannerController::getGoalServiceCallback(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
+void PlannerController::getStartOdomButtonClicked()
 {
-  mode_ = MODE::GETGOALPOSE;
+  mode_ = MODE::GET_START_POSE_FROM_ODOM;
+  ROS_INFO("Global Planner: Waiting for Start Pose");
+  ui->start_point_label->setText(QString::fromStdString("Waiting for Start Pose from Odom"));
+}
+
+void PlannerController::getGoalButtonClicked()
+{
+  mode_ = MODE::GET_GOAL_POSE;
   ROS_INFO("Global Planner: Waiting for Goal Pose");
-  return true;
+  ui->goal_point_label->setText(QString::fromStdString("Waiting for Goal Pose from RViz"));
+}
+
+void PlannerController::changeIterationButtonClicked()
+{
+  planner_.setIterations(ui->iteration_numer_spinbox->value());
+  std::stringstream message;
+  message << "Currently, the number of iterations is " << ui->iteration_numer_spinbox->value();
+  ui->iteration_number_label->setText(QString::fromStdString(message.str()));
 }
 
 void PlannerController::clickedPointCallback(const geometry_msgs::PointStamped& point)
 {
-  if (mode_ == MODE::GETGOALPOSE)
+  if (mode_ == MODE::GET_GOAL_POSE)
   {
     goal_.pose.position = point.point;
     mode_ = MODE::IDLE;
     ROS_INFO("Global Planner: Received Goal pose");
+    std::stringstream message;
+    message << "Goal pose received: (" << std::to_string(goal_.pose.position.x) << ", "
+            << std::to_string(goal_.pose.position.y) << ")";
+    // message.append(std::to_string(goal_.pose.position.x));
+    ui->goal_point_label->setText(QString::fromStdString(message.str()));
   }
-  else if (mode_ == MODE::GETSTARTPOSE)
+  else if (mode_ == MODE::GET_START_POSE_FROM_RVIZ)
   {
     start_.pose.position = point.point;
     mode_ = MODE::IDLE;
-    ROS_INFO("Global Planner: Received Start pose");
+    ROS_INFO("Global Planner: Received Start pose from RViz");
+    std::stringstream message;
+    message << "Start pose received from RViz: (" << std::to_string(start_.pose.position.x) << ", "
+            << std::to_string(start_.pose.position.y) << ")";
+    // message.append(std::to_string(goal_.pose.position.x));
+    ui->start_point_label->setText(QString::fromStdString(message.str()));
   }
 }
 
@@ -120,16 +154,21 @@ void PlannerController::mapCallback(const grid_map_msgs::GridMap& map_msg)
   grid_map::GridMapRosConverter::fromMessage(map_msg, map_);
   planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_));
   received_map_ = true;
+  ui->generate_plan_label->setText(QString::fromStdString("The map been received, ready to generate the plan."));
 }
 
-void PlannerController::startPoseCallback(const geometry_msgs::PoseStamped& start_msg)
+void PlannerController::odomCallback(const nav_msgs::Odometry& odom)
 {
-  start_ = start_msg;
-}
-
-void PlannerController::goalPoseCallback(const geometry_msgs::PoseStamped& goal_msg)
-{
-  goal_ = goal_msg;
+  if (mode_ == MODE::GET_START_POSE_FROM_ODOM)
+  {
+    start_.pose = odom.pose.pose;
+    mode_ = MODE::IDLE;
+    ROS_INFO("Global Planner: Received Start pose from Odometry");
+    std::stringstream message;
+    message << "Start pose received from odometry: (" << std::to_string(start_.pose.position.x) << ", "
+            << std::to_string(start_.pose.position.y) << ")";
+    ui->start_point_label->setText(QString::fromStdString(message.str()));
+  }
 }
 
 void PlannerController::makePlan()
