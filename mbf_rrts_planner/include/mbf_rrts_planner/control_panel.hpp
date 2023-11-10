@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <thread>
+
 #include <QApplication>
 #include <QMainWindow>
 #include <QTableView>
@@ -80,6 +82,8 @@ private:
   bool received_map_;
   bool plan_made_;
   bool action_server_initialized_;
+  bool planning_in_progress_ = false;
+  std::thread planner_thread_;
   ros::Timer timer_;
   MODE mode_;
 

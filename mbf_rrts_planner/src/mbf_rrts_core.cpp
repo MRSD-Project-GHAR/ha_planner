@@ -17,6 +17,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
 {
   std::cout << "Planner is making the plan now!\n";
+  current_iteration_number = 0;
   auto time_now = std::chrono::high_resolution_clock::now();
 
   if (grid_map_ == NULL)
@@ -25,6 +26,20 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
   }
 
   int count = 0;
+
+  grid_map::Index dummy_index;
+  grid_map::Position start_grid_map_pose({start.pose.position.x, start.pose.position.y});
+  grid_map::Position goal_grid_map_pose({start.pose.position.x, start.pose.position.y});
+  bool start_valid = grid_map_->getIndex(start_grid_map_pose, dummy_index);
+  bool goal_valid = grid_map_->getIndex(goal_grid_map_pose, dummy_index);
+
+  if (!start_valid) {
+    return 52;
+  }
+
+  if (!goal_valid) {
+    return 53;
+  }
 
   std::default_random_engine generator;
   generator.seed(seed_);
@@ -48,6 +63,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
     if (i % 50 == 0)
     {
       std::cout << "Iteration: " << i << "\n";
+      current_iteration_number = i;
     }
     
     RRTNode::RRTNodePtr random_node = std::make_shared<RRTNode>(grid_map_, layer_name_, generator);

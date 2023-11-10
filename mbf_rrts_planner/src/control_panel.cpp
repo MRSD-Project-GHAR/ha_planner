@@ -60,6 +60,17 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
 void PlannerController::timerCallback()
 {
   publishPlan();
+  if (planning_in_progress_)
+  {
+    std::stringstream message;
+    message << "Generating Plan: Iteration number " << std::to_string(planner_.current_iteration_number);
+    ui->generate_plan_label->setText(QString::fromStdString(message.str()));
+  }
+  else if (planner_thread_.joinable())
+  {
+    planner_thread_.join();
+  }
+
   ros::spinOnce();
 }
 
@@ -72,8 +83,11 @@ void PlannerController::generatePlanButtonClicked()
 {
   if (received_map_)
   {
-    makePlan();
-    plan_made_ = true;
+    // makePlan();
+    if (!planner_thread_.joinable())
+    {
+      planner_thread_ = std::thread(&PlannerController::makePlan, this);
+    }
   }
   else
   {
@@ -153,8 +167,11 @@ void PlannerController::mapCallback(const grid_map_msgs::GridMap& map_msg)
 {
   grid_map::GridMapRosConverter::fromMessage(map_msg, map_);
   planner_.setMapPtr(std::make_shared<grid_map::GridMap>(map_));
+  if (!received_map_)
+  {
+    ui->generate_plan_label->setText(QString::fromStdString("The map been received, ready to generate the plan."));
+  }
   received_map_ = true;
-  ui->generate_plan_label->setText(QString::fromStdString("The map been received, ready to generate the plan."));
 }
 
 void PlannerController::odomCallback(const nav_msgs::Odometry& odom)
@@ -173,6 +190,8 @@ void PlannerController::odomCallback(const nav_msgs::Odometry& odom)
 
 void PlannerController::makePlan()
 {
+  ui->generate_plan_label->setText(QString::fromStdString("Generating Plan: Iteration number 0"));
+  planning_in_progress_ = true;
   std::vector<geometry_msgs::PoseStamped> plan;
   double cost;
   std::string message;
@@ -186,6 +205,8 @@ void PlannerController::makePlan()
   {
     ROS_INFO_STREAM(pose);
   }
+  ui->generate_plan_label->setText(QString::fromStdString("Plan Generation Complete."));
+  planning_in_progress_ = false;
 }
 
 void PlannerController::executePlan()

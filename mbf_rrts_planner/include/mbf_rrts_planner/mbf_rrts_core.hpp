@@ -62,6 +62,8 @@ public:
   void setSeed(int seed);
   void setDistanceFactor(double distance_factor);
 
+  int current_iteration_number = 0;
+
 private:
   bool cancel_requested_ = false;
   GridMapPtr grid_map_;
