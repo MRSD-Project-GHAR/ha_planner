@@ -12,13 +12,7 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
   clicked_point_sub_ = nh_private.subscribe("clicked_point", 10, &PlannerController::clickedPointCallback, this);
   odom_sub_ = nh_private.subscribe("odom", 10, &PlannerController::odomCallback, this);
   path_pub_ = nh_private.advertise<nav_msgs::Path>("path", 10);
-  // timer_ = nh_private.createTimer(ros::Duration(0.1), &PlannerController::publishPlan, this);
 
-  // plan_service_ = nh_private.advertiseService("generate_plan", &PlannerController::planServiceCallback, this);
-  // execute_service_ = nh_private.advertiseService("execute_plan", &PlannerController::executeServiceCallback, this);
-  // get_start_service_ = nh_private.advertiseService("get_start_pose", &PlannerController::getStartServiceCallback,
-  // this); get_goal_service_ = nh_private.advertiseService("get_goal_pose", &PlannerController::getGoalServiceCallback,
-  // this);
   QObject::connect(ui->generate_plan_button, &QPushButton::clicked, this,
                    &PlannerController::generatePlanButtonClicked);
   QObject::connect(ui->execute_plan_button, &QPushButton::clicked, this, &PlannerController::executePlanButtonClicked);
@@ -30,8 +24,6 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
   QObject::connect(ui->change_iterations_button, &QPushButton::clicked, this,
                    &PlannerController::changeIterationButtonClicked);
 
-  // PUT BUTTON TO GET ODOMETERY FROM TOPIC
-
   start_.pose.position.x = 0;
   start_.pose.position.y = 1;
 
@@ -42,6 +34,8 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
   action_server_initialized_ = action_client_.waitForServer(ros::Duration(5.0));
   if (action_server_initialized_)
   {
+    ui->execute_plan_label->setText(QString::fromStdString("Move base action server started, can execute plan after "
+                                                           "plan generation"));
     ROS_INFO_STREAM("Global Planner: move_base action server started.");
   }
   else
@@ -83,7 +77,6 @@ void PlannerController::generatePlanButtonClicked()
 {
   if (received_map_)
   {
-    // makePlan();
     if (!planner_thread_.joinable())
     {
       planner_thread_ = std::thread(&PlannerController::makePlan, this);
@@ -206,6 +199,7 @@ void PlannerController::makePlan()
     ROS_INFO_STREAM(pose);
   }
   ui->generate_plan_label->setText(QString::fromStdString("Plan Generation Complete."));
+  plan_made_ = true;
   planning_in_progress_ = false;
 }
 
