@@ -51,7 +51,7 @@ MainWindow::MainWindow(rand_grid_map_gen::RandomMapGen* map, ros::NodeHandle nh_
   // ui->orientation->setValidator(new QDoubleValidator(0.0, 360.0, 2, this));
 
   grid_map_publisher_ = nh_private.advertise<grid_map_msgs::GridMap>("map", 1000);
-  reload_params_srv_ = nh.serviceClient<std_srvs::Empty>("/grid_map_filter_a/reload_filters");
+  reload_params_srv_ = nh.serviceClient<std_srvs::Empty>("/reload_filters");
   nh_private.param("yaml_file_name", yaml_savepath, std::string("/opt/ros/"));
 }
 
@@ -244,8 +244,10 @@ void MainWindow::setParamButtonPressed()
   myfile.close();
 
   std::string roslaunch_command =
-      "roslaunch rand_grid_map_gen load_filters.launch ns:=grid_map_filter filename:=" + filename;
+      "roslaunch rand_grid_map_gen load_filters.launch ns:=grid_map_filter_" + robot_name + " filename:=" + filename;
   int result = system(roslaunch_command.c_str());
+
+  ROS_ERROR("REsult of operation: %d", result);
 
   std_srvs::EmptyRequest req;
   std_srvs::EmptyResponse resp;
