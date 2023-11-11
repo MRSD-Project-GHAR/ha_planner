@@ -23,6 +23,9 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
   QObject::connect(ui->change_iterations_button, &QPushButton::clicked, this,
                    &PlannerController::changeIterationButtonClicked);
 
+  QObject::connect(ui->cancel_plan_execution_button, &QPushButton::clicked, this,
+                   &PlannerController::cancelPlanExecutionButtonClicked);
+
   nh_private.param<std::string>("robot_frame", robot_frame_, "camera_link");
   nh_private.param<std::string>("world_frame", world_frame_, "world");
 
@@ -142,7 +145,8 @@ void PlannerController::getStartTFButtonClicked()
   catch (tf2::TransformException& ex)
   {
     // auto transform = tf_buffer.lookupTransform(robot_frame_, world_frame_, ros::Time(0));
-    ui->start_point_label->setText(QString::fromStdString("Couldn't get the transform. Error: " + std::string(ex.what())));
+    ui->start_point_label->setText(
+        QString::fromStdString("Couldn't get the transform. Error: " + std::string(ex.what())));
     return;
   }
 
@@ -247,11 +251,47 @@ void PlannerController::executePlan()
     ROS_INFO_STREAM(goal.target_pose);
 
     action_client_.sendGoal(goal);
-    action_client_.waitForResult();
-    ROS_INFO_STREAM("Goal reached");
-    current_waypoint++;
+    // action_client_.waitForResult();
+
+    auto dur = ros::Duration(0.1);
+
+    while (!action_client_.getState().isDone())
+    {
+      if (cancel_execution_)
+      {
+        action_client_.cancelAllGoals();
+        break;
+      }
+      dur.sleep();
+    }
+
+    if (cancel_execution_)
+    {
+      ROS_INFO_STREAM("Execution cancelled");
+      cancel_execution_ = false;
+      break;
+    }
+    else
+    {
+      ROS_INFO_STREAM("Goal reached");
+      current_waypoint++;
+    }
   }
-  execution_in_progress_ = true;
+  if (cancel_execution_)
+  {
+    ui->execute_plan_label->setText(QString::fromStdString("Plan execution cancelled."));
+    cancel_execution_ = false;
+  }
+  else
+  {
+    ui->execute_plan_label->setText(QString::fromStdString("Reached final waypoint, plan execution complete."));
+  }
+  execution_in_progress_ = false;
+}
+
+void PlannerController::cancelPlanExecutionButtonClicked()
+{
+  cancel_execution_ = true;
 }
 
 void PlannerController::publishPlan()

@@ -19,7 +19,6 @@
 #include <nav_msgs/Odometry.h>
 #include "mbf_rrts_planner/mbf_rrts_core.hpp"
 
-
 namespace Ui
 {
 class PlannerController;
@@ -39,6 +38,7 @@ public:
   void getStartRVizButtonClicked();
   void getGoalButtonClicked();
   void changeIterationButtonClicked();
+  void cancelPlanExecutionButtonClicked();
 
   void clickedPointCallback(const geometry_msgs::PointStamped& point);
 
@@ -80,6 +80,7 @@ private:
   bool action_server_initialized_;
   bool planning_in_progress_ = false;
   bool execution_in_progress_ = false;
+  bool cancel_execution_ = false;
   int current_waypoint = 0;
   std::thread planner_thread_;
   std::thread execute_thread_;
