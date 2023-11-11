@@ -27,9 +27,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="odom_start_point_button">
+         <widget class="QPushButton" name="tf_start_point_button">
           <property name="text">
-           <string>Get Start Point from Odometry</string>
+           <string>Get Start Point from TF tree</string>
           </property>
          </widget>
         </item>

@@ -35,7 +35,7 @@ public:
 
   void generatePlanButtonClicked();
   void executePlanButtonClicked();
-  void getStartOdomButtonClicked();
+  void getStartTFButtonClicked();
   void getStartRVizButtonClicked();
   void getGoalButtonClicked();
   void changeIterationButtonClicked();
@@ -43,8 +43,6 @@ public:
   void clickedPointCallback(const geometry_msgs::PointStamped& point);
 
   void mapCallback(const grid_map_msgs::GridMap& map_msg);
-
-  void odomCallback(const nav_msgs::Odometry& odom);
 
   void makePlan();
 
@@ -57,7 +55,6 @@ public:
 private:
   enum class MODE
   {
-    GET_START_POSE_FROM_ODOM,
     GET_START_POSE_FROM_RVIZ,
     GET_GOAL_POSE,
     IDLE
@@ -69,7 +66,6 @@ private:
   geometry_msgs::PoseStamped start_;
   geometry_msgs::PoseStamped goal_;
 
-  ros::Subscriber odom_sub_;
   ros::Subscriber map_sub_;
   ros::Subscriber clicked_point_sub_;
   ros::ServiceServer plan_service_;
@@ -83,9 +79,15 @@ private:
   bool plan_made_;
   bool action_server_initialized_;
   bool planning_in_progress_ = false;
+  bool execution_in_progress_ = false;
+  int current_waypoint = 0;
   std::thread planner_thread_;
+  std::thread execute_thread_;
   ros::Timer timer_;
   MODE mode_;
+
+  std::string robot_frame_;
+  std::string world_frame_;
 
   Ui::PlannerController* ui;
 };

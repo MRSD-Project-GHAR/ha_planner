@@ -2,6 +2,7 @@
 #include <nav_msgs/Path.h>
 
 #include "mbf_rrts_planner/ui_control_panel.h"
+#include <tf2_ros/transform_listener.h>
 
 PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_private, QWidget* parent)
   : QMainWindow(parent), action_client_("move_base", true), ui(new Ui::PlannerController)
@@ -10,7 +11,6 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
   ui->setupUi(this);
   map_sub_ = nh_private.subscribe("map_topic", 10, &PlannerController::mapCallback, this);
   clicked_point_sub_ = nh_private.subscribe("clicked_point", 10, &PlannerController::clickedPointCallback, this);
-  odom_sub_ = nh_private.subscribe("odom", 10, &PlannerController::odomCallback, this);
   path_pub_ = nh_private.advertise<nav_msgs::Path>("path", 10);
 
   QObject::connect(ui->generate_plan_button, &QPushButton::clicked, this,
@@ -18,11 +18,13 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
   QObject::connect(ui->execute_plan_button, &QPushButton::clicked, this, &PlannerController::executePlanButtonClicked);
   QObject::connect(ui->rviz_start_point_button, &QPushButton::clicked, this,
                    &PlannerController::getStartRVizButtonClicked);
-  QObject::connect(ui->odom_start_point_button, &QPushButton::clicked, this,
-                   &PlannerController::getStartOdomButtonClicked);
+  QObject::connect(ui->tf_start_point_button, &QPushButton::clicked, this, &PlannerController::getStartTFButtonClicked);
   QObject::connect(ui->goal_point_button, &QPushButton::clicked, this, &PlannerController::getGoalButtonClicked);
   QObject::connect(ui->change_iterations_button, &QPushButton::clicked, this,
                    &PlannerController::changeIterationButtonClicked);
+
+  nh_private.param<std::string>("robot_frame", robot_frame_, "camera_link");
+  nh_private.param<std::string>("world_frame", world_frame_, "world");
 
   start_.pose.position.x = 0;
   start_.pose.position.y = 1;
@@ -65,6 +67,10 @@ void PlannerController::timerCallback()
     planner_thread_.join();
   }
 
+  if (!execution_in_progress_ && execute_thread_.joinable())
+  {
+    execute_thread_.join();
+  }
   ros::spinOnce();
 }
 
@@ -90,9 +96,21 @@ void PlannerController::generatePlanButtonClicked()
 
 void PlannerController::executePlanButtonClicked()
 {
-  if (plan_made_ && action_server_initialized_)
+  if (planning_in_progress_)
   {
-    executePlan();
+    ui->execute_plan_label->setText(QString::fromStdString("The plan is still being generated, cannot execute the "
+                                                           "plan."));
+  }
+  else if (execution_in_progress_)
+  {
+    ui->execute_plan_label->setText(QString::fromStdString("A plan is already executing."));
+  }
+  else if (plan_made_ && action_server_initialized_)
+  {
+    if (!execute_thread_.joinable())
+    {
+      execute_thread_ = std::thread(&PlannerController::executePlan, this);
+    }
   }
   else
   {
@@ -108,11 +126,33 @@ void PlannerController::getStartRVizButtonClicked()
   ui->start_point_label->setText(QString::fromStdString("Waiting for Start Pose from RViz"));
 }
 
-void PlannerController::getStartOdomButtonClicked()
+void PlannerController::getStartTFButtonClicked()
 {
-  mode_ = MODE::GET_START_POSE_FROM_ODOM;
-  ROS_INFO("Global Planner: Waiting for Start Pose");
-  ui->start_point_label->setText(QString::fromStdString("Waiting for Start Pose from Odom"));
+  ROS_INFO("Listening to TF for start pose");
+  ui->start_point_label->setText(QString::fromStdString("Waiting for Start Pose from TF tree"));
+
+  tf2_ros::Buffer tf_buffer;
+  tf2_ros::TransformListener tf_listener(tf_buffer);
+  geometry_msgs::TransformStamped transform;
+  try
+  {
+    transform = tf_buffer.lookupTransform(world_frame_, robot_frame_, ros::Time(0),
+                                          ros::Duration(1.0));  // Adjust the timeout as needed
+  }
+  catch (tf2::TransformException& ex)
+  {
+    // auto transform = tf_buffer.lookupTransform(robot_frame_, world_frame_, ros::Time(0));
+    ui->start_point_label->setText(QString::fromStdString("Couldn't get the transform. Error: " + std::string(ex.what())));
+    return;
+  }
+
+  start_.pose.position.x = transform.transform.translation.x;
+  start_.pose.position.y = transform.transform.translation.y;
+  std::stringstream message;
+  message << "Start pose received from TF Tree: (" << std::to_string(start_.pose.position.x) << ", "
+          << std::to_string(start_.pose.position.y) << ")";
+  // message.append(std::to_string(goal_.pose.position.x));
+  ui->start_point_label->setText(QString::fromStdString(message.str()));
 }
 
 void PlannerController::getGoalButtonClicked()
@@ -167,20 +207,6 @@ void PlannerController::mapCallback(const grid_map_msgs::GridMap& map_msg)
   received_map_ = true;
 }
 
-void PlannerController::odomCallback(const nav_msgs::Odometry& odom)
-{
-  if (mode_ == MODE::GET_START_POSE_FROM_ODOM)
-  {
-    start_.pose = odom.pose.pose;
-    mode_ = MODE::IDLE;
-    ROS_INFO("Global Planner: Received Start pose from Odometry");
-    std::stringstream message;
-    message << "Start pose received from odometry: (" << std::to_string(start_.pose.position.x) << ", "
-            << std::to_string(start_.pose.position.y) << ")";
-    ui->start_point_label->setText(QString::fromStdString(message.str()));
-  }
-}
-
 void PlannerController::makePlan()
 {
   ui->generate_plan_label->setText(QString::fromStdString("Generating Plan: Iteration number 0"));
@@ -198,15 +224,21 @@ void PlannerController::makePlan()
   {
     ROS_INFO_STREAM(pose);
   }
-  ui->generate_plan_label->setText(QString::fromStdString("Plan Generation Complete."));
+  ui->generate_plan_label->setText(
+      QString::fromStdString("Plan Generation Complete: Cost of the path is " + std::to_string(cost)));
   plan_made_ = true;
   planning_in_progress_ = false;
 }
 
 void PlannerController::executePlan()
 {
+  execution_in_progress_ = true;
+  current_waypoint = 0;
   for (auto pose : plan_)
   {
+    ui->execute_plan_label->setText(
+        QString::fromStdString("Trying to reach waypoint: " + std::to_string(current_waypoint) + ", pose is " +
+                               std::to_string(pose.pose.position.x) + ", " + std::to_string(pose.pose.position.y)));
     move_base_msgs::MoveBaseGoal goal;
     goal.target_pose = pose;
     goal.target_pose.header.frame_id = "world";
@@ -217,7 +249,9 @@ void PlannerController::executePlan()
     action_client_.sendGoal(goal);
     action_client_.waitForResult();
     ROS_INFO_STREAM("Goal reached");
+    current_waypoint++;
   }
+  execution_in_progress_ = true;
 }
 
 void PlannerController::publishPlan()
