@@ -209,7 +209,7 @@ void PlannerController::executePlan()
   {
     move_base_msgs::MoveBaseGoal goal;
     goal.target_pose = pose;
-    goal.target_pose.header.frame_id = "map";
+    goal.target_pose.header.frame_id = "world";
 
     ROS_INFO_STREAM("Sending new  ");
     ROS_INFO_STREAM(goal.target_pose);
@@ -229,7 +229,7 @@ void PlannerController::publishPlan()
     path.poses.push_back(plan_[i]);
   }
 
-  path.header.frame_id = "map";
+  path.header.frame_id = "world";
   path.header.stamp = ros::Time::now();
   path.header.seq = seq;
   seq++;
