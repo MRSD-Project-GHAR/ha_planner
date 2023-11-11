@@ -169,13 +169,16 @@
         <item>
          <widget class="QSpinBox" name="iteration_numer_spinbox">
           <property name="minimum">
-           <number>1500</number>
+           <number>500</number>
           </property>
           <property name="maximum">
            <number>3000</number>
           </property>
           <property name="singleStep">
            <number>25</number>
+          </property>
+          <property name="value">
+           <number>1500</number>
           </property>
          </widget>
         </item>
