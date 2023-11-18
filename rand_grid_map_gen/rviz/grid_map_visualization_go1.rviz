@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /GridMap1
-        - /GridMap1/Status1
         - /Path1
         - /Path1/Offset1
         - /Path2
@@ -162,7 +161,7 @@ Visualization Manager:
         Shaft Length: 0.10000000149011612
         Shaft Radius: 0.05000000074505806
         Value: Arrow
-      Topic: /rtabmap/odom
+      Topic: /odom
       Unreliable: false
       Value: true
     - Alpha: 0.699999988079071
@@ -203,7 +202,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 27.058204650878906
+      Distance: 13.00750732421875
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -219,9 +218,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7797969579696655
+      Pitch: 0.6697973012924194
       Target Frame: <Fixed Frame>
-      Yaw: 5.176812648773193
+      Yaw: 3.926811695098877
     Saved:
       - Class: rviz/Orbit
         Distance: 13.063237190246582
