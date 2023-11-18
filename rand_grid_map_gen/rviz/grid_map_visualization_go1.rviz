@@ -7,6 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
         - /GridMap1
+        - /GridMap1/Status1
         - /Path1
         - /Path1/Offset1
         - /Path2
@@ -178,7 +179,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: map
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
@@ -202,7 +203,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 40.777130126953125
+      Distance: 27.058204650878906
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -210,17 +211,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 1.7028695344924927
-        Y: -0.30859631299972534
-        Z: -2.7745606899261475
+        X: -1.7150753736495972
+        Y: 0.42845818400382996
+        Z: 0.73861163854599
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1797964572906494
+      Pitch: 0.7797969579696655
       Target Frame: <Fixed Frame>
-      Yaw: 1.1686457395553589
+      Yaw: 5.176812648773193
     Saved:
       - Class: rviz/Orbit
         Distance: 13.063237190246582

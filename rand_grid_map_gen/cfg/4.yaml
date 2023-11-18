@@ -121,3 +121,51 @@ Obstacles:
     roughness: 6.952525901507504e-310
     orientation: 4.658391108677367e-310
     name: Custom Obstacle 20
+  - x: -7.1
+    y: 0
+    height: 1
+    width: 12.5
+    length: 0.2
+    slope1: 90
+    slope2: 90
+    slope3: 90
+    slope4: 90
+    roughness: 6.953107026533526e-310
+    orientation: 4.68634713655048e-310
+    name: Custom Obstacle 21
+  - x: 7.1
+    y: 0
+    height: 1
+    width: 12.5
+    length: 0.2
+    slope1: 90
+    slope2: 90
+    slope3: 90
+    slope4: 90
+    roughness: 6.953107026533526e-310
+    orientation: 4.68634713655048e-310
+    name: Custom Obstacle 22
+  - x: 0
+    y: 6.25
+    height: 1
+    width: 0.2
+    length: 14.1
+    slope1: 90
+    slope2: 90
+    slope3: 90
+    slope4: 90
+    roughness: 6.953107026533526e-310
+    orientation: 4.68634713655048e-310
+    name: Custom Obstacle 23
+  - x: 0
+    y: -6.25
+    height: 1
+    width: 0.2
+    length: 14.1
+    slope1: 90
+    slope2: 90
+    slope3: 90
+    slope4: 90
+    roughness: 6.953107026533526e-310
+    orientation: 4.68634713655048e-310
+    name: Custom Obstacle 24
