@@ -176,13 +176,13 @@ Obstacles:
     length: 2.44
     slope1: 90
     slope2: 90
-    slope3: 3.01
-    slope4: 3.01
-    roughness: 6.953001053789203e-310
-    orientation: 4.645807456111143e-310
+    slope3: 9
+    slope4: 9
+    roughness: 4.681198916592583e-310
+    orientation: 0
     name: Custom Obstacle 25
   - x: 0.55
-    y: -5.02
+    y: -4.5
     height: 0.15
     width: 0.54
     length: 1.18
@@ -190,8 +190,8 @@ Obstacles:
     slope2: 90
     slope3: 90
     slope4: 90
-    roughness: 6.953001053789203e-310
-    orientation: 4.645807456111143e-310
+    roughness: 4.681198916592583e-310
+    orientation: 0
     name: Custom Obstacle 26
   - x: 3.77
     y: -5.15
