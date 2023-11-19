@@ -23,7 +23,7 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: elevation_threshold
-      expression: ((step(elevation - 0.200000) + 2) .* (-step(original_slope - 20.000000*(3.14/180)) + 2)) - 1
+      expression: ((step(elevation - 0.600000) + 2) .* (-step(original_slope - 20.000000*(3.14/180)) + 2)) - 1
   - name: elevation_threshold_clamped
     type: gridMapFilters/ThresholdFilter
     params:
@@ -40,7 +40,7 @@ grid_map_filters:
     type: gridMapFilters/MathExpressionFilter
     params:
       output_layer: slope_factor
-      expression: (step(elevation) .* (step(elevation - 0.200000))) + 1
+      expression: (step(elevation) .* (step(elevation - 0.600000))) + 1
   - name: slope_factor_clamped
     type: gridMapFilters/ThresholdFilter
     params:
