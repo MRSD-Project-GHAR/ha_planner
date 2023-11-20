@@ -185,7 +185,7 @@
            <number>25</number>
           </property>
           <property name="value">
-           <number>1500</number>
+           <number>2000</number>
           </property>
          </widget>
         </item>
@@ -205,7 +205,7 @@
         <item>
          <widget class="QLabel" name="iteration_number_label">
           <property name="text">
-           <string>Currently, the number of iterations is 1500</string>
+           <string>Currently, the number of iterations is 2000</string>
           </property>
          </widget>
         </item>

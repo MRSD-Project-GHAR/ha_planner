@@ -69,7 +69,7 @@ private:
   GridMapPtr grid_map_;
   std::vector<RRTNode::RRTNodePtr> nodes;
   std::string layer_name_;
-  int iterations_ = 1500;
+  int iterations_ = 2000;
   double neighbourhood_size_ = 4.0;
   int seed_ = 123;
   double distance_factor_ = 7.0;
