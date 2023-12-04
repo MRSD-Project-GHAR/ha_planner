@@ -1,0 +1,68 @@
+grid_map_filters:
+  - name: first
+    type: gridMapFilters/MockFilter
+    params:
+      processing_time: 100
+      print_name: true
+  - name: buffer_normalizer
+    type: gridMapFilters/BufferNormalizerFilter
+  - name: surface_normals_original
+    type: gridMapFilters/NormalVectorsFilter
+    params:
+      input_layer: elevation
+      output_layers_prefix: orig_normal_vectors_
+      radius: 0.4
+      normal_vector_positive_axis: z
+      parallelization_enabled: true
+  - name: original_slope
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: original_slope
+      expression: acos(orig_normal_vectors_z)
+  - name: elevation_threshold
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: elevation_threshold
+      expression: ((step(elevation - 0.020000) + 2) .* (-step(original_slope - 10.000000*(3.14/180)) + 2)) - 1
+  - name: elevation_threshold_clamped
+    type: gridMapFilters/ThresholdFilter
+    params:
+      condition_layer: elevation_threshold
+      output_layer: elevation_threshold
+      upper_threshold: 0.1
+      set_to: 1.0
+  - name: final_elevation
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: final_elevation
+      expression: elevation_threshold .* elevation
+  - name: slope_factor
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: slope_factor
+      expression: (step(elevation) .* (step(elevation - 0.020000))) + 1
+  - name: slope_factor_clamped
+    type: gridMapFilters/ThresholdFilter
+    params:
+      condition_layer: slope_factor
+      output_layer: slope_factor
+      upper_threshold: 0.1
+      set_to: 1.0
+  - name: surface_normals
+    type: gridMapFilters/NormalVectorsFilter
+    params:
+      input_layer: final_elevation
+      output_layers_prefix: normal_vectors_
+      radius: 0.4
+      normal_vector_positive_axis: z
+      parallelization_enabled: true
+  - name: slope
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: slope
+      expression: acos(normal_vectors_z)
+  - name: traversability
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: traversability
+      expression: (slope_factor .* (1.000000*slope + 10000*(step(slope - 10.000000*(3.14/180)) + 1)))

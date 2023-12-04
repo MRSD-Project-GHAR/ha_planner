@@ -62,23 +62,25 @@ public:
   void setSeed(int seed);
   void setDistanceFactor(double distance_factor);
 
+  int current_iteration_number = 0;
+
 private:
   bool cancel_requested_ = false;
   GridMapPtr grid_map_;
   std::vector<RRTNode::RRTNodePtr> nodes;
   std::string layer_name_;
-  int iterations_ = 1000;  
-  double neighbourhood_size_ = 2.0;
-  int seed_ = 10;
-  double distance_factor_ = 3.5;
+  int iterations_ = 2000;
+  double neighbourhood_size_ = 4.0;
+  int seed_ = 123;
+  double distance_factor_ = 7.0;
 
   // std::unordered_map < std::pair<double, double>, RRTNode::RRTNodePtr, RRTNodeHash> nodes_map;
 
   /**
    * @brief Finds the neighbours nearest to a node in the tree.
    * @details This function finds the neighbours nearest to the given node. The function checks for nodes that are
-   * within a certain neighbourhood of the given node. If no such node exists, it just returns the closest node to the given
-   * node. Hence, it is always guaranteed to return at least one neighbour if the tree is not empty.
+   * within a certain neighbourhood of the given node. If no such node exists, it just returns the closest node to the
+   * given node. Hence, it is always guaranteed to return at least one neighbour if the tree is not empty.
    * @param node The node whose nearest neighbours need to be found
    * @param neighbourhood_size The size of the bounding box within which neighbours have to be found
    * @return A vector of nearest neighbours.
