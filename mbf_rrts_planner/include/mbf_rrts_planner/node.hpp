@@ -55,7 +55,7 @@ public:
    * @param node The pointer to the node to which the cost needs to be calculated
    * @return The cost to traverse between this node and the passed node parameter
    */
-  double getCost(RRTNodePtr node, double distance_factor);
+  double getCost(RRTNodePtr node, double distance_factor, double yaw_factor);
 
   /**
    * @brief Sets the parent of this node.
@@ -63,7 +63,7 @@ public:
    * cases.
    * @param parent The pointer to the node that is going to be the new parent of this node
    */
-  void setParent(RRTNodePtr parent, double distance_factor);
+  void setParent(RRTNodePtr parent, double distance_factor, double yaw_factor);
 
   /**
    * @return Returns the pointer to the current parent of this node
@@ -76,9 +76,13 @@ public:
   geometry_msgs::PoseStamped getPoseStampedMsg();
   double cost;
 
-  double x, y;
+  double x, y, yaw;
 
 private:
+
+  double quaternionToYaw(geometry_msgs::Quaternion& q);
+  geometry_msgs::Quaternion yawToQuaternion(double yaw);
+
   RRTNodePtr parent_;
   std::list<RRTNodePtr> children_;
   GridMapPtr map_;
