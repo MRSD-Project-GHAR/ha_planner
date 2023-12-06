@@ -10,7 +10,7 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
 {
   ui->setupUi(this);
   map_sub_ = nh_private.subscribe("map_topic", 10, &PlannerController::mapCallback, this);
-  clicked_point_sub_ = nh_private.subscribe("clicked_point", 10, &PlannerController::clickedPointCallback, this);
+  clicked_point_sub_ = nh_private.subscribe("initialpose", 10, &PlannerController::clickedPointCallback, this);
   path_pub_ = nh_private.advertise<nav_msgs::Path>("path", 10);
   markers_pub_ = nh_private.advertise<visualization_msgs::MarkerArray>("path_markers", 10);
 
@@ -175,11 +175,11 @@ void PlannerController::changeIterationButtonClicked()
   ui->iteration_number_label->setText(QString::fromStdString(message.str()));
 }
 
-void PlannerController::clickedPointCallback(const geometry_msgs::PointStamped& point)
+void PlannerController::clickedPointCallback(const geometry_msgs::PoseWithCovarianceStamped& point)
 {
   if (mode_ == MODE::GET_GOAL_POSE)
   {
-    goal_.pose.position = point.point;
+    goal_.pose = point.pose.pose;
     mode_ = MODE::IDLE;
     ROS_INFO("Global Planner: Received Goal pose");
     std::stringstream message;
@@ -190,7 +190,7 @@ void PlannerController::clickedPointCallback(const geometry_msgs::PointStamped& 
   }
   else if (mode_ == MODE::GET_START_POSE_FROM_RVIZ)
   {
-    start_.pose.position = point.point;
+    start_.pose = point.pose.pose;
     mode_ = MODE::IDLE;
     ROS_INFO("Global Planner: Received Start pose from RViz");
     std::stringstream message;

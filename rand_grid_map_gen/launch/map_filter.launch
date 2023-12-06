@@ -23,7 +23,7 @@
     </node> 
 
   <node name="rviz_$(arg robot_name)" pkg="rviz" type="rviz" args="-d $(find rand_grid_map_gen)/rviz/grid_map_visualization_$(arg robot_name).rviz" respawn="true">
-    <remap from="clicked_point" to="$(arg robot_name)_rrts_planner/clicked_point" />
+    <remap from="/initialpose" to="$(arg robot_name)_rrts_planner/initialpose" />
   </node>
 
 </launch>

@@ -19,6 +19,8 @@
 #include <nav_msgs/Odometry.h>
 #include "mbf_rrts_planner/mbf_rrts_core.hpp"
 #include <visualization_msgs/MarkerArray.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+
 
 namespace Ui
 {
@@ -41,7 +43,7 @@ public:
   void changeIterationButtonClicked();
   void cancelPlanExecutionButtonClicked();
 
-  void clickedPointCallback(const geometry_msgs::PointStamped& point);
+  void clickedPointCallback(const geometry_msgs::PoseWithCovarianceStamped& point);
 
   void mapCallback(const grid_map_msgs::GridMap& map_msg);
 

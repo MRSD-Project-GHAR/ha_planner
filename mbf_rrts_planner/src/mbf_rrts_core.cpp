@@ -29,7 +29,7 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
   grid_map::Index dummy_index;
   grid_map::Position start_grid_map_pose({ start.pose.position.x, start.pose.position.y });
-  grid_map::Position goal_grid_map_pose({ start.pose.position.x, start.pose.position.y });
+  grid_map::Position goal_grid_map_pose({ goal.pose.position.x, goal.pose.position.y });
   bool start_valid = grid_map_->getIndex(start_grid_map_pose, dummy_index);
   bool goal_valid = grid_map_->getIndex(goal_grid_map_pose, dummy_index);
 
@@ -50,14 +50,16 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
   RRTNode::RRTNodePtr start_node = std::make_shared<RRTNode>(grid_map_, layer_name_, start);
   start_node->cost = 0;
-  start_node->yaw = 0;
+  auto start_orient = start.pose.orientation;
+  start_node->yaw = quaternionToYaw(start_orient);
   // start_node->yaw = quaternionToYaw(start)
 
   node_tree.addNode(start_node);
 
   RRTNode::RRTNodePtr goal_node = std::make_shared<RRTNode>(grid_map_, layer_name_, goal);
   goal_node->cost = DBL_MAX;
-  goal_node->yaw = 0;
+  auto goal_orient = goal.pose.orientation;
+  goal_node->yaw = quaternionToYaw(goal_orient);
   // std::cout << "Added start and goal node\n";
 
   std::cout << "Starting the iterations" << iterations_ << "\n";
@@ -187,6 +189,11 @@ void RRTSPlanner::setSeed(int seed)
 void RRTSPlanner::setYawFactor(double yaw_factor)
 {
   yaw_factor_ = yaw_factor;
+}
+
+double RRTSPlanner::quaternionToYaw(geometry_msgs::Quaternion& q)
+{
+  return atan2(2.0 * (q.z * q.w + q.x * q.y), -1.0 + 2.0 * (q.w * q.w + q.x * q.x));
 }
 
 }  // namespace mbf_rrts_core
