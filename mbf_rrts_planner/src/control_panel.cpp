@@ -12,6 +12,7 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
   map_sub_ = nh_private.subscribe("map_topic", 10, &PlannerController::mapCallback, this);
   clicked_point_sub_ = nh_private.subscribe("clicked_point", 10, &PlannerController::clickedPointCallback, this);
   path_pub_ = nh_private.advertise<nav_msgs::Path>("path", 10);
+  markers_pub_ = nh_private.advertise<visualization_msgs::MarkerArray>("path_markers", 10);
 
   QObject::connect(ui->generate_plan_button, &QPushButton::clicked, this,
                    &PlannerController::generatePlanButtonClicked);
@@ -297,11 +298,53 @@ void PlannerController::cancelPlanExecutionButtonClicked()
 void PlannerController::publishPlan()
 {
   nav_msgs::Path path;
+  visualization_msgs::MarkerArray marker_array;
   static long int seq = 0;
+  int id = 0;
   for (int i = 0; i < plan_.size(); i++)
   {
     path.poses.push_back(plan_[i]);
+    // if (i == 0) {
+    //   continue;
+    // }
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = "world";
+    marker.header.stamp = ros::Time();
+    marker.ns = "my_namespace";
+    marker.id = id;
+    id++;
+    marker.type = visualization_msgs::Marker::ARROW;
+    marker.action = visualization_msgs::Marker::ADD;
+    // marker.pose.position.x = ;
+    // marker.pose.position.y = 1;
+    // marker.pose.position.z = 1;
+    marker.pose.position = plan_[i].pose.position;
+    marker.pose.orientation = plan_[i].pose.orientation;
+    // marker.pose.orientation.x = 0.0;
+    // marker.pose.orientation.y = 0.0;
+    // marker.pose.orientation.z = 0.0;
+    // marker.pose.orientation.w = 1.0;
+    marker.scale.x = 0.5;
+    marker.scale.y = 0.1;
+    marker.scale.z = 0.1;
+    marker.color.a = 1.0;  // Don't forget to set the alpha!
+    marker.color.r = 0.0;
+    marker.color.g = 0.0;
+    marker.color.b = 0.0;
+
+    if (i == 0)
+    {
+      marker.color.b = 1.0;
+    }
+    else
+    {
+      marker.color.r = 1.0;
+    }
+    // only if using a MESH_RESOURCE marker type:
+    // marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
+    marker_array.markers.push_back(marker);
   }
+  markers_pub_.publish(marker_array);
 
   path.header.frame_id = "world";
   path.header.stamp = ros::Time::now();

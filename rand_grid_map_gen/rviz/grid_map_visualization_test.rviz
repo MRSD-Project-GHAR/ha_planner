@@ -62,7 +62,7 @@ Visualization Manager:
       Autocompute Intensity Bounds: true
       Class: grid_map_rviz_plugin/GridMap
       Color: 200; 200; 200
-      Color Layer: elevation
+      Color Layer: traversability
       Color Transformer: ""
       ColorMap: turbo
       Enabled: true
@@ -103,7 +103,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /locobot_rrts_planner/path
+      Topic: /test_rrts_planner/path
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -175,6 +175,14 @@ Visualization Manager:
       Unreliable: false
       Use Timestamp: false
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /test_rrts_planner/path_markers
+      Name: MarkerArray
+      Namespaces:
+        my_namespace: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -202,7 +210,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 0
+      Angle: -0.004999649710953236
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -212,10 +220,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 51.87113952636719
+      Scale: 76.1817855834961
       Target Frame: <Fixed Frame>
-      X: 0.2428649216890335
-      Y: 0.36486920714378357
+      X: -4.325599670410156
+      Y: 4.335009574890137
     Saved:
       - Class: rviz/Orbit
         Distance: 13.063237190246582

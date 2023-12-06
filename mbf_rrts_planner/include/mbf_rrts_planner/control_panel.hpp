@@ -18,6 +18,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <nav_msgs/Odometry.h>
 #include "mbf_rrts_planner/mbf_rrts_core.hpp"
+#include <visualization_msgs/MarkerArray.h>
 
 namespace Ui
 {
@@ -73,6 +74,7 @@ private:
   ros::ServiceServer get_goal_service_;
   ros::ServiceServer get_start_service_;
   ros::Publisher path_pub_;
+  ros::Publisher markers_pub_;
 
   std::vector<geometry_msgs::PoseStamped> plan_;
   bool received_map_;

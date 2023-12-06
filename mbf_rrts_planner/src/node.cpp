@@ -83,13 +83,13 @@ double RRTNode::getCost(RRTNodePtr node, double distance_factor, double yaw_fact
   // std::cout << "Original point : " << node->x << ", " << node->y << "\n";
   // std::cout << "New point : " << x << ", " << y << "\n";
 
-  double cost = distance_factor * total_length + yaw_factor * total_yaw_change;
-  for (double length = 0; length < total_length; length += resolution)
+  double cost = distance_factor * total_length + yaw_factor * start_yaw_change;
+  for (double length = 0; length < total_length; length += footprint.second)
   {
     double new_x = node->x + length * cos(slope);
     double new_y = node->y + length * sin(slope);
 
-    cost += map_->atPosition(layer_name_, { new_x, new_y });
+    cost += getCostAtCell({ new_x, new_y }, yaw);
   }
 
   // std::cout << "Cost to this node is " << cost << "\n";
@@ -129,10 +129,45 @@ geometry_msgs::PoseStamped RRTNode::getPoseStampedMsg()
   node.pose.position.x = x;
   node.pose.position.y = y;
   node.pose.position.z = 0.5;
-
-  node.pose.orientation.w = 1;
+  node.pose.orientation = yawToQuaternion(yaw);
+  std::cout << "Yaw is :" << yaw << "\n";
+  std::cout << "Pose is : " << x << ", " << y << "\n\n";
 
   return node;
+}
+
+grid_map::Position RRTNode::transformPointToGlobalFrame(grid_map::Position original_point, double robot_yaw,
+                                                        grid_map::Position robot_centre)
+{
+  grid_map::Position result;
+  result.x() = original_point.x() * cos(-yaw) - original_point.y() * sin(-yaw) + robot_centre.x();
+  result.y() = original_point.x() * sin(-yaw) + original_point.y() * cos(-yaw) + robot_centre.y();
+  return result;
+}
+
+double RRTNode::getCostAtCell(grid_map::Position robot_centre, double robot_yaw)
+{
+  double resolution = map_->getResolution();
+  double cost = 0;
+  for (double x_robot = -footprint.first; x_robot <= footprint.first; x_robot += resolution)
+  {
+    for (double y_robot = -footprint.second; y_robot <= footprint.first; y_robot += resolution)
+    {
+      // double new_x = node->x + length * cos(slope);
+      // double new_y = node->y + length * sin(slope);
+      // std::cout << "robot frame x and y " << x_robot << ", " << y_robot << "\n";
+      // std::cout << "robot centre and yaw " << robot_centre.x() << ", " << robot_centre.y() << ", " << robot_yaw << "\n";
+      auto l = transformPointToGlobalFrame({ x_robot, y_robot }, robot_yaw, robot_centre);
+      // std::cout << "new x and y " << l.x() << ", " << l.y() << "\n";
+      try {
+        cost += map_->atPosition(layer_name_, l);
+      } catch (std::out_of_range& e) {
+        cost = DBL_MAX;
+      }
+    }
+  }
+
+  return cost;
 }
 
 double RRTNode::quaternionToYaw(geometry_msgs::Quaternion& q)

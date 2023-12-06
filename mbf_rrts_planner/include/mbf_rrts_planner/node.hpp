@@ -10,6 +10,7 @@
 namespace mbf_rrts_core
 {
 typedef std::shared_ptr<grid_map::GridMap> GridMapPtr;
+typedef std::pair<double, double> Point;
 
 /**
  * @class RRTNode
@@ -82,11 +83,16 @@ private:
 
   double quaternionToYaw(geometry_msgs::Quaternion& q);
   geometry_msgs::Quaternion yawToQuaternion(double yaw);
+  double getCostAtCell(grid_map::Position robot_centre, double robot_yaw);
+
+  grid_map::Position transformPointToGlobalFrame(grid_map::Position original_point, double robot_yaw,
+                                                 grid_map::Position robot_centre);
 
   RRTNodePtr parent_;
   std::list<RRTNodePtr> children_;
   GridMapPtr map_;
   std::string layer_name_;
+  std::pair<double, double> footprint = { 0.2, 0.3 };
 };
 
 }  // namespace mbf_rrts_core

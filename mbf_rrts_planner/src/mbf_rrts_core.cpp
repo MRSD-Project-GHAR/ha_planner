@@ -50,11 +50,14 @@ uint32_t RRTSPlanner::makePlan(const geometry_msgs::PoseStamped& start, const ge
 
   RRTNode::RRTNodePtr start_node = std::make_shared<RRTNode>(grid_map_, layer_name_, start);
   start_node->cost = 0;
+  start_node->yaw = 0;
+  // start_node->yaw = quaternionToYaw(start)
 
   node_tree.addNode(start_node);
 
   RRTNode::RRTNodePtr goal_node = std::make_shared<RRTNode>(grid_map_, layer_name_, goal);
   goal_node->cost = DBL_MAX;
+  goal_node->yaw = 0;
   // std::cout << "Added start and goal node\n";
 
   std::cout << "Starting the iterations" << iterations_ << "\n";
