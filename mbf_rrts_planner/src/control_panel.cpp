@@ -29,11 +29,11 @@ PlannerController::PlannerController(ros::NodeHandle nh, ros::NodeHandle nh_priv
   nh_private.param<std::string>("robot_frame", robot_frame_, "camera_link");
   nh_private.param<std::string>("world_frame", world_frame_, "world");
 
-  start_.pose.position.x = 0;
-  start_.pose.position.y = 1;
+  start_.pose.position.x = -4.403289;
+  start_.pose.position.y = 4.914849;
 
-  goal_.pose.position.x = 1;
-  goal_.pose.position.y = 0;
+  goal_.pose.position.x = 6.215281;
+  goal_.pose.position.y = -5.341420;
 
   ROS_INFO_STREAM("Global Planner: Waiting for move_base action server to start.");
   action_server_initialized_ = action_client_.waitForServer(ros::Duration(5.0));

@@ -74,7 +74,7 @@ private:
   double neighbourhood_size_ = 4.0;
   int seed_ = 123;
   double distance_factor_ = 7.0;
-  double yaw_factor_ = 10.0;
+  double yaw_factor_ = 100.0;
 
   // std::unordered_map < std::pair<double, double>, RRTNode::RRTNodePtr, RRTNodeHash> nodes_map;
 

@@ -18,7 +18,7 @@ RRTNode::RRTNode(GridMapPtr map, std::string layer_name, std::default_random_eng
   // TODO: hardcoded center of the map
   std::uniform_real_distribution<> x_generator(-map->getLength()[0] / 2.0, map->getLength()[0] / 2.0);
   std::uniform_real_distribution<> y_generator(-map->getLength()[1] / 2.0, map->getLength()[1] / 2.0);
-  std::uniform_real_distribution<> yaw_generator(0, 2 * M_PI);
+  std::uniform_real_distribution<> yaw_generator(-M_PI, M_PI);
 
   x = x_generator(generator);
   y = y_generator(generator);
@@ -56,16 +56,28 @@ double RRTNode::getCost(RRTNodePtr node, double distance_factor, double yaw_fact
 {
   double total_length = getDistance(node);
 
+  static int count = 0;
+  // count++;
   // std::cout << "Distance to this node is " << total_length << "\n";
 
   double slope = atan2(y - node->y, x - node->x);
   double resolution = map_->getResolution();
 
   double start_yaw_change = abs(node->yaw - slope);
-  start_yaw_change = (start_yaw_change > M_PI) ? (start_yaw_change - M_PI) : start_yaw_change;
+  start_yaw_change = (start_yaw_change > M_PI) ? (2 * M_PI - start_yaw_change) : start_yaw_change;
 
-  double end_yaw_change = abs (yaw - slope);
-  end_yaw_change = (end_yaw_change > M_PI) ? (end_yaw_change - M_PI) : end_yaw_change;
+  double end_yaw_change = abs(yaw - slope);
+  end_yaw_change = (end_yaw_change > M_PI) ? (2 * M_PI - end_yaw_change) : end_yaw_change;
+
+  // if (count == 5000)
+  // {
+  //   std::cout << "This node x,y, yaw: " << x << ", " << y << ", " << yaw << "\n";
+  //   std::cout << "New node x,y, yaw: " << node->x << ", " << node->y << ", " << node->yaw << "\n";
+  //   std::cout << "Slope is " << slope << "\n";
+  //   std::cout << "Start Yaw changee" << start_yaw_change << "\n";
+  //   std::cout << "End Yaw change" << end_yaw_change << "\n";
+  //   count = 0;
+  // }
 
   double total_yaw_change = start_yaw_change + end_yaw_change;
   // std::cout << "Original point : " << node->x << ", " << node->y << "\n";
